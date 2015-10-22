@@ -29,7 +29,6 @@ var createXHR = engine.isCocos ? createCocosXHR : createBrowserXHR
 
 /**
  * for Egret Runtime and Native
-
  */
 function egretRequest(opts) {
   var egret = window.egret
@@ -47,7 +46,7 @@ function egretRequest(opts) {
   })
 
   var request = new egret.URLRequest(opts.url)
-  request.method = egret.URLRequestMethod.POST
+  request.method = opts.method || egret.URLRequestMethod.POST
   request.data = utils.JSONStringify(opts.data)
   loader.load(request)
 }
@@ -58,7 +57,7 @@ function request(opts) {
    * 切断网络或者手机切到后台可能导致timeout
    */
   xhr.timeout = opts.timeout
-  xhr.open('POST', opts.url, true)
+  xhr.open(opts.method || 'POST', opts.url, true)
   xhr.setRequestHeader('Content-Type', 'text/plain; charset=UTF-8')
 
   var start = Date.now()

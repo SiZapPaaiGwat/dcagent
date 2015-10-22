@@ -199,7 +199,7 @@ export function parseInt(value, defaultValue = 0,  radix = 10) {
 
 export function JSONStringify(data) {
   try {
-    return JSON.stringify(data)
+    return data ? JSON.stringify(data) : null
   } catch (e) {
     log('invalid json')
   }
