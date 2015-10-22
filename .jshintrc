@@ -1,0 +1,22 @@
+{
+  "asi": true,
+  "eqeqeq": true,
+  "eqnull": true,
+  "expr": true,
+  "latedef": true,
+  "laxbreak": false,
+  "undef": true,
+  "unused": true,
+  "devel": true,
+  "boss": true,
+  "esnext": true,
+  "predef": [
+    "define",
+    "require",
+    "egret",
+    "cc",
+    "layabox",
+    "module",
+    "exports"
+  ]
+}
