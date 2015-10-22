@@ -1,5 +1,5 @@
 /**
- * 主流引擎列表
+ * 检测当前游戏使用的游戏引擎
  * https://html5gameengine.com/
  */
 
@@ -8,7 +8,7 @@ import {win as window} from '../globals.js'
 export var engine =  {
   isEgret: !!window.egret,
   isLayabox: !!window.layabox,
-  isCocos: !!window.cc && window.cc.game
+  isCocos: !!window.cc && !!window.cc.game
 }
 
 // 当前页面使用的引擎

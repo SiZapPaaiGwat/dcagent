@@ -4,6 +4,7 @@
  * Copyright (c) 2013 Valentin Vasilyev (valentin.vasilyev@outlook.com)
  * Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license.
  */
+
 import {win as window, doc as document} from '../globals.js'
 
 var screen = window.screen

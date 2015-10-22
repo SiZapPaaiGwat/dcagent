@@ -1,5 +1,9 @@
-import {engine} from '../decect/engine.js'
-import {hasStorage} from '../decect/client.js'
+/**
+ * 本地存储封装
+ */
+
+import {engine} from '../detect/engine.js'
+import {hasStorage} from '../detect/client.js'
 import {noop} from '../libs/utils.js'
 import {win as window} from '../globals'
 

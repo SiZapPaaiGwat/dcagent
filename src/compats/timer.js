@@ -1,4 +1,8 @@
-import {engine} from '../decect/engine.js'
+/**
+ * 轮询的定时器
+ */
+
+import {engine} from '../detect/engine.js'
 import {win as window} from '../globals.js'
 import {attemp} from '../libs/utils.js'
 

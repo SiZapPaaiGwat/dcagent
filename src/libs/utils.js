@@ -1,3 +1,7 @@
+/**
+ * 通用的辅助类
+ */
+
 import {doc as document, win as window} from '../globals.js'
 
 var toString = Object.prototype.toString
@@ -191,4 +195,14 @@ export function parseInt(value, defaultValue = 0,  radix = 10) {
   }
 
   return window.parseInt(value, radix) || defaultValue
+}
+
+export function JSONStringify(data) {
+  try {
+    return JSON.stringify(data)
+  } catch (e) {
+    log('invalid json')
+  }
+
+  return null
 }

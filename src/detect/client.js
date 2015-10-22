@@ -1,3 +1,7 @@
+/**
+ * 识别客户端的基本环境
+ */
+
 import {win as window, doc as document} from '../globals.js'
 import hasDOM from '../libs/hasDOM.js'
 import {engine} from './engine.js'
