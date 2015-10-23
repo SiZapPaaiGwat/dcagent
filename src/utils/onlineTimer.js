@@ -3,19 +3,26 @@
  */
 
 import Timer from '../libs/timer.js'
+import {setTimeout} from '../compats/xTimeout.js'
 
 var timer
 
-export function resetTimer(interval) {
+/**
+ * 等待一个周期再启动Timer
+ */
+export function reset(interval) {
   if (timer) {
-    timer.reset(interval)
+    timer.stop()
+    setTimeout(() => {
+      timer.reset(interval)
+    }, interval)
   }
 }
 
-export function createTimer(func, interval) {
+export function set(func, interval) {
   timer = new Timer(func, interval)
 }
 
-export function getTimer() {
+export function get() {
   return timer
 }
