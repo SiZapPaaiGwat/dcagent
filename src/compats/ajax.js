@@ -2,6 +2,7 @@
  * 适用于一般js环境的ajax封装，调用方式：
  * ajax({
  *   opts.url
+ *   opts.method
  *   opts.data
  *   opts.success
  *   opts.error
