@@ -24,12 +24,14 @@ export default function(opts, force) {
    */
   if (!force) {
     if (lastRequestTime && now - lastRequestTime < defaults.ASAP_TIMEOUT) {
-      utils.log('request dropped: unexpected behavior happened')
+      utils.log('Request dropped: unexpected behavior')
       return
     }
 
     lastRequestTime = now
   }
+
+  reportCount += 1
 
   Ajax({
     url: opts.url,
@@ -42,7 +44,6 @@ export default function(opts, force) {
       utils.attemp(opts.error, xhr, [xhr, elapsed, isTimeout])
     },
     complete: (xhr, elapsed) => {
-      reportCount += 1
       utils.attemp(opts.complete, xhr, [xhr, elapsed])
 
       /**
@@ -55,5 +56,3 @@ export default function(opts, force) {
     }
   })
 }
-
-
