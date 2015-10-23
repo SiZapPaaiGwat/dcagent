@@ -3,12 +3,12 @@
  */
 
 import * as Client from '../detect/client.js'
-import {CLIENT_KEY} from '../consts.js'
+import * as CONST from '../consts.js'
 import config from './initConfig.js'
 
 export default function(key) {
   // 设备ID不加APPID前缀，方便跨app定位用户
-  if (Client.isStandardBrowser || CLIENT_KEY === key) {
+  if (Client.isStandardBrowser || CONST.CLIENT_KEY === key) {
     return key
   }
 

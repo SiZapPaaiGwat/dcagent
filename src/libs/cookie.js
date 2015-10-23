@@ -1,4 +1,4 @@
-import {doc as document} from '../globals.js'
+import {document} from '../globals.js'
 
 const Cookie = {
   get: (name) => {

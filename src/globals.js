@@ -12,6 +12,6 @@
 var topThis = (1, eval)('this');
 /*jshint +W067*/
 
-export var win = topThis || {}
-export var doc = topThis.document || {}
-export var loc = topThis.location || {}
+export var window = topThis || {}
+export var document = topThis.document || {}
+export var location = topThis.location || {}

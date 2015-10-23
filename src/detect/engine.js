@@ -3,7 +3,7 @@
  * https://html5gameengine.com/
  */
 
-import {win as window} from '../globals.js'
+import {window} from '../globals.js'
 
 export var engine =  {
   isEgret: !!window.egret,

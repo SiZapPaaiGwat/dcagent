@@ -11,7 +11,7 @@
  * })
  */
 
-import {win as window} from  '../globals.js'
+import {window} from  '../globals.js'
 import {engine} from '../detect/engine.js'
 import * as utils from '../libs/utils.js'
 

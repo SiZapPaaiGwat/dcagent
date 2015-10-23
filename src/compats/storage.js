@@ -5,7 +5,7 @@
 import {engine} from '../detect/engine.js'
 import {hasStorage} from '../detect/client.js'
 import {noop} from '../libs/utils.js'
-import {win as window} from '../globals'
+import {window} from '../globals'
 
 var storage
 

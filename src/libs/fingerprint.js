@@ -5,7 +5,7 @@
  * Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license.
  */
 
-import {win as window, doc as document} from '../globals.js'
+import {window, document} from '../globals.js'
 
 var screen = window.screen
 var navigator = window.navigator

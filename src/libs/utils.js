@@ -2,7 +2,7 @@
  * 通用的辅助类
  */
 
-import {doc as document, win as window} from '../globals.js'
+import {document, window} from '../globals.js'
 
 var toString = Object.prototype.toString
 

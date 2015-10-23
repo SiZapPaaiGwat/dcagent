@@ -4,7 +4,7 @@
  * 很多无dom的环境存在一些虚拟对象，需要实际验证
  */
 
-import {doc as document} from '../globals.js'
+import {document} from '../globals.js'
 import {isFunction} from './utils.js'
 
 export default function() {

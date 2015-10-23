@@ -6,7 +6,7 @@
 import Ajax from '../compats/ajax.js'
 import * as utils from '../libs/utils.js'
 import * as defaults from '../defaults.js'
-import resetTimer from './resetTimer.js'
+import onlineTimer from './onlineTimer.js'
 
 // 上次请求发生时间
 var lastRequestTime = 0
@@ -51,7 +51,7 @@ export default function(opts, force) {
        */
       var interval = xhr.getResponseHeader && utils.parseInt(xhr.getResponseHeader('X-Rate-Limit'))
       if (interval >= defaults.MIN_ONLINE_INTERVAL) {
-        resetTimer(interval)
+        onlineTimer.reset(interval * 1000)
       }
     }
   })

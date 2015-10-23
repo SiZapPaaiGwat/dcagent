@@ -1,4 +1,4 @@
-var host = `rd.gdatacube.net`
+export var HOST = `rd.gdatacube.net`
 
 export var CREATE_TIME = 'dcagent_create_time'
 
@@ -21,7 +21,7 @@ export var CLIENT_KEY = 'dcagent_client_id'
 
 export var LOGOUT_TIME = 'dc_p_lo'
 
-export var API_PATH = `${host}/dc/hh5/sync`
+export var API_PATH = `${HOST}/dc/hh5/sync`
 
 export var PADDING_STRING = '0A'
 
