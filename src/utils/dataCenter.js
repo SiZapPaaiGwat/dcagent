@@ -60,7 +60,9 @@ export function collect(payment, reg) {
  * 用户退出时将当前数据保存到本地存储
  */
 export function saveToStorage() {
-  storage.setItem(CONST.QUIT_SNAPSHOT, utils.JSONStringify(collect()))
+  if (errors.length || events.length) {
+    storage.setItem(CONST.QUIT_SNAPSHOT, utils.JSONStringify(collect()))
+  }
 }
 
 /**
