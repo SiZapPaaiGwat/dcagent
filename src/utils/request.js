@@ -23,7 +23,7 @@ export default function(opts, force) {
    * 强制上报的请求不受限制
    */
   if (!force) {
-    if (lastRequestTime && now - lastRequestTime < defaults.ASAP_TIMEOUT) {
+    if (lastRequestTime && (now - lastRequestTime < defaults.ASAP_TIMEOUT)) {
       utils.log('Request dropped: unexpected behavior')
       return
     }

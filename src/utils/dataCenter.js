@@ -41,8 +41,9 @@ export function collect(payment, reg) {
   var payload = {
     headerInfo: getHeaderInfo(),
     onlineInfo: getOnlineInfo(),
-    errorInfoList: errors,
-    eventInfoList: events
+    // 复制一份防止被清
+    errorInfoList: errors.concat(),
+    eventInfoList: events.concat()
   }
 
   if (payment) {
@@ -54,6 +55,11 @@ export function collect(payment, reg) {
   }
 
   return payload
+}
+
+export function clear() {
+  events.length = 0
+  errors.length = 0
 }
 
 /**
@@ -73,6 +79,7 @@ export function loadFromStorage() {
 }
 
 export function addError(item) {
+  // TODO 这里要根据总的错误发生数目来判断，而不是本次上报数目
   if (errors.length >= defaults.MAX_ERROR_COUNT) return
 
   errors.push(item)
