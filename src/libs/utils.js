@@ -201,7 +201,17 @@ export function JSONStringify(data) {
   try {
     return data ? JSON.stringify(data) : null
   } catch (e) {
-    log('invalid json')
+    log('invalid json format')
+  }
+
+  return null
+}
+
+export function JSONParse(str) {
+  try {
+    return str ? JSON.parse(str) : null
+  } catch (e) {
+    log('invalid json string')
   }
 
   return null

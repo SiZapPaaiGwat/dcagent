@@ -19,6 +19,9 @@ export var ERRORS_KEY = 'dcagent_client_errors'
 
 export var CLIENT_KEY = 'dcagent_client_id'
 
+// 用户退出时数据存储到本地
+export var QUIT_SNAPSHOT = 'dcagent_snapshot'
+
 export var LOGOUT_TIME = 'dc_p_lo'
 
 export var API_PATH = `${HOST}/dc/hh5/sync`
