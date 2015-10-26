@@ -49,7 +49,13 @@ export default function(opts, force) {
       /**
        * 重新设置定时器
        */
-      var interval = xhr.getResponseHeader && utils.parseInt(xhr.getResponseHeader('X-Rate-Limit'))
+      if (!xhr.getAllResponseHeaders || !xhr.getResponseHeader) return
+
+      var headers = xhr.getAllResponseHeaders()
+      var header = 'X-Rate-Limit'
+      if (headers.indexOf(header) === -1) return
+
+      var interval = utils.parseInt(xhr.getResponseHeader(header))
       if (interval >= defaults.MIN_ONLINE_INTERVAL) {
         onlineTimer.reset(interval * 1000)
       }
