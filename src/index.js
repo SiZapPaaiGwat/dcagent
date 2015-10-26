@@ -6,6 +6,7 @@
  *
  * 对于web环境设备信息中设备id由sdk内部从服务端分配
  */
+
 import init from './interface/init.js'
 import {version} from './interface/version.js'
 import player from './interface/player.js'
@@ -15,4 +16,3 @@ export {
   version,
   player
 }
-
