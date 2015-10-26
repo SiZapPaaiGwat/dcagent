@@ -8,9 +8,11 @@
  */
 import init from './interface/init.js'
 import {version} from './interface/version.js'
+import player from './interface/player.js'
 
 export {
   init,
-  version
+  version,
+  player
 }
 
