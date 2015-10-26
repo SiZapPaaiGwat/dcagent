@@ -18,11 +18,9 @@ import setAge from '../interface/setAge'
 import setGameServer from '../interface/setGameServer'
 import setGender from '../interface/setGender'
 import setRoleInfo from '../interface/setRoleInfo'
-import State from './internal/state'
-import {log} from './utils'
-import settings from './settings'
 import {setTimeout, clearTimeout} from '../compats/xTimeout'
-import {ASAP_TIMEOUT} from '../defaults.js'
+import * as defaults from '../defaults.js'
+import config from '../utils/initConfig.js'
 
 export var initBasedAPI = {
   login,
@@ -50,42 +48,6 @@ export var loginBasedAPI = {
   setRoleInfo
 }
 
-// 登录完成的调用列表
-var loginInvokeList = []
-
-/**
- * login内有异步请求，可能导致某些依赖于login的接口过早调用
- * 需要缓存待login完成之后调用
- */
-export function cacheBeforeLogin(method) {
-  return function() {
-    var loginStatus = State.getLoginStatus()
-
-    // 依赖于登录调用
-    if (loginStatus === 0) {
-      log('DCAgent.login needed')
-      return false
-    }
-
-    // 调用了login接口，异步请求还没结束
-    if (loginStatus === 1) {
-      var result = [method];
-      [].forEach.call(arguments, i => result.push(i))
-      loginInvokeList.push(result)
-
-      return false
-    }
-  }
-}
-
-/**
- * 执行login异步请求过程中调用的接口
- */
-export function clearLoginInvokeList() {
-  loginInvokeList.forEach(item => loginBasedAPI[item.shift()].apply(0, item))
-  loginInvokeList.length = 0
-}
-
 var controlTimer
 
 /**
@@ -101,7 +63,7 @@ export function asap() {
   timer.stop()
   controlTimer = setTimeout(function() {
     timer.run()
-  }, ASAP_TIMEOUT)
+  }, defaults.ASAP_TIMEOUT)
 }
 
 export function checkInit() {

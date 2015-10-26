@@ -5,6 +5,7 @@
 import {window, document, location} from '../globals.js'
 import hasDOM from '../libs/hasDOM.js'
 import {engine} from './engine.js'
+import * as defaults from '../defaults.js'
 
 var hasStorage = !!window.localStorage || engine.isEgret || engine.isCocos || engine.isLayabox
 var isStandardBrowser = hasDOM()
@@ -23,7 +24,7 @@ var resolution = screenObj.width && (screenObj.width + '*' + screenObj.height)
  * 如果运行环境不是浏览器
  * 需要SDK初始化时指定brand，osVersion，platform
  */
-var brand = '', osVersion = '', platform = 0
+var brand = '', osVersion = '', platform = defaults.DEFAULT_PLATFORM
 
 if (!userAgent) {
   var platforms = ['ios', 'android']
@@ -43,7 +44,7 @@ if (!userAgent) {
 
   // 未知平台
   if ([0, 1, 2, 3].indexOf(platform) === -1) {
-    platform = 0
+    platform = defaults.DEFAULT_PLATFORM
   }
 }
 

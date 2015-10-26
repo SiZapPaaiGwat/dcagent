@@ -3,30 +3,31 @@
  */
 
 import {version} from '../interface/version.js'
+import * as defaults from '../defaults.js'
 
 export default {
    accountId: '',
    accountType: '',
-   age: 0,
+   age: defaults.DEFAULT_AGE,
    appId: '',
    appVersion: '',
    brand: '',
    channel: '',
    customDeviceId: '',
    gameServer: '',
-   gender: 0,
+   gender: defaults.DEFAULT_GENDER,
    idfa: '',
    imei: '',
    lonLat: '',
    mac: '',
-   netType: 3,
+   netType: defaults.DEFAULT_NET_TYPE,
    operator: '',
    osVersion: '',
-   platform: 0,
+   platform: defaults.DEFAULT_PLATFORM,
    resolution: '',
    roleClass: '',
    roleId: '',
-   roleLevel: 0,
+   roleLevel: defaults.DEFAULT_ROLE_LEVEL,
    roleRace: '',
    simCardOp: '',
    uid: '',

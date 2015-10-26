@@ -13,7 +13,7 @@ import * as validator from './validator.js'
 
 var API_PATH = Client.protocol + '//' + CONST.HOST + CONST.API_PATH
 
-export default function(force) {
+export default function(force, payment, reg) {
   // 如果文档被隐藏暂时不上报
   if (!force && utils.hiddenProperty && document[utils.hiddenProperty]) return
 
@@ -35,7 +35,7 @@ export default function(force) {
     })
   }
 
-  opts.data = dataCenter.collect()
+  opts.data = dataCenter.collect(payment, reg)
 
   if (!validator.isParamsValid(opts.data)) return
 

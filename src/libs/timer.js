@@ -41,7 +41,9 @@ export default function(fn, duration) {
   // reset之后也会立即执行一次
   this.reset = (num) => {
     this.stop()
-    this.duration = num
+    if (num) {
+      this.duration = num
+    }
     this.run()
   }
 }

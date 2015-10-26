@@ -2,7 +2,7 @@
  * SDK初始化
  */
 
-import {document, location} from '../globals'
+import {document, location} from '../globals.js'
 import * as utils from '../libs/utils.js'
 import * as CONST from '../consts.js'
 import * as defaults from '../defaults.js'
@@ -125,16 +125,6 @@ function initialize(options) {
   stateCenter.createTime = utils.parseInt(createTime)
 
   /**
-   * 激活以及父节点信息，注册在激活时暂时默认为1，目前还没有单独的注册
-   * 如果不是首次激活但是有parentId也不记录节点传播关系
-   * TODO 激活注册信息
-   */
-  var regParams = isAct ? {
-    actTime: createTime,
-    regTime: createTime
-  } : null
-
-  /**
    * 将本次PV数据写入到本地存储
    * 不管第一次PV上报是否成功，后面只要有一次上报成功数据就会准确
    */
@@ -145,10 +135,19 @@ function initialize(options) {
     eventMap: {
       page: encodeURI(pageUrl.split('?')[0])
     }
-  }, regParams)
+  })
+
+  /**
+   * 激活以及父节点信息，注册在激活时暂时默认为1，目前还没有单独的注册
+   * 如果不是首次激活但是有parentId也不记录节点传播关系
+   */
+  var regParams = isAct ? {
+    actTime: createTime,
+    regTime: createTime
+  } : null
 
   // 在线（PV）上报
-  onlinePolling(true)
+  onlinePolling(true, null, regParams)
 
   // 玩家退出
   onPlayerLeave(dataCenter.saveToStorage)

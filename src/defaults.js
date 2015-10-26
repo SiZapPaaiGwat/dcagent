@@ -14,3 +14,13 @@ export var ASAP_TIMEOUT = 5000
 
 // 最大错误上报数目
 export var MAX_ERROR_COUNT = 100
+
+export var DEFAULT_AGE = 0
+
+export var DEFAULT_GENDER = 0
+
+export var DEFAULT_ROLE_LEVEL = 0
+
+export var DEFAULT_NET_TYPE = 3
+
+export var DEFAULT_PLATFORM = 0
