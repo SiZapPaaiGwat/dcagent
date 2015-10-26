@@ -19,32 +19,6 @@ var totalError = 0
 
 export function getHeaderInfo() {
   // TODO 获取头部信息（角色等）
-  // accountId: "19541788390A0A0A0A0A0A0A0A0A0A0A"
-  // accountType: ""
-  // age: 0
-  // appId: "C4BD90A91FE340AAE1ECB1852D1D12E8"
-  // appVersion: ""
-  // brand: ""
-  // channel: "wexin"
-  // customDeviceId: ""
-  // gameServer: ""
-  // gender: 0
-  // idfa: ""
-  // imei: ""
-  // lonLat: ""
-  // mac: ""
-  // netType: 3
-  // operator: ""
-  // osVersion: ""
-  // platform: 0
-  // resolution: "1440*900"
-  // roleClass: ""
-  // roleId: ""
-  // roleLevel: 0
-  // roleRace: ""
-  // simCardOp: ""
-  // uid: "19541788390A0A0A0A0A0A0A0A0A0A0A"
-  // ver: 23
   return config
 }
 
