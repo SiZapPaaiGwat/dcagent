@@ -11,12 +11,14 @@ import {document} from '../globals.js'
 import config from './initConfig.js'
 import * as validator from './validator.js'
 
+var API_PATH = Client.protocol + '//' + CONST.HOST + CONST.API_PATH
+
 export default function(force) {
   // 如果文档被隐藏暂时不上报
   if (!force && utils.hiddenProperty && document[utils.hiddenProperty]) return
 
   var opts = {
-    url: Client.protocol + '//' + CONST.HOST
+    url: API_PATH
   }
 
   /**

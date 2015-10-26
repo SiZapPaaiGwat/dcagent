@@ -21,9 +21,7 @@ export function isObject(value) {
 }
 
 export function log(msg) {
-  console.log('---- DCAgent log start ----')
-  console.log(msg)
-  console.log('---- DCAgent log end   ----')
+  console.log(`---- DCAgent log start ----\n${msg}\n---- DCAgent log end   ----`)
 }
 
 /**

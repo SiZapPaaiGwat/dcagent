@@ -8,11 +8,14 @@ import * as CONST from '../consts.js'
 import * as storage from './storage.js'
 import * as utils from '../libs/utils.js'
 import detectEngine from '../detect/engine.js'
+import stateCenter from './stateCenter.js'
 
 // 错误信息
 var errors = []
 // 自定义事件信息
 var events = []
+// 已上报错误数
+var totalError = 0
 
 export function getHeaderInfo() {
   // TODO 获取头部信息（角色等）
@@ -21,15 +24,15 @@ export function getHeaderInfo() {
 
 export function getOnlineInfo() {
   return {
-    loginTime: config.loginTime,
-    onlineTime: utils.parseInt(Date.now() / 1000) - config.loginTime,
+    loginTime: stateCenter.loginTime,
+    onlineTime: (utils.parseInt(Date.now() / 1000) - stateCenter.loginTime) || 1,
     extendMap: {
       // 流量来源
-      from: config.from,
+      from: stateCenter.from,
       // 引擎类型
       engine: detectEngine() || '',
       // 应用名称
-      app: config.app
+      app: stateCenter.app
     }
   }
 }
@@ -79,10 +82,11 @@ export function loadFromStorage() {
 }
 
 export function addError(item) {
-  // TODO 这里要根据总的错误发生数目来判断，而不是本次上报数目
-  if (errors.length >= defaults.MAX_ERROR_COUNT) return
+  if (totalError >= defaults.MAX_ERROR_COUNT) return
 
   errors.push(item)
+
+  totalError += 1
 }
 
 export function addEvent(item) {

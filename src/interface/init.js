@@ -12,9 +12,10 @@ import * as dataCenter from '../utils/dataCenter.js'
 import * as innerStorage from '../utils/storage.js'
 import storage from '../compats/storage.js'
 import config from '../utils/initConfig.js'
-import Timer from '../libs/timer.js'
 import onlinePolling from '../utils/onlinePolling.js'
+import * as onlineTimer from '../utils/onlineTimer.js'
 import getUID from '../compats/uid.js'
+import onError from '../utils/onError.js'
 
 /**
  * 验证用户参数
@@ -42,17 +43,14 @@ function checkArguments(options) {
   // 统一大写
   options.appId = options.appId.toUpperCase()
 
-  // 病毒传播、错误上报默认设置为false
-  config.errorReport = !!options.errorReport
-  config.virus = !!options.virus
   // 上报质量统计，设置每隔多少个请求上报一次
-  config.oss = typeof options.oss === 'number' ? options.oss : 0
-  // 使用何种app打开
-  config.app = options.appName || ''
-  // 流量来源
-  config.from = options.from || utils.getHostName(document.referrer)
+  stateCenter.oss = typeof options.oss === 'number' ? options.oss : 0
   // 错误发生时捕捉错误现场
-  config.getErrorScene = options.getErrorScene
+  stateCenter.getErrorScene = options.getErrorScene
+  // 使用何种app打开
+  stateCenter.app = options.appName || ''
+  // 流量来源
+  stateCenter.from = options.from || utils.getHostName(document.referrer)
 
   /**
    * 读取用户设置
@@ -93,28 +91,25 @@ function initDeviceID(localUID) {
 
 function initialize(options) {
   var localUID = innerStorage.getItem(CONST.CLIENT_KEY)
+
   // 是否首次激活
   var isAct = localUID ? 0 : 1
 
   var deviceId = initDeviceID(localUID)
   config.uid = deviceId
   config.accountId = deviceId
-  config.interval = Math.max(defaults.MIN_ONLINE_INTERVAL, parseFloat(options.interval || defaults.MIN_ONLINE_INTERVAL)) * 1000
 
-  if (config.errorReport) {
-    //injectErrorEvent()
+  if (options.errorReport) {
+    onError()
   }
-
-  // 在线轮询上报
-  config.timer = new Timer(onlinePolling, config.interval)
 
   /**
    * 新版游戏初始化一次算一次启动
    * 在线时长不再使用会话存储，而是当前时间减去本次登录时间
    */
-  config.loginTime = utils.parseInt(Date.now() / 1000)
+  stateCenter.loginTime = utils.parseInt(Date.now() / 1000)
   // 不会随玩家切换帐号而改变
-  config.initTime = config.loginTime
+  stateCenter.initTime = stateCenter.loginTime
 
   /**
    * 白鹭引擎由于共享设备ID
@@ -122,11 +117,11 @@ function initialize(options) {
    */
   var createTime = storage.getItem(CONST.CREATE_TIME)
   if (!createTime) {
-    createTime = config.loginTime
+    createTime = stateCenter.loginTime
     storage.setItem(CONST.CREATE_TIME, createTime)
   }
 
-  config.createTime = utils.parseInt(createTime)
+  stateCenter.createTime = utils.parseInt(createTime)
 
   /**
    * 激活以及父节点信息，注册在激活时暂时默认为1，目前还没有单独的注册
@@ -135,20 +130,19 @@ function initialize(options) {
    */
   var regParams = isAct ? {
     actTime: createTime,
-    regTime: createTime,
-    parentId: config.parentId
+    regTime: createTime
   } : null
 
   /**
    * 将本次PV数据写入到本地存储
    * 不管第一次PV上报是否成功，后面只要有一次上报成功数据就会准确
    */
-  var pageUrl = Client.isStandardBrowser ? location.pathname : '!'
+  var pageUrl = Client.isStandardBrowser ? location.href : '!'
 
   dataCenter.addEvent({
     eventId: CONST.EVT_PV,
     eventMap: {
-      page: encodeURIComponent(pageUrl)
+      page: encodeURI(pageUrl.split('?')[0])
     }
   }, regParams)
 
@@ -156,7 +150,12 @@ function initialize(options) {
 
   // TODO 玩家离开
 
+  // 在线轮询上报
+  var interval = Math.max(defaults.MIN_ONLINE_INTERVAL, parseFloat(options.interval || defaults.MIN_ONLINE_INTERVAL)) * 1000
+  onlineTimer.set(onlinePolling, interval)
+
   stateCenter.inited = true
+  return true
 }
 
 export default function(options) {

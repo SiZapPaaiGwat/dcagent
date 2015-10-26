@@ -24,7 +24,7 @@ export var QUIT_SNAPSHOT = 'dcagent_snapshot'
 
 export var LOGOUT_TIME = 'dc_p_lo'
 
-export var API_PATH = `${HOST}/dc/hh5/sync`
+export var API_PATH = `/dc/hh5/sync`
 
 export var PADDING_STRING = '0A'
 
