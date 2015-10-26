@@ -1,8 +1,8 @@
 {
-  "asi": true,
+  "asi":    true,
   "eqeqeq": true,
   "eqnull": true,
-  "expr": true,
+  "expr":   true,
   "latedef": true,
   "laxbreak": false,
   "undef": true,
@@ -13,10 +13,9 @@
   "predef": [
     "define",
     "require",
-    "egret",
-    "cc",
-    "layabox",
     "module",
-    "exports"
+    "exports",
+    "describe",
+    "it"
   ]
 }
