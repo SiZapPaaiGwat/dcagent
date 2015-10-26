@@ -6,7 +6,7 @@
 import Ajax from '../compats/ajax.js'
 import * as utils from '../libs/utils.js'
 import * as defaults from '../defaults.js'
-import onlineTimer from './onlineTimer.js'
+import * as onlineTimer from './onlineTimer.js'
 
 // 上次请求发生时间
 var lastRequestTime = 0
