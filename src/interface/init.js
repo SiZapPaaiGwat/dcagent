@@ -16,6 +16,7 @@ import onlinePolling from '../utils/onlinePolling.js'
 import * as onlineTimer from '../utils/onlineTimer.js'
 import getUID from '../compats/uid.js'
 import onError from '../utils/onError.js'
+import onPlayerLeave from '../utils/onPlayerLeave.js'
 
 /**
  * 验证用户参数
@@ -146,11 +147,13 @@ function initialize(options) {
     }
   }, regParams)
 
+  // 在线（PV）上报
   onlinePolling(true)
 
-  // TODO 玩家离开
+  // 玩家退出
+  onPlayerLeave(dataCenter.saveToStorage)
 
-  // 在线轮询上报
+  // 开启在线轮询
   var interval = Math.max(defaults.MIN_ONLINE_INTERVAL, parseFloat(options.interval || defaults.MIN_ONLINE_INTERVAL)) * 1000
   onlineTimer.set(onlinePolling, interval)
 

@@ -5,7 +5,7 @@
 import config from './initConfig.js'
 import * as defaults from '../defaults.js'
 import * as CONST from '../consts.js'
-import * as storage from './storage.js'
+import * as storage from '../compats/storage.js'
 import * as utils from '../libs/utils.js'
 import detectEngine from '../detect/engine.js'
 import {device} from '../detect/client.js'
@@ -70,6 +70,8 @@ export function clear() {
  * 用户退出时将当前数据保存到本地存储
  */
 export function saveToStorage() {
+  storage.setItem(CONST.LOGOUT_TIME, utils.parseInt(Date.now() / 1000))
+
   if (errors.length || events.length) {
     storage.setItem(CONST.QUIT_SNAPSHOT, utils.JSONStringify(collect()))
   }
