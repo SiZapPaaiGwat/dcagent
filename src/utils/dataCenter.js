@@ -8,6 +8,7 @@ import * as CONST from '../consts.js'
 import * as storage from './storage.js'
 import * as utils from '../libs/utils.js'
 import detectEngine from '../detect/engine.js'
+import {device} from '../detect/client.js'
 import stateCenter from './stateCenter.js'
 
 // 错误信息
@@ -17,9 +18,9 @@ var events = []
 // 已上报错误数
 var totalError = 0
 
-export function getHeaderInfo() {
-  // TODO 获取头部信息（角色等）
-  return config
+for (var key in device) {
+  // 优先使用用户配置
+  config[key] = config[key] || device[key]
 }
 
 export function getOnlineInfo() {
@@ -42,7 +43,7 @@ export function getOnlineInfo() {
  */
 export function collect(payment, reg) {
   var payload = {
-    headerInfo: getHeaderInfo(),
+    headerInfo: config,
     onlineInfo: getOnlineInfo(),
     // 复制一份防止被清
     errorInfoList: errors.concat(),
