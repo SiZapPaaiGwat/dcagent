@@ -12,10 +12,6 @@
   "esnext": true,
   "predef": [
     "define",
-    "require",
-    "module",
-    "exports",
-    "describe",
-    "it"
+    "exports"
   ]
 }
