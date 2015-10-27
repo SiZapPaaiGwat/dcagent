@@ -16,7 +16,7 @@ export default function login(accountID) {
 		return
 	}
 
-  stateCenter.logged = true
+  stateCenter.isLogin = true
 
 	// 重新设置不会起作用
 	if (config.accountId === accountID) {
@@ -42,5 +42,4 @@ export default function login(accountID) {
 
   // 立即执行一次在线上报
   timer.reset()
-  return
 }
