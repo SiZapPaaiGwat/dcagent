@@ -1,23 +1,15 @@
 var rename = require('gulp-rename')
 var jshint = require('gulp-jshint')
-var esperanto = require('gulp-esperanto')
-var gulp   = require('gulp')
+var gulp = require('gulp')
 var babel = require('gulp-babel')
-var closureCompiler = require('gulp-closure-compiler')
+var rollup = require('gulp-rollup')
+var uglify = require('gulp-uglify')
 
-var sourceFileV2 = 'dist/dcagent.v2.src.js'
-
-var bundleConfigV2 = {
-    // 是否进行打包，其它配置都是esperanto的配置
-    bundle: true,
-    type: 'umd',
-    base: 'src',
-    entry: 'index.js',
-    name: 'DCAgent',
-    amdName: 'DCAgent',
-    strict: true
+var sourceFile = 'dist/dcagent.v2.src.js'
+var options = {
+  format: 'umd',
+  moduleName: 'DCAgent'
 }
-
 var babelTransformWhitelist = [
   'es3.memberExpressionLiterals',
   'es3.propertyLiterals',
@@ -31,33 +23,32 @@ var babelTransformWhitelist = [
   'es6.templateLiterals'
 ]
 
-gulp.task('closureV2', ['bundleV2'], function() {
-	return gulp.src(sourceFileV2)
-		.pipe(closureCompiler({
-			compilerPath: 'dist/google-closure-compiler.jar',
-			fileName: './dist/dcagent.v2.min.js',
-			compilerFlags: {
-				language_in: 'ES5'
-			}
-		}))
+gulp.task('compress', ['bundle'], function() {
+  return gulp.src(sourceFile)
+    .pipe(uglify())
+    .pipe(rename(function (path) {
+      // 移除目录和后缀
+      path.basename = 'dcagent.v2.min'
+    }))
+    .pipe(gulp.dest('dist'))
+});
+
+
+gulp.task('lint', ['bundle'], function () {
+  return gulp.src(sourceFile)
+    .pipe(jshint())
+    .pipe(jshint.reporter('default'))
 })
 
-
-gulp.task('lintV2', ['bundleV2'], function() {
-	return gulp.src(sourceFileV2)
-		.pipe(jshint())
-		.pipe(jshint.reporter('default'))
+gulp.task('bundle', function () {
+  return gulp.src('src/index.js', {read: false})
+    .pipe(rollup(options))
+    .pipe(rename(function (path) {
+      // 移除目录和后缀
+      path.basename = 'dcagent.v2.src'
+    }))
+    .pipe(babel({whitelist: babelTransformWhitelist}))
+    .pipe(gulp.dest('dist'))
 })
 
-gulp.task('bundleV2', function () {
-	return gulp.src(bundleConfigV2.base + '/*.js')
-		.pipe(esperanto(bundleConfigV2))
-		.pipe(rename(function(path) {
-			// 移除目录和后缀
-			path.basename = sourceFileV2.replace('.js', '').split('/').pop()
-		}))
-		.pipe(babel({whitelist: babelTransformWhitelist}))
-		.pipe(gulp.dest('dist'))
-})
-
-gulp.task('default', ['lintV2', 'closureV2'])
+gulp.task('default', ['lint', 'compress'])
