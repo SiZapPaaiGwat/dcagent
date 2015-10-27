@@ -56,7 +56,7 @@ export default function(opts, force) {
       if (headers.indexOf(header) === -1) return
 
       var interval = utils.parseInt(xhr.getResponseHeader(header))
-      if (interval >= defaults.MIN_ONLINE_INTERVAL) {
+      if (interval > 1) {
         onlineTimer.reset(interval * 1000)
       }
     }
