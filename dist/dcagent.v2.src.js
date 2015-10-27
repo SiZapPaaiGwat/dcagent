@@ -40,6 +40,9 @@
     get log() {
       return log;
     },
+    get tryThrow() {
+      return tryThrow;
+    },
     get uuid() {
       return uuid;
     },
@@ -207,6 +210,12 @@
   var validator = {
     get isParamsValid() {
       return isParamsValid;
+    },
+    get shouldBeInited() {
+      return shouldBeInited;
+    },
+    get shouldBeLoggedIn() {
+      return shouldBeLoggedIn;
     }
   };
 
@@ -368,6 +377,7 @@
   }
 
   var toString = Object.prototype.toString;
+  var isDebug = window.DCAGENT_DEBUG_OPEN;
 
   /*
    * 不做任何操作的空函数，用于各种兼容处理
@@ -386,6 +396,15 @@
   function log(msg) {
     console.log('---- DCAgent log start ----\n' + msg + '\n---- DCAgent log end   ----');
   }
+
+  /**
+   * debug环境抛错，正式环境打印日志
+   */
+  var tryThrow = isDebug ? function (msg) {
+    throw new Error(msg);
+  } : function (msg) {
+    log(msg);
+  };
 
   /**
    * generate a fake UUID
@@ -440,8 +459,13 @@
 
   /**
    * 安全执行函数
+   * debug环境需要跑出错误不能catch，否则测试通不过
    */
-  function attempt(fn, context, args) {
+  var attempt = isDebug ? function (fn, context, args) {
+    if (!isFunction(fn)) return;
+
+    return fn.apply(context, args);
+  } : function (fn, context, args) {
     if (!isFunction(fn)) return;
 
     try {
@@ -449,7 +473,7 @@
     } catch (e) {
       log('exec error for function:\n ' + fn.toString());
     }
-  }
+  };
 
   /**
    * 测试是否真的支持本地存储，safari无痕模式会报异常
@@ -704,9 +728,10 @@
   }
 
   function getOnlineInfo() {
+    var loginTime = stateCenter.loginTime || stateCenter.initTime;
     return {
-      loginTime: stateCenter.loginTime,
-      onlineTime: utils.parseInt(Date.now() / 1000) - stateCenter.loginTime || 1,
+      loginTime: loginTime,
+      onlineTime: utils.parseInt(Date.now() / 1000) - loginTime || 1,
       extendMap: {
         // 流量来源
         from: stateCenter.from,
@@ -857,7 +882,7 @@
 
   function onEvent(eventId, json) {
     if (!eventId) {
-      utils.log("Missing eventId");
+      utils.tryThrow("Missing eventId");
       return false;
     }
 
@@ -1064,7 +1089,7 @@
      */
     if (!force) {
       if (lastRequestTime && now - lastRequestTime < defaults.ASAP_TIMEOUT) {
-        utils.log('Request dropped: unexpected behavior');
+        utils.tryThrow('Request dropped: unexpected behavior');
         return;
       }
 
@@ -1111,11 +1136,25 @@
 
     var onlineTime = data.onlineInfo.onlineTime;
     if (onlineTime < 1 || onlineTime > defaults.MAX_ONLINE_TIME) {
-      utils.log('Illegal online time');
+      utils.tryThrow('Illegal online time');
       return false;
     }
 
     return true;
+  }
+
+  function shouldBeInited() {
+    if (!stateCenter.inited) {
+      utils.tryThrow('DCAgent.init needed');
+      return false;
+    }
+  }
+
+  function shouldBeLoggedIn() {
+    if (!stateCenter.loginTime) {
+      utils.tryThrow('DCAgent.login needed');
+      return false;
+    }
   }
 
   function hasDOM() {
@@ -1219,11 +1258,11 @@
    */
   function login(accountID) {
     if (!accountID) {
-      utils.log('Missing accountID');
+      utils.tryThrow('Missing accountID');
       return;
     }
 
-    stateCenter.isLogin = true;
+    stateCenter.loginTime = utils.parseInt(Date.now() / 1000);
 
     // 重新设置不会起作用
     if (config.accountId === accountID) {
@@ -1247,7 +1286,6 @@
     config.gender = defaults.DEFAULT_GENDER;
     config.roleLevel = defaults.DEFAULT_ROLE_LEVEL;
     config.accountId = accountID;
-    config.loginTime = parseInt(Date.now() / 1000);
 
     // 立即执行一次在线上报
     timer.reset();
@@ -1507,12 +1545,8 @@
   };
 
   var name;
-  var preInit = [function () {
-    return stateCenter.inited;
-  }];
-  var preLogin = [function () {
-    return stateCenter.isLogin;
-  }];
+  var preInit = [validator.shouldBeInited];
+  var preLogin = [validator.shouldBeLoggedIn];
   var debounce = [API.debounce];
 
   /**
@@ -1559,7 +1593,8 @@
 
   var player = {
     get isNew() {
-      return stateCenter.createTime === stateCenter.loginTime;
+      var loginTime = stateCenter.loginTime || stateCenter.initTime;
+      return stateCenter.createTime === loginTime;
     },
     get initTime() {
       return stateCenter.initTime;
@@ -2046,13 +2081,8 @@
       onError();
     }
 
-    /**
-     * 新版游戏初始化一次算一次启动
-     * 在线时长不再使用会话存储，而是当前时间减去本次登录时间
-     */
-    stateCenter.loginTime = utils.parseInt(Date.now() / 1000);
     // 不会随玩家切换帐号而改变
-    stateCenter.initTime = stateCenter.loginTime;
+    stateCenter.initTime = utils.parseInt(Date.now() / 1000);
 
     /**
      * 白鹭引擎由于共享设备ID
@@ -2060,7 +2090,7 @@
      */
     var createTime = D__git_dcagent_src_compats_storage.getItem(CONST.CREATE_TIME);
     if (!createTime) {
-      createTime = stateCenter.loginTime;
+      createTime = stateCenter.initTime;
       D__git_dcagent_src_compats_storage.setItem(CONST.CREATE_TIME, createTime);
     }
 
@@ -2111,17 +2141,17 @@
      * TODO SDK是否无须localstorage支持
      */
     if (!utils.isLocalStorageSupported(D__git_dcagent_src_compats_storage)) {
-      utils.log(Client.hasStorage ? 'Storage quota error' : 'Storage not support');
+      utils.tryThrow(Client.hasStorage ? 'Storage quota error' : 'Storage not support');
       return;
     }
 
     if (stateCenter.inited) {
-      utils.log('Initialization ignored');
+      utils.tryThrow('Initialization ignored');
       return;
     }
 
     if (!options || !options.appId) {
-      utils.log('Missing appId');
+      utils.tryThrow('Missing appId');
       return;
     }
 

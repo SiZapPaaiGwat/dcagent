@@ -7,7 +7,7 @@
  * 对于web环境设备信息中设备id由sdk内部从服务端分配
  */
 
-import stateCenter from './utils/stateCenter.js'
+import * as validator from './utils/validator.js'
 import * as utils from './libs/utils.js'
 import {window} from './globals.js'
 import * as API from './utils/api.js'
@@ -63,8 +63,8 @@ var loginBasedAPI = {
 }
 
 var name
-var preInit = [() => stateCenter.inited]
-var preLogin = [() => stateCenter.isLogin]
+var preInit = [validator.shouldBeInited]
+var preLogin = [validator.shouldBeLoggedIn]
 var debounce = [API.debounce]
 
 /**

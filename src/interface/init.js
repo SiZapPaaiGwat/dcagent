@@ -27,17 +27,17 @@ function checkArguments(options) {
    * TODO SDK是否无须localstorage支持
    */
   if (!utils.isLocalStorageSupported(storage)) {
-    utils.log(Client.hasStorage ? 'Storage quota error' : 'Storage not support')
+    utils.tryThrow(Client.hasStorage ? 'Storage quota error' : 'Storage not support')
     return
   }
 
   if (stateCenter.inited) {
-    utils.log('Initialization ignored')
+    utils.tryThrow('Initialization ignored')
     return
   }
 
   if (!options || !options.appId) {
-    utils.log('Missing appId')
+    utils.tryThrow('Missing appId')
     return
   }
 

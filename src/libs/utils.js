@@ -5,6 +5,7 @@
 import {document, window} from '../globals.js'
 
 var toString = Object.prototype.toString
+var isDebug = window.DCAGENT_DEBUG_OPEN
 
 /*
  * 不做任何操作的空函数，用于各种兼容处理
@@ -22,6 +23,15 @@ export function isObject(value) {
 
 export function log(msg) {
   console.log(`---- DCAgent log start ----\n${msg}\n---- DCAgent log end   ----`)
+}
+
+/**
+ * debug环境抛错，正式环境打印日志
+ */
+export var tryThrow = isDebug ? (msg) => {
+  throw new Error(msg)
+} : (msg) => {
+  log(msg)
 }
 
 /**
@@ -77,15 +87,20 @@ export function extend(target) {
 
 /**
  * 安全执行函数
+ * debug环境需要跑出错误不能catch，否则测试通不过
  */
-export function attempt(fn, context, args) {
-	if (!isFunction(fn)) return
+export var attempt = isDebug ? (fn, context, args) => {
+  if (!isFunction(fn)) return
 
-	try{
-		return fn.apply(context, args)
-	} catch(e) {
-		log(`exec error for function:\n ${fn.toString()}`)
-	}
+  return fn.apply(context, args)
+} : (fn, context, args) => {
+  if (!isFunction(fn)) return
+
+  try{
+    return fn.apply(context, args)
+  } catch(e) {
+    log(`exec error for function:\n ${fn.toString()}`)
+  }
 }
 
 /**

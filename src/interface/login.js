@@ -12,11 +12,10 @@ import stateCenter from '../utils/stateCenter.js'
  */
 export default function login(accountID) {
 	if (!accountID) {
-		utils.log('Missing accountID')
+		utils.tryThrow('Missing accountID')
 		return
 	}
 
-  stateCenter.isLogin = true
   stateCenter.loginTime = utils.parseInt(Date.now() / 1000)
 
 	// 重新设置不会起作用
@@ -39,7 +38,6 @@ export default function login(accountID) {
   config.gender = defaults.DEFAULT_GENDER
   config.roleLevel = defaults.DEFAULT_ROLE_LEVEL
   config.accountId = accountID
-  config.loginTime = parseInt(Date.now() / 1000)
 
   // 立即执行一次在线上报
   timer.reset()

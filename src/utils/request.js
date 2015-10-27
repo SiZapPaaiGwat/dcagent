@@ -24,7 +24,7 @@ export default function(opts, force) {
    */
   if (!force) {
     if (lastRequestTime && (now - lastRequestTime < defaults.ASAP_TIMEOUT)) {
-      utils.log('Request dropped: unexpected behavior')
+      utils.tryThrow('Request dropped: unexpected behavior')
       return
     }
 

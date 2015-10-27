@@ -3,7 +3,7 @@ import * as utils from '../libs/utils.js'
 
 export default function onEvent(eventId, json) {
 	if (!eventId) {
-    utils.log("Missing eventId")
+    utils.tryThrow("Missing eventId")
 		return false
 	}
 

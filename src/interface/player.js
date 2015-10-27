@@ -11,7 +11,8 @@ import stateCenter from '../utils/stateCenter.js'
 
 export default {
   get isNew() {
-    return stateCenter.createTime === stateCenter.loginTime
+    var loginTime = stateCenter.loginTime || stateCenter.initTime
+    return stateCenter.createTime === loginTime
   },
   get initTime() {
     return stateCenter.initTime
