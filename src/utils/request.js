@@ -3,7 +3,7 @@
  * 会记录请求响应成功失败次数、限制发送频率
  */
 
-import Ajax from '../compats/ajax.js'
+import ajax from '../compats/ajax.js'
 import * as utils from '../libs/utils.js'
 import * as defaults from '../defaults.js'
 import * as onlineTimer from './onlineTimer.js'
@@ -33,7 +33,7 @@ export default function(opts, force) {
 
   reportCount += 1
 
-  Ajax({
+  ajax({
     url: opts.url,
     data: opts.data,
     success: (xhr, elapsed) => {

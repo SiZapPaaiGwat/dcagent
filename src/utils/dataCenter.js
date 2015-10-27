@@ -5,7 +5,7 @@
 import config from './initConfig.js'
 import * as defaults from '../defaults.js'
 import * as CONST from '../consts.js'
-import * as storage from '../compats/storage.js'
+import storage from '../compats/storage.js'
 import * as utils from '../libs/utils.js'
 import detectEngine from '../detect/engine.js'
 import {device} from '../detect/client.js'
@@ -73,7 +73,7 @@ export function saveToStorage() {
   storage.setItem(CONST.LOGOUT_TIME, utils.parseInt(Date.now() / 1000))
 
   if (errors.length || events.length) {
-    storage.setItem(CONST.QUIT_SNAPSHOT, utils.JSONStringify(collect()))
+    storage.setItem(CONST.QUIT_SNAPSHOT, utils.jsonStringify(collect()))
   }
 }
 
@@ -81,7 +81,7 @@ export function saveToStorage() {
  * 用户进入时从本地存储导入数据
  */
 export function loadFromStorage() {
-  return utils.JSONParse(storage.getItem(CONST.QUIT_SNAPSHOT))
+  return utils.jsonParse(storage.getItem(CONST.QUIT_SNAPSHOT))
 }
 
 export function addError(item) {

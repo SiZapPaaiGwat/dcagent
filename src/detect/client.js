@@ -12,8 +12,6 @@ var isStandardBrowser = hasDOM()
 var hasCookie = isStandardBrowser && ('cookie' in document)
 var protocol = location.protocol === 'https:' ? 'https:' : 'http:'
 
-
-
 var screenObj = window.screen || {}
 var userAgent = (window.navigator && window.navigator.userAgent) || ''
 // 未知分辨率

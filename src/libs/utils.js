@@ -195,7 +195,7 @@ export function parseInt(value, defaultValue = 0,  radix = 10) {
   return window.parseInt(value, radix) || defaultValue
 }
 
-export function JSONStringify(data) {
+export function jsonStringify(data) {
   try {
     return data ? JSON.stringify(data) : null
   } catch (e) {
@@ -205,7 +205,7 @@ export function JSONStringify(data) {
   return null
 }
 
-export function JSONParse(str) {
+export function jsonParse(str) {
   try {
     return str ? JSON.parse(str) : null
   } catch (e) {

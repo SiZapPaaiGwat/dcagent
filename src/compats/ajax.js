@@ -48,7 +48,7 @@ function egretRequest(opts) {
 
   var request = new egret.URLRequest(opts.url)
   request.method = opts.method || egret.URLRequestMethod.POST
-  request.data = utils.JSONStringify(opts.data)
+  request.data = utils.jsonStringify(opts.data)
   loader.load(request)
 }
 
@@ -86,10 +86,10 @@ function request(opts) {
     this.ontimeout = null
   }
 
-  xhr.send(utils.JSONStringify(opts.data))
+  xhr.send(utils.jsonStringify(opts.data))
 }
 
-var Ajax = (() => {
+var ajax = (() => {
   // for browser layabox cocos
   if (window.XMLHttpRequest || engine.isCocos) return request
 
@@ -99,4 +99,4 @@ var Ajax = (() => {
   return utils.noop
 })()
 
-export default Ajax
+export default ajax

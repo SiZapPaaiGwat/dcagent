@@ -5,7 +5,7 @@
  */
 
 import {reportCount, failedCount} from '../utils/request.js'
-import * as storage from '../compats/storage.js'
+import storage from '../compats/storage.js'
 import * as CONST from '../consts.js'
 import stateCenter from '../utils/stateCenter.js'
 
