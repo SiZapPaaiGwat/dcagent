@@ -25,7 +25,7 @@ for (var key in device) {
 
 export function getOnlineInfo() {
   return {
-    loginTime: stateCenter.loginTime,
+    loginTime: stateCenter.loginTime || stateCenter.initTime,
     onlineTime: (utils.parseInt(Date.now() / 1000) - stateCenter.loginTime) || 1,
     extendMap: {
       // 流量来源

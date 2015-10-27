@@ -104,13 +104,8 @@ function initialize(options) {
     onError()
   }
 
-  /**
-   * 新版游戏初始化一次算一次启动
-   * 在线时长不再使用会话存储，而是当前时间减去本次登录时间
-   */
-  stateCenter.loginTime = utils.parseInt(Date.now() / 1000)
   // 不会随玩家切换帐号而改变
-  stateCenter.initTime = stateCenter.loginTime
+  stateCenter.initTime = utils.parseInt(Date.now() / 1000)
 
   /**
    * 白鹭引擎由于共享设备ID
@@ -118,7 +113,7 @@ function initialize(options) {
    */
   var createTime = storage.getItem(CONST.CREATE_TIME)
   if (!createTime) {
-    createTime = stateCenter.loginTime
+    createTime = stateCenter.initTime
     storage.setItem(CONST.CREATE_TIME, createTime)
   }
 

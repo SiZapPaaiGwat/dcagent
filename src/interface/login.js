@@ -17,6 +17,7 @@ export default function login(accountID) {
 	}
 
   stateCenter.isLogin = true
+  stateCenter.loginTime = utils.parseInt(Date.now() / 1000)
 
 	// 重新设置不会起作用
 	if (config.accountId === accountID) {
