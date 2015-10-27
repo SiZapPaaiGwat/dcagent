@@ -4,6 +4,7 @@
 
 import config from './initConfig.js'
 
+// TODO 上报请求
 export function appendOnline(uri) {
   return uri + '?__deuid=' + config.uid + '&__deappid=' + config.appId
 }

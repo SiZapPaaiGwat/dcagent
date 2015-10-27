@@ -11,7 +11,6 @@ import stateCenter from './utils/stateCenter.js'
 import * as utils from './libs/utils.js'
 import {window} from './globals.js'
 import * as API from './utils/api.js'
-import * as utils from './libs/utils.js'
 import init from './interface/init.js'
 import isReady from './interface/isReady.js'
 import {version} from './interface/version.js'
@@ -109,7 +108,7 @@ if (proxyName) {
 
     if (cache.length) {
       cache.forEach((args) => {
-        utils.attemp(exports[args[0]], exports, utils.slice(args, 1))
+        utils.attempt(exports[args[0]], exports, utils.slice(args, 1))
       })
 
       cache.length = 0

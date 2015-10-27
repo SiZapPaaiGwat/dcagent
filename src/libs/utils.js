@@ -78,7 +78,7 @@ export function extend(target) {
 /**
  * 安全执行函数
  */
-export function attemp(fn, context, args) {
+export function attempt(fn, context, args) {
 	if (!isFunction(fn)) return
 
 	try{
@@ -149,17 +149,17 @@ export function aspect(func, before, after) {
 		for(i = 0; i < before.length; i += 1) {
 			fn = before[i]
 			// 前置函数返回false表示提前结束执行
-			if (attemp(fn, this, arguments) === false) return
+			if (attempt(fn, this, arguments) === false) return
 		}
 
-		var result = attemp(func, this, arguments)
+		var result = attempt(func, this, arguments)
 
 		// 主函数返回false表示中断后置函数执行
 		if (result === false) return false
 
 		for(i = 0; i < after.length; i += 1) {
 			fn = after[i]
-			attemp(fn, this, arguments)
+			attempt(fn, this, arguments)
 		}
 
 		return result

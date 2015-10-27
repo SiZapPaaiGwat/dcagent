@@ -37,14 +37,14 @@ export default function(opts, force) {
     url: opts.url,
     data: opts.data,
     success: (xhr, elapsed) => {
-      utils.attemp(opts.success, xhr, [xhr, elapsed])
+      utils.attempt(opts.success, xhr, [xhr, elapsed])
     },
     error: (xhr, elapsed, isTimeout) => {
       failedCount += 1
-      utils.attemp(opts.error, xhr, [xhr, elapsed, isTimeout])
+      utils.attempt(opts.error, xhr, [xhr, elapsed, isTimeout])
     },
     complete: (xhr, elapsed) => {
-      utils.attemp(opts.complete, xhr, [xhr, elapsed])
+      utils.attempt(opts.complete, xhr, [xhr, elapsed])
 
       /**
        * 重新设置定时器

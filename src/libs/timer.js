@@ -28,7 +28,7 @@ export default function(fn, duration) {
     // 清除上次的定时器
     clearTimeout(this.timer)
 
-    utils.attemp(fn)
+    utils.attempt(fn)
 
     this.timer = setTimeout(() => this.run(), this.duration)
   }

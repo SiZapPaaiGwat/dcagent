@@ -41,8 +41,8 @@ function egretRequest(opts) {
     var context = e.target
     var isValid = context.data === 'success'
 
-    utils.attemp(isValid ? opts.success : opts.error, context, [context, elapsed, elapsed >= opts.timeout])
-    utils.attemp(opts.complete, context, [context, elapsed])
+    utils.attempt(isValid ? opts.success : opts.error, context, [context, elapsed, elapsed >= opts.timeout])
+    utils.attempt(opts.complete, context, [context, elapsed])
     // TODO 白鹭这里能够获取headers吗？
   })
 
@@ -69,8 +69,8 @@ function request(opts) {
     var isValid = this.status >=200 && this.status < 300
     var elapsed = Date.now() - start
 
-    utils.attemp(isValid ? opts.success : opts.error, this, [this, elapsed])
-    utils.attemp(opts.complete, this, [this, elapsed])
+    utils.attempt(isValid ? opts.success : opts.error, this, [this, elapsed])
+    utils.attempt(opts.complete, this, [this, elapsed])
 
     this.onreadystatechange = null
     this.ontimeout = null
@@ -79,8 +79,8 @@ function request(opts) {
   xhr.ontimeout = function() {
     var elapsed = Date.now() - start
 
-    utils.attemp(opts.error, this, [this, elapsed, true])
-    utils.attemp(opts.complete, this, [this, elapsed])
+    utils.attempt(opts.error, this, [this, elapsed, true])
+    utils.attempt(opts.complete, this, [this, elapsed])
 
     this.onreadystatechange = null
     this.ontimeout = null

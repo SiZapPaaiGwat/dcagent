@@ -10,7 +10,7 @@ import * as dataCenter from './dataCenter.js'
 
 export default function() {
   window.addEventListener && window.addEventListener('error', function(e) {
-    utils.attemp(function() {
+    utils.attempt(function() {
 
       var params = {}
       var keys = ['colno', 'filename', 'lineno', 'message']
@@ -23,7 +23,7 @@ export default function() {
 
       // 支持在错误发生时由用户自定义信息搜集
       if (utils.isFunction(stateCenter.getErrorScene)) {
-        var customMsg = utils.attemp(stateCenter.getErrorScene, error, [e])
+        var customMsg = utils.attempt(stateCenter.getErrorScene, error, [e])
         if (customMsg) {
           // 如果是对象按行转换成a=b
           if (utils.isObject(customMsg)) {
