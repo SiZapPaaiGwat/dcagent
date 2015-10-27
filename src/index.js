@@ -36,13 +36,6 @@ import setGender from './interface/setGender.js'
 import setRoleInfo from './interface/setRoleInfo.js'
 import createRole from './interface/createRole.js'
 
-var commonAPI = {
-  init,
-  version,
-  player,
-  isReady
-}
-
 var initBasedAPI = {
   login,
   getUid,
@@ -73,10 +66,6 @@ var name
 var preInit = [() => stateCenter.inited]
 var preLogin = [() => stateCenter.isLogin]
 var debounce = [API.debounce]
-
-for (name in commonAPI) {
-  exports[name] = commonAPI[name]
-}
 
 /**
  * 校验是否已经初始化
@@ -114,4 +103,14 @@ if (proxyName) {
       cache.length = 0
     }
   }
+}
+
+/**
+ * 这里需要显示export一些接口否则生成的代码会有问题
+ */
+export {
+  init,
+  version,
+  player,
+  isReady
 }

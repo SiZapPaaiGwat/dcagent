@@ -1,6 +1,6 @@
-(function (factory) {
-  !(typeof exports === 'object' && typeof module !== 'undefined') && typeof define === 'function' && define.amd ? define('DCAgent', factory) : factory();
-})(function () {
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) : typeof define === 'function' && define.amd ? define('DCAgent', ['exports'], factory) : factory(global.DCAgent = {});
+})(this, function (exports) {
   'use strict';
 
   /**
@@ -849,6 +849,8 @@
   var device = { resolution: resolution, brand: brand, osVersion: osVersion, platform: platform };
 
   var version = 24;
+
+  exports.version = version;
 
   /**
    * 用户初始化配置
@@ -1854,9 +1856,13 @@
     return initialize(options);
   };
 
+  exports.init = init;
+
   function isReady() {
     return stateCenter.inited;
   }
+
+  exports.isReady = isReady;
 
   /**
    * 搜集玩家相关信息
@@ -1887,6 +1893,8 @@
       return failedCount;
     }
   };
+
+  exports.player = player;
 
   function login(accountID) {
     if (!accountID) {
@@ -2116,13 +2124,6 @@
    * 对于web环境设备信息中设备id由sdk内部从服务端分配
    */
 
-  var commonAPI = {
-    init: init,
-    version: version,
-    player: player,
-    isReady: isReady
-  };
-
   var initBasedAPI = {
     login: login,
     getUid: getUid,
@@ -2158,9 +2159,9 @@
   }];
   var _index__debounce = [api_js.debounce];
 
-  for (name in commonAPI) {
-    exports[name] = commonAPI[name];
-  }
+  //for (name in commonAPI) {
+  //  exports[name] = commonAPI[name]
+  //}
 
   /**
    * 校验是否已经初始化
