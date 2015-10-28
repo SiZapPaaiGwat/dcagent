@@ -1,4 +1,4 @@
-/*globals describe, it, expect, DCAgent, setTimeout*/
+/*globals describe, it, expect, DCAgent*/
 describe('DCAgent.onPayment()', function() {
   it('should throw an error if user is not logged in', function() {
     expect(DCAgent.onPayment).toThrow()
