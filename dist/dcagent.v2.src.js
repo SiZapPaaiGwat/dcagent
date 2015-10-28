@@ -237,6 +237,15 @@
     }
   };
 
+  var uri = {
+    get appendOnline() {
+      return appendOnline;
+    },
+    get appendEcho() {
+      return appendEcho;
+    }
+  };
+
   var API = {
     get debounce() {
       return _debounce;
@@ -1204,18 +1213,27 @@
 
   var API_PATH = Client.protocol + '//' + CONST.HOST + CONST.API_PATH;
 
+  // TODO 上报请求
+  function appendOnline(uri) {
+    return uri + '?__deuid=' + config.uid + '&__deappid=' + config.appId;
+  }
+
+  function appendEcho(uri) {
+    return uri + '?type=h520&appId=' + config.appId + '&uid=' + config.uid + '&mac=' + (config.mac || '') + '&imei=' + (config.imei || '') + '&idfa=' + (config.idfa || '');
+  }
+
   function onlinePolling(force, payment, reg) {
     // 如果文档被隐藏暂时不上报
     if (!force && utils.hiddenProperty && document[utils.hiddenProperty]) return;
 
     var opts = {
-      url: API_PATH
+      url: uri.appendOnline(API_PATH)
     };
 
     /**
      * 上报质量统计，每隔多少个周期上报，默认为10
      */
-    if (reportCount && reportCount % config.oss === 0) {
+    if (reportCount && reportCount % stateCenter.oss === 0) {
       dataCenter.addEvent({
         eventId: CONST.REQ_KEY,
         eventMap: {
@@ -2129,7 +2147,6 @@
     onlineTimer.set(onlinePolling, interval);
 
     stateCenter.inited = true;
-    return true;
   }
 
   /**
@@ -2141,18 +2158,15 @@
      * TODO SDK是否无须localstorage支持
      */
     if (!utils.isLocalStorageSupported(D__git_dcagent_src_compats_storage)) {
-      utils.tryThrow(Client.hasStorage ? 'Storage quota error' : 'Storage not support');
-      return;
+      return Client.hasStorage ? 'Storage quota error' : 'Storage not support';
     }
 
     if (stateCenter.inited) {
-      utils.tryThrow('Initialization ignored');
-      return;
+      return 'Initialization ignored';
     }
 
     if (!options || !options.appId) {
-      utils.tryThrow('Missing appId');
-      return;
+      return 'Missing appId';
     }
 
     // 统一大写
@@ -2175,17 +2189,21 @@
         config[i] = options[i];
       }
     });
-
-    return true;
   }
 
   function init(options) {
-    var isLegal = checkArguments(options);
-    if (!isLegal) {
-      return false;
+    var errorMSg = checkArguments(options);
+    if (errorMSg) {
+      return utils.tryThrow(errorMSg);
     }
 
-    return initialize(options);
+    initialize(options);
+
+    // 发送给后端的echo请求，便于接入层控制
+    request({
+      url: uri.appendEcho(Client.protocol + '//' + CONST.HOST + '/echo'),
+      method: 'GET'
+    }, true);
   }
 
   exports.init = init;
