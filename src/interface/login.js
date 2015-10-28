@@ -17,12 +17,17 @@ export default function login(accountID) {
 		return
 	}
 
-  stateCenter.loginTime = utils.parseInt(Date.now() / 1000)
-
-	// 重新设置不会起作用
+  /**
+   * 没有帐号系统的app可以使用uid作为帐户ID
+   * DCAgent.login(DCAgent.getUid())
+   */
 	if (config.accountId === accountID) {
+    // 防止两次重新登录导致登录时间不一致
+    stateCenter.loginTime = stateCenter.loginTime || utils.parseInt(Date.now() / 1000)
     return
   }
+
+  stateCenter.loginTime = utils.parseInt(Date.now() / 1000)
 
   var timer = onlineTime.get()
   timer.stop()

@@ -920,8 +920,6 @@
     return config.uid || '';
   }
 
-  var timer;
-
   var setTimeout = window.setTimeout;
   var clearTimeout = window.clearTimeout;
 
@@ -937,6 +935,8 @@
       window.egret.clearTimeout(id);
     };
   }
+
+  var timer;
 
   function Timer(fn, duration) {
     var _this = this;
@@ -1280,12 +1280,17 @@
       return;
     }
 
-    stateCenter.loginTime = utils.parseInt(Date.now() / 1000);
-
-    // 重新设置不会起作用
+    /**
+     * 没有帐号系统的app可以使用uid作为帐户ID
+     * DCAgent.login(DCAgent.getUid())
+     */
     if (config.accountId === accountID) {
+      // 防止两次重新登录导致登录时间不一致
+      stateCenter.loginTime = stateCenter.loginTime || utils.parseInt(Date.now() / 1000);
       return;
     }
+
+    stateCenter.loginTime = utils.parseInt(Date.now() / 1000);
 
     var timer = onlineTimer.get();
     timer.stop();
@@ -1306,7 +1311,10 @@
     config.accountId = accountID;
 
     // 立即执行一次在线上报
-    timer.reset();
+    onlinePolling(true);
+    setTimeout(function () {
+      timer.run();
+    }, timer.duration);
   }
 
   var initBasedAPI = {
