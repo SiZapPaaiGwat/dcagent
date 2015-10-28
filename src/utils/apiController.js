@@ -12,8 +12,7 @@ var controlTimeoutID
  * 优化接口调用的数据上报
  * 使其尽可能快地批量上报数据
  */
-export function debounce() {
-  console.log('debounce')
+export function setPollingDebounce(wait = defaults.ASAP_TIMEOUT) {
   clearTimeout(controlTimeoutID)
 
   var timer = onlineTimer.get()
@@ -21,5 +20,5 @@ export function debounce() {
 
   controlTimeoutID = setTimeout(() => {
     timer.run()
-  }, defaults.ASAP_TIMEOUT)
+  }, wait)
 }

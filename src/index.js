@@ -10,7 +10,7 @@
 import * as validator from './utils/validator.js'
 import * as utils from './libs/utils.js'
 import {window} from './globals.js'
-import * as API from './utils/api.js'
+import * as controller from './utils/apiController.js'
 import init from './interface/init.js'
 import isReady from './interface/isReady.js'
 import {version} from './interface/version.js'
@@ -65,7 +65,7 @@ var loginBasedAPI = {
 var name
 var preInit = [validator.shouldBeInited]
 var preLogin = [validator.shouldBeLoggedIn]
-var debounce = [API.debounce]
+var debounce = [controller.setPollingDebounce]
 
 /**
  * 校验是否已经初始化

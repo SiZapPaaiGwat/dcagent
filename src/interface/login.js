@@ -2,13 +2,10 @@ import * as utils from '../libs/utils.js'
 import * as CONST from '../consts.js'
 import * as defaults from '../defaults.js'
 import config from '../utils/initConfig.js'
-import * as onlineTime from '../utils/onlineTimer.js'
+import * as onlineTimer from '../utils/onlineTimer.js'
 import onlinePolling from '../utils/onlinePolling.js'
 import stateCenter from '../utils/stateCenter.js'
-import {setTimeout, clearTimeout} from '../compats/xTimeout.js'
-
-// 控制登陆后的轮询在线上报的启动
-var loginTimeoutID
+import * as controller from '../utils/apiController.js'
 
 /**
  * 连续多次调用login会切换帐户
@@ -30,10 +27,9 @@ export default function login(accountID) {
     return
   }
 
-  clearTimeout(loginTimeoutID)
-
-  var timer = onlineTime.get()
-  timer.stop()
+  // 暂停定时器，指定时间段以后开始在线上报
+  var timer = onlineTimer.get()
+  controller.setPollingDebounce(timer.duration)
 
   // 上报上个用户的所有数据
   onlinePolling(true)
@@ -50,13 +46,6 @@ export default function login(accountID) {
   config.roleLevel = defaults.DEFAULT_ROLE_LEVEL
   config.accountId = accountID
 
-  /**
-   * 不能使用timer.reset()代替下面的代码
-   * 这里的数据需要强制上报
-   * 如果短时间多次调用login, timer.reset的上报会拦截
-   */
+  // 上报当前用户的在线数据
   onlinePolling(true)
-  loginTimeoutID = setTimeout(() => {
-    timer.run()
-  }, timer.duration)
 }

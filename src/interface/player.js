@@ -26,10 +26,10 @@ export default {
   get lastLogoutTime() {
     return parseInt(storage.getItem(CONST.LOGOUT_TIME))
   },
-  get getReportCount() {
+  get reportCount() {
     return reportCount
   },
-  get getReportFailedCount() {
+  get reportFailedCount() {
     return failedCount
   }
 }

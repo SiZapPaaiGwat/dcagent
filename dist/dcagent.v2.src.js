@@ -252,9 +252,9 @@
     }
   };
 
-  var API = {
-    get debounce() {
-      return _debounce;
+  var controller = {
+    get setPollingDebounce() {
+      return setPollingDebounce;
     }
   };
 
@@ -901,8 +901,12 @@
   function onEvent(eventId, json) {
     if (!eventId) {
       utils.tryThrow("Missing eventId");
-      return false;
+      return;
     }
+
+    var replace = function (str) {
+      return str.replace(/%/g, '_');
+    };
 
     // 兼容v1的三个参数的情况
     if (arguments.length > 2) {
@@ -913,21 +917,24 @@
     if (utils.isObject(json)) {
       for (var key in json) {
         // 没有编码，移除%
-        jsonStr[key.replace('%', '_')] = typeof json[key] === 'number' ? json[key] : encodeURIComponent(json[key]);
+        jsonStr[replace(key)] = typeof json[key] === 'number' ? json[key] : encodeURIComponent(json[key]);
       }
     }
 
-    dataCenter.addEvent({
-      eventId: eventId,
+    var sendData = {
+      eventId: replace(eventId),
       eventMap: jsonStr
-    });
+    };
+    dataCenter.addEvent(sendData);
 
-    return true;
+    return sendData;
   }
 
   function getUid() {
     return config.uid || '';
   }
+
+  var timer;
 
   var setTimeout = window.setTimeout;
   var clearTimeout = window.clearTimeout;
@@ -944,11 +951,6 @@
       window.egret.clearTimeout(id);
     };
   }
-
-  // 控制登陆后的轮询在线上报的启动
-  var loginTimeoutID;
-
-  var timer;
 
   function Timer(fn, duration) {
     var _this = this;
@@ -1225,7 +1227,6 @@
 
   var API_PATH = Client.protocol + '//' + CONST.HOST + CONST.API_PATH;
 
-  // TODO 上报请求
   function appendOnline(uri) {
     return uri + '?__deuid=' + config.uid + '&__deappid=' + config.appId;
   }
@@ -1282,6 +1283,25 @@
     request(opts, force);
   }
 
+  var controlTimeoutID;
+
+  /**
+   * 优化接口调用的数据上报
+   * 使其尽可能快地批量上报数据
+   */
+  function setPollingDebounce() {
+    var wait = arguments.length <= 0 || arguments[0] === undefined ? defaults.ASAP_TIMEOUT : arguments[0];
+
+    clearTimeout(controlTimeoutID);
+
+    var timer = onlineTimer.get();
+    timer.stop();
+
+    controlTimeoutID = setTimeout(function () {
+      timer.run();
+    }, wait);
+  }
+
   /**
    * 连续多次调用login会切换帐户
    * 由于login存在异步请求，所以依赖于login的接口需要判断loginStatus
@@ -1302,10 +1322,9 @@
       return;
     }
 
-    clearTimeout(loginTimeoutID);
-
+    // 暂停定时器，指定时间段以后开始在线上报
     var timer = onlineTimer.get();
-    timer.stop();
+    controller.setPollingDebounce(timer.duration);
 
     // 上报上个用户的所有数据
     onlinePolling(true);
@@ -1324,15 +1343,8 @@
     config.roleLevel = defaults.DEFAULT_ROLE_LEVEL;
     config.accountId = accountID;
 
-    /**
-     * 不能使用timer.reset()代替下面的代码
-     * 这里的数据需要强制上报
-     * 如果短时间多次调用login, timer.reset的上报会拦截
-     */
+    // 上报当前用户的在线数据
     onlinePolling(true);
-    loginTimeoutID = setTimeout(function () {
-      timer.run();
-    }, timer.duration);
   }
 
   var initBasedAPI = {
@@ -1340,24 +1352,6 @@
     getUid: getUid,
     onEvent: onEvent
   };
-
-  var controlTimeoutID;
-
-  /**
-   * 优化接口调用的数据上报
-   * 使其尽可能快地批量上报数据
-   */
-  function _debounce() {
-    console.log('debounce');
-    clearTimeout(controlTimeoutID);
-
-    var timer = onlineTimer.get();
-    timer.stop();
-
-    controlTimeoutID = setTimeout(function () {
-      timer.run();
-    }, defaults.ASAP_TIMEOUT);
-  }
 
   /**
    * 设置角色信息
@@ -1591,7 +1585,7 @@
   var name;
   var preInit = [validator.shouldBeInited];
   var preLogin = [validator.shouldBeLoggedIn];
-  var debounce = [API.debounce];
+  var debounce = [controller.setPollingDebounce];
 
   /**
    * 校验是否已经初始化
@@ -1652,10 +1646,10 @@
     get lastLogoutTime() {
       return parseInt(D__git_dcagent_src_compats_storage.getItem(CONST.LOGOUT_TIME));
     },
-    get getReportCount() {
+    get reportCount() {
       return reportCount;
     },
-    get getReportFailedCount() {
+    get reportFailedCount() {
       return failedCount;
     }
   };
