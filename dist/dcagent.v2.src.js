@@ -79,6 +79,9 @@
     get parseInt() {
       return _parseInt;
     },
+    get max() {
+      return max;
+    },
     get jsonStringify() {
       return jsonStringify;
     },
@@ -599,6 +602,10 @@
     }
 
     return window.parseInt(value, radix) || defaultValue;
+  }
+
+  function max(num) {
+    return Math.min(9.9e20, num);
   }
 
   function jsonStringify(data) {
@@ -1427,11 +1434,12 @@
 
   function onPayment(opts) {
     if (!opts || !opts.hasOwnProperty('amount')) {
+      utils.tryThrow('Missing amount');
       return;
     }
 
-    onlinePolling(true, {
-      currencyAmount: parseFloat(opts.amount, 10) || 0,
+    var sendData = {
+      currencyAmount: utils.max(parseFloat(opts.amount, 10) || 0),
       currencyType: opts.currencyType || 'CNY',
       payType: String(opts.payType || ''),
       iapid: String(opts.iapid || ''),
@@ -1439,7 +1447,10 @@
       extendMap: {
         orderId: String(opts.orderId || '')
       }
-    });
+    };
+
+    onlinePolling(true, sendData);
+    return sendData;
   }
 
   function onMissionUnfinished(taskID, elapsed) {

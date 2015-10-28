@@ -211,6 +211,10 @@ export function parseInt(value, defaultValue = 0,  radix = 10) {
   return window.parseInt(value, radix) || defaultValue
 }
 
+export function max(num) {
+  return Math.min(9.9e20, num)
+}
+
 export function jsonStringify(data) {
   try {
     return data ? JSON.stringify(data) : null
