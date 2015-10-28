@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>DCAgent Test Suite</title>
+  <link rel="shortcut icon" type="image/png" href="../libs/jasmine_favicon.png">
+  <link rel="stylesheet" href="./libs/jasmine.css">
+  <script>
+    var DCAGENT_DEBUG_OPEN = true
+  </script>
+</head>
+<body>
+<script>
+  if (location.search) {
+    document.write('<script src="./libs/jasmine.js"><' + '/script>')
+    document.write('<script src="./libs/jasmine-html.js"><' + '/script>')
+    document.write('<script src="./libs/boot.js"><' + '/script>')
+    document.write('<script src="./../dist/dcagent.v2.src.js"><' + '/script>')
+    var fileName = location.search.slice(1)
+    document.write('<script src="./src/' + fileName + '.js"><' + '/script>')
+  } else {
+    var files = [
+      'test.init',
+      'test.login'
+    ]
+
+    document.write('<h1>DCAgent Test Suite</h1>')
+    document.write('<ul>')
+    files.forEach(function(file) {
+      document.write('<li><a target="_blank" href="?' + file + '">' + file + '.js</a></li>')
+    })
+    document.write('</ul>')
+  }
+</script>
+</body>
+</html>
