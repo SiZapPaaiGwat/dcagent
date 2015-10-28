@@ -1,5 +1,9 @@
 /*globals describe, it, expect, DCAgent*/
-describe('DCAgent.init()', function() {
+describe('DCAgent.init ', function() {
+  beforeEach(loadDCAgent)
+
+  afterEach(destroyDCAgent)
+
   // appid不能为空
   it('should throw an error when appId is empty', function() {
     expect(DCAgent.init).toThrow()

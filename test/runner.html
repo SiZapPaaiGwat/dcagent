@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>DCAgent Test Suite</title>
+  <link rel="shortcut icon" type="image/png" href="./libs/jasmine_favicon.png">
+  <link rel="stylesheet" href="./libs/jasmine.css">
+  <style media="screen">
+    #choice {
+      margin-bottom: 20px;
+      padding: 5px;
+      font-size: 14px;
+      font-family: Monaco, "Lucida Console", monospace;
+      line-height: 14px;
+      color: #333;
+    }
+    #choice h1 {
+      margin-bottom: 20px;
+    }
+    #choice ul {
+      margin-left: 40px;
+      margin-bottom: 20px;
+    }
+    #choice ul li {
+      padding: 4px 0;
+    }
+    #choice ul li a {
+      float: right;
+      margin-right: 60px;
+    }
+    #choice * {
+      margin: 0;
+      padding: 0;
+    }
+    #run_all {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<script>
+  var DCAGENT_DEBUG_OPEN = true
+
+  function loadDCAgent(done) {
+    var script = document.createElement('script')
+    script.src = '../dist/dcagent.v2.src.js'
+    script.setAttribute('id', 'dcagent')
+    script.onload = function() {
+      done()
+    }
+    document.body.appendChild(script)
+  }
+
+  function destroyDCAgent(done) {
+    var script = document.querySelector('#dcagent')
+    script.remove()
+    DCAgent = null
+    done()
+  }
+
+  var files = [
+    'test.init',
+    'test.login',
+    'test.onEvent',
+    'test.onPayment'
+  ]
+
+  document.write('<div id="choice"><h1>Choose Test Suite</h1>')
+  document.write('<ul>')
+  files.forEach(function(file) {
+    document.write('<li><span>' + file + '.js</span> ' +
+      '<a href="?' + file + '.js">Run</a></li>')
+  })
+  document.write('</ul>')
+  document.write('<div id="run_all"><a href="?all">Run All Tests</a></div></div>')
+</script>
+<script src="./libs/jasmine.js"></script>
+<script src="./libs/jasmine-html.js"></script>
+<script src="./libs/boot.js"></script>
+<script>
+  var currentFile = location.search.slice(1)
+  // 执行单个spec
+  if (currentFile.indexOf('.js') !== -1) {
+    document.write('<script src="src/' + currentFile + '"><' + '/script>')
+    document.title = 'Running ' + currentFile
+  } else if (currentFile === 'all') {
+    files.forEach(function(file) {
+      document.write('<script src="src/' + file + '.js"><' + '/script>')
+    })
+
+    document.title = 'Running all tests'
+  }
+</script>
+</body>
+</html>
