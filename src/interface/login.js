@@ -5,6 +5,7 @@ import config from '../utils/initConfig.js'
 import * as onlineTime from '../utils/onlineTimer.js'
 import onlinePolling from '../utils/onlinePolling.js'
 import stateCenter from '../utils/stateCenter.js'
+import {setTimeout} from '../compats/xTimeout.js'
 
 /**
  * 连续多次调用login会切换帐户
@@ -40,5 +41,8 @@ export default function login(accountID) {
   config.accountId = accountID
 
   // 立即执行一次在线上报
-  timer.reset()
+  onlinePolling(true)
+  setTimeout(() => {
+    timer.run()
+  }, timer.duration)
 }
