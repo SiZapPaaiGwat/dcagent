@@ -5,7 +5,8 @@
 import {document, window} from '../globals.js'
 
 var toString = Object.prototype.toString
-var isDebug = window.DCAGENT_DEBUG_OPEN
+
+export var isDebug = window.DCAGENT_DEBUG_OPEN
 
 /*
  * 不做任何操作的空函数，用于各种兼容处理

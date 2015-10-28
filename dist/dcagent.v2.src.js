@@ -28,6 +28,9 @@
   };
 
   var utils = {
+    get isDebug() {
+      return isDebug;
+    },
     get noop() {
       return noop;
     },
@@ -93,6 +96,9 @@
     },
     get MIN_ONLINE_INTERVAL() {
       return MIN_ONLINE_INTERVAL;
+    },
+    get MIN_ONLINE_INTERVAL_DEBUG() {
+      return MIN_ONLINE_INTERVAL_DEBUG;
     },
     get UID_MIN_LENGTH() {
       return UID_MIN_LENGTH;
@@ -386,6 +392,7 @@
   }
 
   var toString = Object.prototype.toString;
+
   var isDebug = window.DCAGENT_DEBUG_OPEN;
 
   /*
@@ -624,6 +631,8 @@
 
   // 最短在线轮询周期，秒
   var MIN_ONLINE_INTERVAL = 40;
+
+  var MIN_ONLINE_INTERVAL_DEBUG = 15;
 
   var UID_MIN_LENGTH = 32;
 
@@ -936,6 +945,9 @@
     };
   }
 
+  // 控制登陆后的轮询在线上报的启动
+  var loginTimeoutID;
+
   var timer;
 
   function Timer(fn, duration) {
@@ -1087,7 +1099,7 @@
   var reportCount = 0;
 
   // 上次请求发生时间
-  var lastRequestTime = 0;
+  var lastRequestTime = Date.now() - defaults.ASAP_TIMEOUT;
 
   function request(opts, force) {
     var now = Date.now();
@@ -1097,8 +1109,8 @@
      * 强制上报的请求不受限制
      */
     if (!force) {
-      if (lastRequestTime && now - lastRequestTime < defaults.ASAP_TIMEOUT) {
-        utils.tryThrow('Request dropped: unexpected behavior');
+      if (now - lastRequestTime < defaults.ASAP_TIMEOUT) {
+        utils.tryThrow('Request dropped: rate limit');
         return;
       }
 
@@ -1290,13 +1302,15 @@
       return;
     }
 
-    stateCenter.loginTime = utils.parseInt(Date.now() / 1000);
+    clearTimeout(loginTimeoutID);
 
     var timer = onlineTimer.get();
     timer.stop();
 
     // 上报上个用户的所有数据
     onlinePolling(true);
+
+    stateCenter.loginTime = utils.parseInt(Date.now() / 1000);
 
     // 清除上次用户设置
     var accountBaseSettings = CONST.ACCOUNT_RELATED_SETTINGS + ',' + CONST.ACCOUNT_ROLE_SETTINGS;
@@ -1310,9 +1324,13 @@
     config.roleLevel = defaults.DEFAULT_ROLE_LEVEL;
     config.accountId = accountID;
 
-    // 立即执行一次在线上报
+    /**
+     * 不能使用timer.reset()代替下面的代码
+     * 这里的数据需要强制上报
+     * 如果短时间多次调用login, timer.reset的上报会拦截
+     */
     onlinePolling(true);
-    setTimeout(function () {
+    loginTimeoutID = setTimeout(function () {
       timer.run();
     }, timer.duration);
   }
@@ -2151,7 +2169,8 @@
     onPlayerLeave(dataCenter.saveToStorage);
 
     // 开启在线轮询
-    var interval = Math.max(defaults.MIN_ONLINE_INTERVAL, parseFloat(options.interval || defaults.MIN_ONLINE_INTERVAL)) * 1000;
+    var minInterval = utils.isDebug ? defaults.MIN_ONLINE_INTERVAL_DEBUG : defaults.MIN_ONLINE_INTERVAL;
+    var interval = Math.max(minInterval, parseFloat(options.interval || minInterval)) * 1000;
     onlineTimer.set(onlinePolling, interval);
 
     stateCenter.inited = true;

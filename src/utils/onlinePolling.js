@@ -25,7 +25,7 @@ export default function(force, payment, reg) {
   /**
    * 上报质量统计，每隔多少个周期上报，默认为10
    */
-  if (reportCount && reportCount % stateCenter.oss === 0) {
+  if (reportCount && (reportCount % stateCenter.oss === 0)) {
     dataCenter.addEvent({
       eventId: CONST.REQ_KEY,
       eventMap: {

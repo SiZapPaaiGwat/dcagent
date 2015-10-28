@@ -9,7 +9,7 @@ import * as defaults from '../defaults.js'
 import * as onlineTimer from './onlineTimer.js'
 
 // 上次请求发生时间
-var lastRequestTime = 0
+var lastRequestTime = Date.now() - defaults.ASAP_TIMEOUT
 
 export var failedCount = 0
 
@@ -23,8 +23,8 @@ export default function(opts, force) {
    * 强制上报的请求不受限制
    */
   if (!force) {
-    if (lastRequestTime && (now - lastRequestTime < defaults.ASAP_TIMEOUT)) {
-      utils.tryThrow('Request dropped: unexpected behavior')
+    if (now - lastRequestTime < defaults.ASAP_TIMEOUT) {
+      utils.tryThrow('Request dropped: rate limit')
       return
     }
 
