@@ -8,8 +8,9 @@ import * as CONST from '../consts.js'
 import * as Client from '../detect/client.js'
 import * as utils from '../libs/utils.js'
 import {document} from '../globals.js'
-import config from './initConfig.js'
+import stateCenter from './stateCenter.js'
 import * as validator from './validator.js'
+import * as uri from './uri.js'
 
 var API_PATH = Client.protocol + '//' + CONST.HOST + CONST.API_PATH
 
@@ -18,13 +19,13 @@ export default function(force, payment, reg) {
   if (!force && utils.hiddenProperty && document[utils.hiddenProperty]) return
 
   var opts = {
-    url: API_PATH
+    url: uri.appendOnline(API_PATH)
   }
 
   /**
    * 上报质量统计，每隔多少个周期上报，默认为10
    */
-  if (reportCount && reportCount % config.oss === 0) {
+  if (reportCount && reportCount % stateCenter.oss === 0) {
     dataCenter.addEvent({
       eventId: CONST.REQ_KEY,
       eventMap: {

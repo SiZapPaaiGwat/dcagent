@@ -17,5 +17,3 @@ export function getItem(key) {
   key = wrapKey(key)
   return storage.getItem(key) || Cookie.get(key)
 }
-
-

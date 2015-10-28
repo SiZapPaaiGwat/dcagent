@@ -17,6 +17,8 @@ import * as onlineTimer from '../utils/onlineTimer.js'
 import getUID from '../compats/uid.js'
 import onError from '../utils/onError.js'
 import onPlayerLeave from '../utils/onPlayerLeave.js'
+import request from '../utils/request.js'
+import * as uri from '../utils/uri.js'
 
 /**
  * 验证用户参数
@@ -27,18 +29,15 @@ function checkArguments(options) {
    * TODO SDK是否无须localstorage支持
    */
   if (!utils.isLocalStorageSupported(storage)) {
-    utils.tryThrow(Client.hasStorage ? 'Storage quota error' : 'Storage not support')
-    return
+    return Client.hasStorage ? 'Storage quota error' : 'Storage not support'
   }
 
   if (stateCenter.inited) {
-    utils.tryThrow('Initialization ignored')
-    return
+    return 'Initialization ignored'
   }
 
   if (!options || !options.appId) {
-    utils.tryThrow('Missing appId')
-    return
+    return 'Missing appId'
   }
 
   // 统一大写
@@ -61,8 +60,6 @@ function checkArguments(options) {
       config[i] = options[i]
     }
   })
-
-  return true
 }
 
 function initDeviceID(localUID) {
@@ -152,14 +149,19 @@ function initialize(options) {
   onlineTimer.set(onlinePolling, interval)
 
   stateCenter.inited = true
-  return true
 }
 
 export default function(options) {
-  var isLegal = checkArguments(options)
-  if (!isLegal) {
-    return false
+  var errorMSg = checkArguments(options)
+  if (errorMSg) {
+    return utils.tryThrow(errorMSg)
   }
 
-  return initialize(options)
+  initialize(options)
+
+  // 发送给后端的echo请求，便于接入层控制
+  request({
+    url: uri.appendEcho(Client.protocol + '//' + CONST.HOST + '/echo'),
+    method: 'GET'
+  }, true)
 }
