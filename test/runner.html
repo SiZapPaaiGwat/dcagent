@@ -16,6 +16,8 @@
     }
     #choice h1 {
       margin-bottom: 20px;
+      color: #8a4182;
+      text-align: center;
     }
     #choice ul {
       margin-left: 40px;
@@ -39,6 +41,7 @@
 </head>
 <body>
 <script>
+  /* jshint ignore:start */
   var DCAGENT_DEBUG_OPEN = true
 
   function loadDCAgent(done) {
@@ -73,11 +76,13 @@
   })
   document.write('</ul>')
   document.write('<div id="run_all"><a href="?all">Run All Tests</a></div></div>')
+  /* jshint ignore:end */
 </script>
 <script src="./libs/jasmine.js"></script>
 <script src="./libs/jasmine-html.js"></script>
 <script src="./libs/boot.js"></script>
 <script>
+  /* jshint ignore:start */
   var currentFile = location.search.slice(1)
   // 执行单个spec
   if (currentFile.indexOf('.js') !== -1) {
@@ -90,6 +95,7 @@
 
     document.title = 'Running all tests'
   }
+  /* jshint ignore:end */
 </script>
 </body>
 </html>

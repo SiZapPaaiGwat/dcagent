@@ -37,6 +37,7 @@
   <link href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
   <!-- DataEye HTML5 Analytics -->
   <script id="sample_code">
+    /* jshint ignore:start */
     ;(function(b,f){
       var a=document.createElement("script");a.async=true;a.charset="UTF-8";a.src=f;var d=document.querySelector("script");d.parentNode.insertBefore(a,d);var e=[];var c=function(h){if(typeof DCAgent==="undefined"){e.push(arguments)}else{var g=DCAgent[h];if(!g){return console.log("DCAgent."+h+" is undefined")}if(typeof g==="function"){return g.apply(DCAgent,[].slice.call(arguments,1))}else{return g}}};c.loadTime=Date.now();c.cache=e;window[b]=c;window["DCAgentObject"]=b
     })("dc", "../dist/dcagent.v2.src.js");
@@ -325,6 +326,7 @@ dc('onLevelUp', 11, 12, 30)
 
 <script src="http://cdn.bootcss.com/jquery/2.1.4/jquery.js"></script>
 <script>
+  /* jshint ignore:start */
   // 此代码为演示用
   $(function () {
     $('.panel .btn-success').on('click', function () {
