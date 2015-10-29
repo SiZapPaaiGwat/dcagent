@@ -48,7 +48,9 @@
       // APPID
       appId: 'c4bd90a91fe340aae1ecb1852d1d12e8',
       // 渠道名
-      channel: 'wexin'
+      channel: 'wexin',
+      // 打开错误日志上报，默认关闭
+      errorReport: true
       // 其他配置参数参考 http://wiki.dataeye.com/h5/document/html5/api.html#init
     });
   </script>
@@ -116,6 +118,24 @@ dc('onEvent', '打开商城', {
       </div>
     </div>
   </div>
+
+  <div class="col-md-4">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        错误日志
+      </div>
+      <div class="panel-body">
+				<textarea>
+// ReferenceError: a is undefined
+console.log(a)
+				</textarea>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-success btn-block">运行代码</button>
+      </div>
+    </div>
+  </div>
+
 
   <div class="col-md-4">
     <div class="panel panel-primary">

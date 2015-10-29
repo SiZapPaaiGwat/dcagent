@@ -1,4 +1,4 @@
-/*globals describe, it, expect, DCAgent, beforeEach, afterEach, loadDCAgent, destroyDCAgent, jasmine */
+/*globals describe, it, expect, DCAgent, beforeEach, afterEach, loadDCAgent, destroyDCAgent, jasmine, setTimeout */
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
 describe('onEvent', function() {
   beforeEach(loadDCAgent)

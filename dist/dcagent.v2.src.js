@@ -1094,16 +1094,6 @@
   var protocol = location.protocol === 'https:' ? 'https:' : 'http:';
   var useXDR = !!window.XDomainRequest;
 
-  /**
-   * Content
-   * https://msdn.microsoft.com/library/cc288060(v=vs.85).aspx
-   */
-  var setContentType = Client.useXDR ? function (xhr, value) {
-    xhr.contentType = value;
-  } : function (xhr, value) {
-    xhr.setRequestHeader('Content-Type', value);
-  };
-
   var createBrowserXHR = Client.useXDR ? function () {
     return new window.XDomainRequest();
   } : function () {
@@ -1120,12 +1110,38 @@
   var createXHR = engine.isCocos ? createCocosXHR : createBrowserXHR;
 
   /**
+   * WP打包的APP环境下的XMLHttpRequest不支持timeout（没有XDomainRequest）
+   * 有这个属性但是设置会抛异常
+   */
+  var supportTimeout = (function () {
+    try {
+      var xhr = createXHR();
+      xhr.timeout = 1;
+      return true;
+    } catch (e) {
+      return false;
+    }
+  })();
+
+  /**
+   * see XDomainRequest
+   * https://msdn.microsoft.com/library/cc288060(v=vs.85).aspx
+   */
+  var setContentType = Client.useXDR ? function (xhr, value) {
+    xhr.contentType = value;
+  } : function (xhr, value) {
+    xhr.setRequestHeader('Content-Type', value);
+  };
+
+  /**
    * 切断网络或者手机切到后台可能导致timeout
    * IE 9有XMLHttpRequest，但是timeout属性不能设置
    */
   function _request(opts) {
     var xhr = createXHR();
-    xhr.timeout = opts.timeout;
+    if (supportTimeout) {
+      xhr.timeout = opts.timeout;
+    }
     xhr.open(opts.method || 'POST', opts.url, true);
     setContentType(xhr, 'text/plain; charset=UTF-8');
 
@@ -1144,15 +1160,17 @@
       this.ontimeout = null;
     };
 
-    xhr.ontimeout = function () {
-      var elapsed = Date.now() - start;
+    if (supportTimeout) {
+      xhr.ontimeout = function () {
+        var elapsed = Date.now() - start;
 
-      utils.attempt(opts.error, this, [this, elapsed, true]);
-      utils.attempt(opts.complete, this, [this, elapsed]);
+        utils.attempt(opts.error, this, [this, elapsed, true]);
+        utils.attempt(opts.complete, this, [this, elapsed]);
 
-      this.onreadystatechange = null;
-      this.ontimeout = null;
-    };
+        this.onreadystatechange = null;
+        this.ontimeout = null;
+      };
+    }
 
     xhr.send(utils.jsonStringify(opts.data));
   }

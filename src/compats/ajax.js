@@ -33,7 +33,7 @@ var createBrowserXHR = Client.useXDR ? function() {
 }
 
 /**
- * Content
+ * see XDomainRequest
  * https://msdn.microsoft.com/library/cc288060(v=vs.85).aspx
  */
 var setContentType = Client.useXDR ? function (xhr, value) {
@@ -43,6 +43,20 @@ var setContentType = Client.useXDR ? function (xhr, value) {
 }
 
 var createXHR = engine.isCocos ? createCocosXHR : createBrowserXHR
+
+/**
+ * WP打包的APP环境下的XMLHttpRequest不支持timeout（没有XDomainRequest）
+ * 有这个属性但是设置会抛异常
+ */
+var supportTimeout = (() => {
+  try {
+    var xhr = createXHR()
+    xhr.timeout = 1
+    return true
+  } catch(e) {
+    return false
+  }
+})()
 
 /**
  * for Egret Runtime and Native
@@ -74,7 +88,9 @@ function egretRequest(opts) {
  */
 function request(opts) {
   var xhr = createXHR()
-  xhr.timeout = opts.timeout
+  if (supportTimeout) {
+    xhr.timeout = opts.timeout
+  }
   xhr.open(opts.method || 'POST', opts.url, true)
   setContentType(xhr, 'text/plain; charset=UTF-8')
 
@@ -93,14 +109,16 @@ function request(opts) {
     this.ontimeout = null
   }
 
-  xhr.ontimeout = function() {
-    var elapsed = Date.now() - start
+  if (supportTimeout) {
+    xhr.ontimeout = function() {
+      var elapsed = Date.now() - start
 
-    utils.attempt(opts.error, this, [this, elapsed, true])
-    utils.attempt(opts.complete, this, [this, elapsed])
+      utils.attempt(opts.error, this, [this, elapsed, true])
+      utils.attempt(opts.complete, this, [this, elapsed])
 
-    this.onreadystatechange = null
-    this.ontimeout = null
+      this.onreadystatechange = null
+      this.ontimeout = null
+    }
   }
 
   xhr.send(utils.jsonStringify(opts.data))

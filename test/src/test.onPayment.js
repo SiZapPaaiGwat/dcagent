@@ -14,7 +14,7 @@ describe('onPayment', function() {
   }
 
   it('should throw an error if init is not invoked', function(done) {
-    expect(function() {}).not.toThrow()
+    expect(payment).toThrow()
     done()
   })
 

@@ -56,16 +56,32 @@
 
   function destroyDCAgent(done) {
     var script = document.querySelector('#dcagent')
-    script.remove()
+    document.body.removeChild(script)
     DCAgent = null
     done()
   }
 
   var files = [
+    'test.createRole',
     'test.init',
     'test.login',
+    'test.onCoinGet',
+    'test.onCoinUse',
     'test.onEvent',
-    'test.onPayment'
+    'test.onItemBuy',
+    'test.onItemProduce',
+    'test.onItemUse',
+    'test.onLevelUp',
+    'test.onMissionFinished',
+    'test.onMissionUnfinished',
+    'test.onPayment',
+    'test.onTaskFinished',
+    'test.onTaskUnfinished',
+    'test.setAccountType',
+    'test.setAge',
+    'test.setGameServer',
+    'test.setGender',
+    'test.setRoleInfo'
   ]
 
   document.write('<div id="choice"><h1>Choose Test Suite</h1>')

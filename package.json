@@ -13,6 +13,6 @@
   },
   "scripts": {
     "build": "gulp",
-    "demo": "puer"
+    "demo": "http-server . -o http://localhost:8080/exmaple/index.v2.html"
   }
 }
