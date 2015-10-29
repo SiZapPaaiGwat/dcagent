@@ -216,18 +216,6 @@
     }
   };
 
-  var validator = {
-    get isParamsValid() {
-      return isParamsValid;
-    },
-    get shouldBeInited() {
-      return shouldBeInited;
-    },
-    get shouldBeLoggedIn() {
-      return shouldBeLoggedIn;
-    }
-  };
-
   var Client = {
     get hasStorage() {
       return hasStorage;
@@ -241,8 +229,23 @@
     get protocol() {
       return protocol;
     },
+    get useXDR() {
+      return useXDR;
+    },
     get device() {
       return device;
+    }
+  };
+
+  var validator = {
+    get isParamsValid() {
+      return isParamsValid;
+    },
+    get shouldBeInited() {
+      return shouldBeInited;
+    },
+    get shouldBeLoggedIn() {
+      return shouldBeLoggedIn;
     }
   };
 
@@ -1045,9 +1048,67 @@
     loader.load(request);
   }
 
-  function createBrowserXHR() {
-    return new window.XMLHttpRequest();
+  function hasDOM() {
+
+    if (document && isFunction(document.createElement)) {
+      /**
+       * document.createElement is not reliable
+       * since there is some kind browser you can just create canvas only
+       */
+      var node = document.createElement('div');
+
+      /**
+       * node may be an empty object or null (layabox earlier version)
+       */
+      if (!node) return false;
+
+      /**
+       * detect logic, create dom and exec query
+       */
+      if (isFunction(node.querySelector)) {
+        node.innerHTML = '<i></i>';
+
+        var el = node.querySelector('i');
+
+        return !!el && el.tagName === 'I';
+      }
+
+      /**
+       * for old browsers such as IE version < 9
+       */
+      if (isFunction(node.getElementsByTagName)) {
+        var children = node.getElementsByTagName('i');
+
+        return !!children && children.length === 1;
+      }
+    }
+
+    return false;
   }
+
+  var isStandardBrowser = hasDOM();
+  var hasCookie = isStandardBrowser && 'cookie' in document;
+
+  var location = topThis.location || {};
+
+  var protocol = location.protocol === 'https:' ? 'https:' : 'http:';
+  var useXDR = !!window.XDomainRequest;
+
+  /**
+   * Content
+   * https://msdn.microsoft.com/library/cc288060(v=vs.85).aspx
+   */
+  var setContentType = Client.useXDR ? function (xhr, value) {
+    xhr.contentType = value;
+  } : function (xhr, value) {
+    xhr.setRequestHeader('Content-Type', value);
+  };
+
+  var createBrowserXHR = Client.useXDR ? function () {
+    return new window.XDomainRequest();
+  } : function () {
+    return new window.XMLHttpRequest();
+  };
 
   /**
    * for standard browser and layabox, or cocos
@@ -1058,14 +1119,15 @@
 
   var createXHR = engine.isCocos ? createCocosXHR : createBrowserXHR;
 
+  /**
+   * 切断网络或者手机切到后台可能导致timeout
+   * IE 9有XMLHttpRequest，但是timeout属性不能设置
+   */
   function _request(opts) {
     var xhr = createXHR();
-    /**
-     * 切断网络或者手机切到后台可能导致timeout
-     */
     xhr.timeout = opts.timeout;
     xhr.open(opts.method || 'POST', opts.url, true);
-    xhr.setRequestHeader('Content-Type', 'text/plain; charset=UTF-8');
+    setContentType(xhr, 'text/plain; charset=UTF-8');
 
     var start = Date.now();
 
@@ -1186,51 +1248,6 @@
       return false;
     }
   }
-
-  function hasDOM() {
-
-    if (document && isFunction(document.createElement)) {
-      /**
-       * document.createElement is not reliable
-       * since there is some kind browser you can just create canvas only
-       */
-      var node = document.createElement('div');
-
-      /**
-       * node may be an empty object or null (layabox earlier version)
-       */
-      if (!node) return false;
-
-      /**
-       * detect logic, create dom and exec query
-       */
-      if (isFunction(node.querySelector)) {
-        node.innerHTML = '<i></i>';
-
-        var el = node.querySelector('i');
-
-        return !!el && el.tagName === 'I';
-      }
-
-      /**
-       * for old browsers such as IE version < 9
-       */
-      if (isFunction(node.getElementsByTagName)) {
-        var children = node.getElementsByTagName('i');
-
-        return !!children && children.length === 1;
-      }
-    }
-
-    return false;
-  }
-
-  var isStandardBrowser = hasDOM();
-  var hasCookie = isStandardBrowser && 'cookie' in document;
-
-  var location = topThis.location || {};
-
-  var protocol = location.protocol === 'https:' ? 'https:' : 'http:';
 
   var API_PATH = Client.protocol + '//' + CONST.HOST + CONST.API_PATH;
 
@@ -1439,6 +1456,7 @@
     }
 
     var sendData = {
+      // 1e21经过JSON.stringify会变成 '1e+21'
       currencyAmount: utils.max(parseFloat(opts.amount, 10) || 0),
       currencyType: opts.currencyType || 'CNY',
       payType: String(opts.payType || ''),

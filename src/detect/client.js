@@ -11,6 +11,7 @@ var hasStorage = !!window.localStorage || engine.isEgret || engine.isCocos || en
 var isStandardBrowser = hasDOM()
 var hasCookie = isStandardBrowser && ('cookie' in document)
 var protocol = location.protocol === 'https:' ? 'https:' : 'http:'
+var useXDR = !!window.XDomainRequest
 
 var screenObj = window.screen || {}
 var userAgent = (window.navigator && window.navigator.userAgent) || ''
@@ -52,4 +53,4 @@ if (!resolution) {
 
 var device = {resolution, brand, osVersion, platform}
 
-export {hasStorage, isStandardBrowser, hasCookie, protocol, device}
+export {hasStorage, isStandardBrowser, hasCookie, protocol, useXDR, device}

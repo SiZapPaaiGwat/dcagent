@@ -9,11 +9,15 @@
  *   opts.complete
  *   opts.timeout
  * })
+ *
+ * 优先使用XMLHttpRequest（如果有XDomainRequest则使用XDomainRequest）
+ * 如果没有XMLHttpRequest则根据引擎类型判断
  */
 
 import {window} from  '../globals.js'
 import {engine} from '../detect/engine.js'
 import * as utils from '../libs/utils.js'
+import * as Client from '../detect/client.js'
 
 /**
  * for standard browser and layabox, or cocos
@@ -22,8 +26,20 @@ function createCocosXHR() {
   return window.cc.loader.getXMLHttpRequest()
 }
 
-function createBrowserXHR() {
+var createBrowserXHR = Client.useXDR ? function() {
+  return new window.XDomainRequest()
+} : function() {
   return new window.XMLHttpRequest()
+}
+
+/**
+ * Content
+ * https://msdn.microsoft.com/library/cc288060(v=vs.85).aspx
+ */
+var setContentType = Client.useXDR ? function (xhr, value) {
+  xhr.contentType = value
+} : function (xhr, value) {
+  xhr.setRequestHeader('Content-Type', value)
 }
 
 var createXHR = engine.isCocos ? createCocosXHR : createBrowserXHR
@@ -52,14 +68,15 @@ function egretRequest(opts) {
   loader.load(request)
 }
 
+/**
+ * 切断网络或者手机切到后台可能导致timeout
+ * IE 9有XMLHttpRequest，但是timeout属性不能设置
+ */
 function request(opts) {
   var xhr = createXHR()
-  /**
-   * 切断网络或者手机切到后台可能导致timeout
-   */
   xhr.timeout = opts.timeout
   xhr.open(opts.method || 'POST', opts.url, true)
-  xhr.setRequestHeader('Content-Type', 'text/plain; charset=UTF-8')
+  setContentType(xhr, 'text/plain; charset=UTF-8')
 
   var start = Date.now()
 
