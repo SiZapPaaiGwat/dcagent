@@ -57,6 +57,8 @@
   function destroyDCAgent(done) {
     var script = document.querySelector('#dcagent')
     document.body.removeChild(script)
+    // 停止轮询
+    DCAgent.destroy()
     DCAgent = null
     done()
   }

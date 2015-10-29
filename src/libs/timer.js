@@ -25,6 +25,8 @@ export default function(fn, duration) {
 
   // 立即执行一次函数
   this.run = () => {
+    if (this.status === 'cancelled') return
+
     // 清除上次的定时器
     clearTimeout(this.timer)
 
@@ -40,10 +42,18 @@ export default function(fn, duration) {
 
   // reset之后也会立即执行一次
   this.reset = (num) => {
+    if (this.status === 'cancelled') return
+
     this.stop()
     if (num) {
       this.duration = num
     }
     this.run()
+  }
+
+  // 永久停止timer防止被错误启动
+  this.cancel = function() {
+    this.status = 'cancelled'
+    clearTimeout(this.timer)
   }
 }

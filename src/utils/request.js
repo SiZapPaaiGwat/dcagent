@@ -10,10 +10,12 @@ import * as onlineTimer from './onlineTimer.js'
 
 // 上次请求发生时间
 var lastRequestTime = Date.now() - defaults.ASAP_TIMEOUT
-
+// 全部请求失败的次数
 export var failedCount = 0
-
+// 全部请求次数
 export var reportCount = 0
+// 最近一次上报的数据
+export var reportData
 
 export default function(opts, force) {
   var now = Date.now()
@@ -32,6 +34,7 @@ export default function(opts, force) {
   }
 
   reportCount += 1
+  reportData = opts.data
 
   ajax({
     url: opts.url,

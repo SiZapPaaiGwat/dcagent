@@ -977,6 +977,8 @@
 
     // 立即执行一次函数
     this.run = function () {
+      if (_this.status === 'cancelled') return;
+
       // 清除上次的定时器
       clearTimeout(_this.timer);
 
@@ -994,11 +996,19 @@
 
     // reset之后也会立即执行一次
     this.reset = function (num) {
+      if (_this.status === 'cancelled') return;
+
       _this.stop();
       if (num) {
         _this.duration = num;
       }
       _this.run();
+    };
+
+    // 永久停止timer防止被错误启动
+    this.cancel = function () {
+      this.status = 'cancelled';
+      clearTimeout(this.timer);
     };
   }
 
@@ -1022,6 +1032,7 @@
     return timer;
   }
 
+  // 全部请求失败的次数
   var failedCount = 0;
 
   /**
@@ -1185,6 +1196,10 @@
     return utils.noop;
   })();
 
+  // 最近一次上报的数据
+  exports.report;
+
+  // 全部请求次数
   var reportCount = 0;
 
   // 上次请求发生时间
@@ -1207,6 +1222,7 @@
     }
 
     reportCount += 1;
+    exports.report = opts.data;
 
     ajax({
       url: opts.url,
@@ -1669,6 +1685,14 @@
 
         cache.length = 0;
       }
+    }
+  }
+
+  function destroy() {
+    var timer = onlineTimer.get();
+    // 如果未初始化或者初始化未成功这里的timer为空
+    if (timer) {
+      timer.cancel();
     }
   }
 
@@ -2277,4 +2301,5 @@
   exports.init = init;
   exports.player = player;
   exports.isReady = isReady;
+  exports.destroy = destroy;
 });
