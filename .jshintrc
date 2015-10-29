@@ -1,6 +1,8 @@
 {
   "asi":    true,
   "eqeqeq": true,
+  "browser": true,
+  "node": true,
   "eqnull": true,
   "expr":   true,
   "latedef": true,

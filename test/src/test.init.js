@@ -1,11 +1,11 @@
-/*globals describe, it, expect, DCAgent*/
-describe('DCAgent.init ', function() {
+/*globals describe, it, expect, DCAgent, beforeEach, afterEach, loadDCAgent, destroyDCAgent*/
+describe('init', function() {
   beforeEach(loadDCAgent)
 
   afterEach(destroyDCAgent)
 
   // appid不能为空
-  it('should throw an error when appId is empty', function() {
+  it('throws an error when appid is not supplied', function() {
     expect(DCAgent.init).toThrow()
 
     var init = function() {
@@ -15,7 +15,7 @@ describe('DCAgent.init ', function() {
   })
 
   // 正常流程
-  it('should work when appId is supplied', function() {
+  it('works when appid is not empty', function() {
     var init = function() {
       DCAgent.init({appId: 'abc'})
     }
@@ -25,8 +25,9 @@ describe('DCAgent.init ', function() {
   })
 
   // 多次初始化报错
-  it('should throw error when invoke init twice', function() {
+  it('should not support multiple invocation', function() {
     var init = function() {
+      DCAgent.init({appId: 'abc'})
       DCAgent.init({appId: 'abc'})
     }
     expect(init).toThrow()

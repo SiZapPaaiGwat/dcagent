@@ -1,35 +1,47 @@
-/*globals describe, it, expect, DCAgent*/
-describe('DCAgent.onPayment()', function() {
-  it('should throw an error if user is not logged in', function() {
-    expect(DCAgent.onPayment).toThrow()
+/*globals describe, it, expect, DCAgent, beforeEach, afterEach, loadDCAgent, destroyDCAgent */
+describe('onPayment', function() {
+  beforeEach(loadDCAgent)
+
+  afterEach(destroyDCAgent)
+
+  var payment = function() {
+    DCAgent.onPayment({amount: 123})
+  }
+
+  var initAndLogin = function() {
+    DCAgent.init({appId: 'payment'})
+    DCAgent.login('simon')
+  }
+
+  it('should throw an error if init is not invoked', function(done) {
+    expect(function() {}).not.toThrow()
+    done()
+  })
+
+  it('should throw an error if login is not invoked', function() {
     DCAgent.init({appId: 'payment'})
     expect(DCAgent.onPayment).toThrow()
   })
 
-  it('should throw an error when there is no argument', function() {
-    DCAgent.login('simon')
-    expect(DCAgent.onPayment).toThrow()
-  })
-
-  it('should throw an error when there is no amount field', function() {
-    DCAgent.login('simon')
-    var payment = function() {
-      DCAgent.onPayment({})
-    }
-    expect(payment).toThrow()
-  })
-
-  it('should work when amount is supplied', function() {
-    DCAgent.login('simon')
-    var payment = function() {
-      DCAgent.onPayment({
-        amount: 123
-      })
-    }
+  it('should work when init and login are invoked', function() {
+    initAndLogin()
     expect(payment).not.toThrow()
   })
 
+  it('should throw an error when there is no amount field', function() {
+    initAndLogin()
+    var pay1 = function() {
+      DCAgent.onPayment({amountx: 123})
+    }
+    var pay2 = function() {
+      DCAgent.onPayment()
+    }
+    expect(pay1).toThrow()
+    expect(pay2).toThrow()
+  })
+
   it('should trigger ajax right now', function() {
+    initAndLogin()
     var count = DCAgent.player.reportCount
     DCAgent.onPayment({
       amount: 123
@@ -37,13 +49,12 @@ describe('DCAgent.onPayment()', function() {
     expect(DCAgent.player.reportCount).toEqual(count + 1)
   })
 
-  describe('amount check', function() {
-    // 大于等于1e21的数不能正确的传给后台
-    it('should be less than 1e21', function() {
-      var data = DCAgent.onPayment({
-        amount: 1e22
-      })
-      expect(data.currencyAmount).toBeLessThan(1e21)
+  // 大于等于1e21的数不能正确的传给后台
+  it('amount should be less than 1e21', function() {
+    initAndLogin()
+    var data = DCAgent.onPayment({
+      amount: 1e22
     })
+    expect(data.currencyAmount).toBeLessThan(1e21)
   })
 })
