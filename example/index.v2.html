@@ -1,0 +1,343 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="Cache-Control" content="no-cache"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>DataEye SDK for HTML5 v2.0</title>
+  <style>
+    body {
+      font-size: 1.2em;
+      word-wrap: break-word;
+      word-break: break-all;
+    }
+
+    body th {
+      text-align: center;
+      vertical-align: middle !important;
+    }
+
+    .col-md-12 .panel-body {
+      padding: 0;
+    }
+
+    .panel-body textarea {
+      width: 100%;
+      height: 180px;
+      overflow: auto;
+      font-size: 12px;
+      resize: none;
+      font-family: Consolas, Menlo, Monaco, monospace;
+    }
+
+    #init_code {
+      height: 235px;
+    }
+  </style>
+  <link href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+  <!-- DataEye HTML5 Analytics -->
+  <script id="sample_code">
+    ;(function(b,f){
+      var a=document.createElement("script");a.async=true;a.charset="UTF-8";a.src=f;var d=document.querySelector("script");d.parentNode.insertBefore(a,d);var e=[];var c=function(h){if(typeof DCAgent==="undefined"){e.push(arguments)}else{var g=DCAgent[h];if(!g){return console.log("DCAgent."+h+" is undefined")}if(typeof g==="function"){return g.apply(DCAgent,[].slice.call(arguments,1))}else{return g}}};c.loadTime=Date.now();c.cache=e;window[b]=c;window["DCAgentObject"]=b
+    })("dc", "../dist/dcagent.v2.src.js");
+    // 修改为SDK脚本所在路径
+
+    // 初始化
+    dc('init', {
+      // APPID
+      appId: 'c4bd90a91fe340aae1ecb1852d1d12e8',
+      // 渠道名
+      channel: 'wexin'
+      // 其他配置参数参考 http://wiki.dataeye.com/h5/document/html5/api.html#init
+    });
+  </script>
+  <!-- End DataEye HTML5 Analytics -->
+</head>
+<body>
+<h3 class="text-center">
+  DataEye SDK for HTML5 2.0 - DEMO,
+  <small><a href="http://wiki.dataeye.com/h5/document/html5/api.html">在线文档说明</a> </small>
+</h3>
+<hr/>
+<div class="alert alert-info">
+  2.0版本推荐使用新的嵌入代码的方式集成，这种嵌入代码的方式比1.0的上报方式更快更准，对页面加载的影响也更小。
+
+</div>
+<div class="col-md-12">
+  <div class="col-md-4">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        嵌入代码
+      </div>
+      <div class="panel-body">
+        <textarea id="init_code"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        登录
+      </div>
+      <div class="panel-body">
+				<textarea>
+// 重复调用会将当前帐号清除登录态
+// 参数：玩家帐号（必填）
+dc('login', 'simon')
+				</textarea>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-success btn-block">运行代码</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        自定义事件
+      </div>
+      <div class="panel-body">
+				<textarea>
+// 自定义事件
+// 参数：事件ID（必填），事件属性（可选）
+dc('onEvent', '打开商城', {
+	// 事件属性为任意字符串（最好不要带百分号）
+	missionID: '关卡1',
+	// 事件属性的值只能为数字或字符串
+	balance: 0
+})
+				</textarea>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-success btn-block">运行代码</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        付费
+      </div>
+      <div class="panel-body">
+				<textarea>
+// 付费记录
+// 需要在调用login接口后调用
+dc('onPayment', {
+    // amount 付费金额，必填
+    amount: 1,
+    // currencyType 货币类型，可选。默认CNY
+    currencyType: 'CNY',
+    // payType 支付方式，可选。默认为空
+    payType: '信用卡',
+    // iapid 付费点，可选。默认为空
+    iapid: '关卡1',
+    // orderId 订单编号，可选。默认为空
+    orderId: '订单编号'
+})
+				</textarea>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-success btn-block">运行代码</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        帐户相关
+      </div>
+      <div class="panel-body">
+				<textarea>
+
+// 设置帐号类型
+// 需要在调用login接口后调用
+dc('setAccountType', 'VIP1')
+
+// 年龄
+// 需要在调用login接口后调用
+dc('setAge', 26)
+
+// 性别：1为男，2为女， 0为未知
+// 需要在调用login接口后调用
+dc('setGender', 1)
+				</textarea>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-success btn-block">运行代码</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        角色相关
+      </div>
+      <div class="panel-body">
+				<textarea>
+// 设置区服
+// 需要在调用login接口后调用
+dc('setGameServer', '九区')
+
+// 创建角色
+// 需要在调用login接口后调用
+// 【玩家第一次创建角色时调用】
+// 角色ID(String), 角色种族(String), 角色职业(String), 角色等级(Number)
+dc('createRole', '兽人', '部落', '战士', 1)
+
+// 设置角色信息
+// 需要在调用login接口后调用
+// 【玩家登录后同步角色信息】
+// 角色ID(String), 角色种族(String), 角色职业(String), 角色等级(Number)
+dc('setRoleInfo', '兽人', '部落', '战士', 2)
+				</textarea>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-success btn-block">运行代码</button>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        虚拟币相关
+      </div>
+      <div class="panel-body">
+				<textarea>
+// 获取虚拟币
+// 获取数量, 留存总量, 虚拟币类型, 获取原因
+// 需要在调用login接口后调用
+
+dc('onCoinGet', 100, 300, '金币', '完成任务获得奖励')
+
+// 消耗虚拟币
+// 消耗数量, 留存总量, 虚拟币类型, 消耗原因
+// 需要在调用login接口后调用
+dc('onCoinUse', 200, 100, '金币', '增加体力消耗')
+				</textarea>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-success btn-block">运行代码</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        道具相关
+      </div>
+      <div class="panel-body">
+				<textarea>
+// 关卡内使用虚拟币购买道具
+// 道具ID, 道具数目, 虚拟币类型, 虚拟币数目, 关卡ID
+// 需要在调用login接口后调用
+dc('onItemBuy', '狂战斧', 1, '金币', 4700, '关卡23')
+
+// 关卡内道具产出以及原因
+// 道具ID, 道具数目, 关卡ID, 产出原因
+// 需要在调用login接口后调用
+dc('onItemProduce', '不朽盾', 1, '关卡24', '五人打盾')
+
+// 关卡内道具消耗以及原因
+// 道具ID, 道具数目, 关卡ID, 消耗原因
+// 需要在调用login接口后调用
+dc('onItemUse', '大魔棒', 17, '关卡25', '加血加魔')
+				</textarea>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-success btn-block">运行代码</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        关卡相关
+      </div>
+      <div class="panel-body">
+				<textarea>
+// 通关成功耗时
+// 关卡ID, 通关耗时（秒）
+// 需要在调用login接口后调用
+dc('onMissionFinished', '关卡1', 20)
+
+// 通关失败耗时
+// 关卡ID, 通关耗时（秒）
+// 需要在调用login接口后调用
+dc('onMissionUnfinished', '关卡2', 40)
+				</textarea>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-success btn-block">运行代码</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        任务相关
+      </div>
+      <div class="panel-body">
+				<textarea>
+// 完成任务耗时
+// 任务ID, 耗时（秒）
+// 需要在调用login接口后调用
+dc('onTaskFinished', '完善资料', 25)
+
+// 执行任务失败耗时
+// 任务ID, 耗时（秒）
+// 需要在调用login接口后调用
+dc('onTaskUnfinished', '首冲送大礼', 45)
+				</textarea>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-success btn-block">运行代码</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        升级耗时
+      </div>
+      <div class="panel-body">
+				<textarea>
+// 升级耗时
+// 开始等级，目标等级，耗时（秒）
+// 需要在调用login接口后调用
+dc('onLevelUp', 11, 12, 30)
+				</textarea>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-success btn-block">运行代码</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="http://cdn.bootcss.com/jquery/2.1.4/jquery.js"></script>
+<script>
+  // 此代码为演示用
+  $(function () {
+    $('.panel .btn-success').on('click', function () {
+      var panel = $(this).parents('.panel')
+      var txt = panel.find('textarea')
+
+      eval(txt.val())
+    })
+
+    $('textarea').attr('title', '这里的示例代码可以编辑')
+
+    $('#init_code').val($('#sample_code').text().trim())
+  })
+</script>
+</body>
+</html>

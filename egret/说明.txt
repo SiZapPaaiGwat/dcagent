@@ -1,0 +1,18 @@
+**** 演示说明 ****
+  打开index.v2.html查看demo
+
+  dcagent.additional.js
+  dcagent.json
+  dcagent.d.ts
+  以上三个文件为白鹭引擎专用，其他运行环境可以忽略
+
+  白鹭引擎2.5之前的版本和2.5之后的版本引用第三方库有差异，请参考
+  http://wiki.dataeye.com/h5/document/html5/egret.html
+
+**** 更新说明 ****
+Version 0.2.3
+更新日期：2015-10-21
+更新内容：
+- 1. SDK上报周期默认值调整为40秒
+- 2. SDK初始化配置默认关闭错误日志上报
+- 3. 改善SDK内部统计玩家上报质量的方式
