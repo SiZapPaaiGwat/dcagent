@@ -213,6 +213,9 @@
     },
     get get() {
       return get;
+    },
+    get destroy() {
+      return destroy;
     }
   };
 
@@ -876,16 +879,16 @@
     };
   }
 
-  var D__git_dcagent_src_compats_storage = storage;
+  var compats_storage = storage;
 
   /**
    * 用户退出时将当前数据保存到本地存储
    */
   function saveToStorage() {
-    D__git_dcagent_src_compats_storage.setItem(CONST.LOGOUT_TIME, utils.parseInt(Date.now() / 1000));
+    compats_storage.setItem(CONST.LOGOUT_TIME, utils.parseInt(Date.now() / 1000));
 
     if (errors.length || events.length) {
-      D__git_dcagent_src_compats_storage.setItem(CONST.QUIT_SNAPSHOT, utils.jsonStringify(collect()));
+      compats_storage.setItem(CONST.QUIT_SNAPSHOT, utils.jsonStringify(collect()));
     }
   }
 
@@ -893,7 +896,7 @@
    * 用户进入时从本地存储导入数据
    */
   function loadFromStorage() {
-    return utils.jsonParse(D__git_dcagent_src_compats_storage.getItem(CONST.QUIT_SNAPSHOT));
+    return utils.jsonParse(compats_storage.getItem(CONST.QUIT_SNAPSHOT));
   }
 
   function addError(item) {
@@ -1030,6 +1033,17 @@
 
   function get() {
     return timer;
+  }
+
+  /**
+   * 停止定时器上报
+   */
+  function destroy() {
+    // 如果未初始化或者初始化未成功这里的timer为空
+    if (timer) {
+      timer.cancel();
+      timer = null;
+    }
   }
 
   // 全部请求失败的次数
@@ -1688,14 +1702,6 @@
     }
   }
 
-  function destroy() {
-    var timer = onlineTimer.get();
-    // 如果未初始化或者初始化未成功这里的timer为空
-    if (timer) {
-      timer.cancel();
-    }
-  }
-
   function isReady() {
     return stateCenter.inited;
   }
@@ -1715,7 +1721,7 @@
       return stateCenter.loginTime;
     },
     get lastLogoutTime() {
-      return parseInt(D__git_dcagent_src_compats_storage.getItem(CONST.LOGOUT_TIME));
+      return parseInt(compats_storage.getItem(CONST.LOGOUT_TIME));
     },
     get reportCount() {
       return reportCount;
@@ -1824,13 +1830,13 @@
 
   function setItem(key, value) {
     key = wrapKey(key);
-    D__git_dcagent_src_compats_storage.setItem(key, value);
+    compats_storage.setItem(key, value);
     _Cookie.set(key, value, 3650);
   }
 
   function getItem(key) {
     key = wrapKey(key);
-    return D__git_dcagent_src_compats_storage.getItem(key) || _Cookie.get(key);
+    return compats_storage.getItem(key) || _Cookie.get(key);
   }
 
   /**
@@ -2166,7 +2172,7 @@
       if (localUID !== paddingUID) {
         config.uid = paddingUID;
         localUID = paddingUID;
-        D__git_dcagent_src_compats_storage.setItem(CONST.CREATE_TIME, utils.parseInt(Date.now() / 1000));
+        compats_storage.setItem(CONST.CREATE_TIME, utils.parseInt(Date.now() / 1000));
       }
     }
 
@@ -2197,10 +2203,10 @@
      * 白鹭引擎由于共享设备ID
      * 所以可能导致第一次进入游戏设备ID已经设置但是创建时间没有设置
      */
-    var createTime = D__git_dcagent_src_compats_storage.getItem(CONST.CREATE_TIME);
+    var createTime = compats_storage.getItem(CONST.CREATE_TIME);
     if (!createTime) {
       createTime = stateCenter.initTime;
-      D__git_dcagent_src_compats_storage.setItem(CONST.CREATE_TIME, createTime);
+      compats_storage.setItem(CONST.CREATE_TIME, createTime);
     }
 
     stateCenter.createTime = utils.parseInt(createTime);
@@ -2249,7 +2255,7 @@
      * 无痕模式下属性存在但无法使用
      * TODO SDK是否无须localstorage支持
      */
-    if (!utils.isLocalStorageSupported(D__git_dcagent_src_compats_storage)) {
+    if (!utils.isLocalStorageSupported(compats_storage)) {
       return Client.hasStorage ? 'Storage quota error' : 'Storage not support';
     }
 

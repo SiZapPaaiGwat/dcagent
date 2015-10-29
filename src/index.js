@@ -35,7 +35,7 @@ import setGameServer from './interface/setGameServer.js'
 import setGender from './interface/setGender.js'
 import setRoleInfo from './interface/setRoleInfo.js'
 import createRole from './interface/createRole.js'
-import destroy from './interface/destroy.js'
+import {destroy} from './utils/onlineTimer.js'
 import {reportData as report} from './utils/request.js'
 
 var initBasedAPI = {

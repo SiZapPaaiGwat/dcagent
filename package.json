@@ -12,7 +12,7 @@
     "gulp-uglify": "^1.4.2"
   },
   "scripts": {
-    "build": "gulp",
-    "demo": "http-server . -o http://localhost:8080/exmaple/index.v2.html"
+    "demo": "http-server . -o \"http://localhost:8080/example/index.v2.html\"",
+    "test": "http-server . -o \"http://localhost:8080/test/runner.html\""
   }
 }

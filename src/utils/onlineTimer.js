@@ -26,3 +26,14 @@ export function set(func, interval) {
 export function get() {
   return timer
 }
+
+/**
+ * 停止定时器上报
+ */
+export function destroy() {
+  // 如果未初始化或者初始化未成功这里的timer为空
+  if (timer) {
+    timer.cancel()
+    timer = null
+  }
+}
