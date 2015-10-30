@@ -29,6 +29,14 @@ describe('onTaskFinished', function() {
     expect(onTaskFinished).not.toThrow()
   })
 
+  it('should throw an error since elapsed is less than zero', function() {
+    initAndLogin()
+    var onTaskFinished1 = function() {
+      DCAgent.onTaskFinished('完善资料', -1)
+    }
+    expect(onTaskFinished1).toThrow()
+  })
+
   it('should trigger ajax in 5 secs', function(done) {
     initAndLogin()
     var count = DCAgent.player.reportCount

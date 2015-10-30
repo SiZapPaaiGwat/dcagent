@@ -1482,18 +1482,32 @@
   }
 
   function onTaskUnfinished(taskID, elapsed) {
+    elapsed = utils.parseInt(elapsed);
+
+    if (elapsed < 0) {
+      utils.tryThrow('Argument error');
+      return false;
+    }
+
     onEvent(CONST.EVT_TASK, {
       actionType: 'taskUnfinish',
-      taskId: taskID,
-      elapsed: utils.parseInt(elapsed)
+      taskId: String(taskID),
+      elapsed: elapsed
     });
   }
 
   function onTaskFinished(taskID, elapsed) {
+    elapsed = utils.parseInt(elapsed);
+
+    if (elapsed < 0) {
+      utils.tryThrow('Argument error');
+      return false;
+    }
+
     onEvent(CONST.EVT_TASK, {
       actionType: 'taskFinish',
-      taskId: taskID,
-      elapsed: utils.parseInt(elapsed)
+      taskId: String(taskID),
+      elapsed: elapsed
     });
   }
 

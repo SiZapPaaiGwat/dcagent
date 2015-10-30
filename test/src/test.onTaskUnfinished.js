@@ -29,6 +29,14 @@ describe('onTaskUnfinished', function() {
     expect(onTaskUnfinished).not.toThrow()
   })
 
+  it('should throw an error since elapsed is less than zero', function() {
+    initAndLogin()
+    var onTaskUnfinished1 = function() {
+      DCAgent.onTaskUnfinished('首冲送大礼', -1)
+    }
+    expect(onTaskUnfinished1).toThrow()
+  })
+
   it('should trigger ajax in 5 secs', function(done) {
     initAndLogin()
     var count = DCAgent.player.reportCount
