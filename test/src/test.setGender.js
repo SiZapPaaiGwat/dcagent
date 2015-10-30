@@ -38,4 +38,14 @@ describe('setGender', function() {
       done()
     }, 5000)
   })
+
+  it('should be the same with what I set', function(done) {
+    initAndLogin()
+    DCAgent.setGender(2)
+    setTimeout(function() {
+      var headerInfo = DCAgent.report.headerInfo
+      expect(headerInfo.gender).toEqual(2)
+      done()
+    }, 5000)
+  })
 })

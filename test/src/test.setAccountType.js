@@ -38,4 +38,14 @@ describe('setAccountType', function() {
       done()
     }, 5000)
   })
+
+  it('should be the same with what I set', function(done) {
+    initAndLogin()
+    DCAgent.setAccountType('VIP')
+    setTimeout(function() {
+      var headerInfo = DCAgent.report.headerInfo
+      expect(headerInfo.accountType).toEqual('VIP')
+      done()
+    }, 5000)
+  })
 })

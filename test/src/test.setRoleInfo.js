@@ -38,4 +38,18 @@ describe('setRoleInfo', function() {
       done()
     }, 5000)
   })
+
+  it('should be the same with what I set', function(done) {
+    initAndLogin()
+    DCAgent.setRoleInfo('精灵', '联盟', '弓箭手', 2)
+    setTimeout(function() {
+      var headerInfo = DCAgent.report.headerInfo
+      expect(headerInfo).not.toBeUndefined()
+      expect(headerInfo.roleId).toEqual('精灵')
+      expect(headerInfo.roleRace).toEqual('联盟')
+      expect(headerInfo.roleClass).toEqual('弓箭手')
+      expect(headerInfo.roleLevel).toEqual(2)
+      done()
+    }, 5000)
+  })
 })

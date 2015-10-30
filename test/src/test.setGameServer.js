@@ -38,4 +38,14 @@ describe('setGameServer', function() {
       done()
     }, 5000)
   })
+
+  it('should be the same with what I set', function(done) {
+    initAndLogin()
+    DCAgent.setGameServer('第六区')
+    setTimeout(function() {
+      var headerInfo = DCAgent.report.headerInfo
+      expect(headerInfo.gameServer).toEqual('第六区')
+      done()
+    }, 5000)
+  })
 })

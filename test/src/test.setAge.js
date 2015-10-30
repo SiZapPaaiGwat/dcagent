@@ -38,4 +38,14 @@ describe('setAge', function() {
       done()
     }, 5000)
   })
+
+  it('should be the same with what I set', function(done) {
+    initAndLogin()
+    DCAgent.setAge(100)
+    setTimeout(function() {
+      var headerInfo = DCAgent.report.headerInfo
+      expect(headerInfo.age).toEqual(100)
+      done()
+    }, 5000)
+  })
 })
