@@ -148,7 +148,7 @@ function initialize(options) {
   var minInterval = utils.isDebug ? defaults.MIN_ONLINE_INTERVAL_DEBUG : defaults.MIN_ONLINE_INTERVAL
   var interval = Math.max(minInterval, parseFloat(options.interval || minInterval)) * 1000
   onlineTimer.set(onlinePolling, interval)
-
+  stateCenter.interval = interval
   stateCenter.inited = true
 }
 
@@ -161,8 +161,10 @@ export default function(options) {
   initialize(options)
 
   // 发送给后端的echo请求，便于接入层控制
-  request({
-    url: uri.appendEcho(Client.protocol + '//' + CONST.HOST + '/echo'),
-    method: 'GET'
-  }, true)
+  if (!utils.isDebug) {
+    request({
+      url: uri.appendEcho(Client.protocol + '//' + CONST.HOST + '/echo'),
+      method: 'GET'
+    }, true)
+  }
 }

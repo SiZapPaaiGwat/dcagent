@@ -4,6 +4,7 @@
 
 import Timer from '../libs/timer.js'
 import {setTimeout} from '../compats/xTimeout.js'
+import stateCenter from './stateCenter.js'
 
 var timer
 
@@ -16,6 +17,10 @@ export function reset(interval) {
     setTimeout(() => {
       timer.reset(interval)
     }, interval)
+
+    if (interval) {
+      stateCenter.interval = interval
+    }
   }
 }
 

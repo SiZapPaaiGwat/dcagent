@@ -37,6 +37,7 @@ import setRoleInfo from './interface/setRoleInfo.js'
 import createRole from './interface/createRole.js'
 import {destroy} from './utils/onlineTimer.js'
 import {reportData as report} from './utils/request.js'
+import state from './utils/stateCenter.js'
 
 var initBasedAPI = {
   login,
@@ -113,8 +114,12 @@ if (proxyName) {
 export {
   init,
   version,
+  // 玩家信息
   player,
   isReady,
   destroy,
-  report
+  // 最近一次上报数据
+  report,
+  // SDK内部状态仓库
+  state
 }

@@ -1024,6 +1024,10 @@
       setTimeout(function () {
         timer.reset(interval);
       }, interval);
+
+      if (interval) {
+        stateCenter.interval = interval;
+      }
     }
   }
 
@@ -1461,9 +1465,7 @@
     config.gender = gender === 2 ? 2 : 1;
   }
 
-  function setGameServer() {
-    var serverID = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-
+  function setGameServer(serverID) {
     config.gameServer = String(serverID);
   }
 
@@ -1475,9 +1477,7 @@
     config.age = age > 0 && age < 128 ? age : 0;
   }
 
-  function setAccountType() {
-    var typeID = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-
+  function setAccountType(typeID) {
     config.accountType = String(typeID);
   }
 
@@ -2302,7 +2302,7 @@
     var minInterval = utils.isDebug ? defaults.MIN_ONLINE_INTERVAL_DEBUG : defaults.MIN_ONLINE_INTERVAL;
     var interval = Math.max(minInterval, parseFloat(options.interval || minInterval)) * 1000;
     onlineTimer.set(onlinePolling, interval);
-
+    stateCenter.interval = interval;
     stateCenter.inited = true;
   }
 
@@ -2357,14 +2357,15 @@
     initialize(options);
 
     // 发送给后端的echo请求，便于接入层控制
-    request({
-      url: uri.appendEcho(Client.protocol + '//' + CONST.HOST + '/echo'),
-      method: 'GET'
-    }, true);
+    // request({
+    //   url: uri.appendEcho(Client.protocol + '//' + CONST.HOST + '/echo'),
+    //   method: 'GET'
+    // }, true)
   }
 
   exports.init = init;
   exports.player = player;
   exports.isReady = isReady;
   exports.destroy = destroy;
+  exports.state = stateCenter;
 });
