@@ -29,6 +29,22 @@ describe('onLevelUp', function() {
     expect(onLevelUp).not.toThrow()
   })
 
+  it('should throw an error since startLevel/endLevel/elapsed is less than zero', function() {
+    initAndLogin()
+    var onLevelUp1 = function() {
+      DCAgent.onLevelUp(-1, 12, 30)
+    }
+    var onLevelUp2 = function() {
+      DCAgent.onLevelUp(11, -1, 30)
+    }
+    var onLevelUp3 = function() {
+      DCAgent.onLevelUp(11, 12, -1)
+    }
+    expect(onLevelUp1).toThrow()
+    expect(onLevelUp2).toThrow()
+    expect(onLevelUp3).toThrow()
+  })
+
   it('should trigger ajax in 5 secs', function(done) {
     initAndLogin()
     var count = DCAgent.player.reportCount
