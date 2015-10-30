@@ -29,6 +29,18 @@ describe('onItemBuy', function() {
     expect(onItemBuy).not.toThrow()
   })
 
+  it('should throw an error since coinNum/itemNum is less than zero', function() {
+    initAndLogin()
+    var itemBuy1 = function() {
+      DCAgent.onItemBuy('狂战斧', 1, '金币', -1, '关卡23')
+    }
+    var itemBuy2 = function() {
+      DCAgent.onItemBuy('狂战斧', -1, '金币', 1, '关卡23')
+    }
+    expect(itemBuy1).toThrow()
+    expect(itemBuy2).toThrow()
+  })
+
   it('should trigger ajax in 5 secs', function(done) {
     initAndLogin()
     var count = DCAgent.player.reportCount

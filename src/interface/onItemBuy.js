@@ -4,19 +4,23 @@ import * as CONST from '../consts.js'
 
 /**
  * 记录关卡内使用虚拟币购买道具
- * @param itemID
- * @param itemNum
- * @param coinType
- * @param coinNum
- * @param missionID
  */
 export default function onItemBuy(itemID, itemNum, coinType, coinNum, missionID) {
+	itemNum = utils.parseInt(itemNum)
+	coinNum = utils.parseInt(coinNum)
+
+	if (itemNum < 0 || coinNum < 0) {
+		utils.tryThrow('Argument error')
+		return false
+	}
+
 	onEvent(CONST.EVT_ITEM, {
 		actionType: 'itemBuy',
-		itemId: itemID,
-		itemNum: utils.parseInt(itemNum),
-		coinType: coinType,
-		coinNum: utils.parseInt(coinNum),
-		missonID: missionID
+		itemId: String(itemID),
+		itemNum: itemNum,
+		coinType: String(coinType),
+		coinNum: coinNum,
+		// 关卡ID
+		missonID: String(missionID)
 	})
 }

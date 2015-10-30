@@ -29,6 +29,14 @@ describe('onItemUse', function() {
     expect(onItemUse).not.toThrow()
   })
 
+  it('should throw an error since itemNum is less than zero', function() {
+    initAndLogin()
+    var itemUse = function() {
+      DCAgent.onItemUse('大魔棒', -1, '关卡25', '加血加魔')
+    }
+    expect(itemUse).toThrow()
+  })
+
   it('should trigger ajax in 5 secs', function(done) {
     initAndLogin()
     var count = DCAgent.player.reportCount

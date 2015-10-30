@@ -29,6 +29,14 @@ describe('onItemProduce', function() {
     expect(onItemProduce).not.toThrow()
   })
 
+  it('should throw an error since itemNum is less than zero', function() {
+    initAndLogin()
+    var itemProduce = function() {
+      DCAgent.onItemProduce('不朽盾', -1, '关卡24', '五人打盾')
+    }
+    expect(itemProduce).toThrow()
+  })
+
   it('should trigger ajax in 5 secs', function(done) {
     initAndLogin()
     var count = DCAgent.player.reportCount

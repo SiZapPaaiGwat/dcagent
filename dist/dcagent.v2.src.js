@@ -1554,54 +1554,64 @@
 
   /**
    * 记录关卡内道具消耗以及原因
-   * @param itemID
-   * @param itemNum
-   * @param reason
-   * @param missionId
    */
   function onItemUse(itemID, itemNum, missionID, reason) {
+    itemNum = utils.parseInt(itemNum);
+
+    if (itemNum < 0) {
+      utils.tryThrow('Argument error');
+      return false;
+    }
+
     onEvent(CONST.EVT_ITEM, {
       actionType: 'itemUse',
-      itemId: itemID,
-      itemNum: utils.parseInt(itemNum),
-      reason: reason,
-      missonID: missionID
+      itemId: String(itemID),
+      itemNum: itemNum,
+      reason: String(reason),
+      missonID: String(missionID)
     });
   }
 
   /**
    * 记录关卡内道具产出以及原因
-   * @param itemID
-   * @param itemNum
-   * @param missionID 关卡ID
-   * @param reason
    */
   function onItemProduce(itemID, itemNum, missionID, reason) {
+    itemNum = utils.parseInt(itemNum);
+
+    if (itemNum < 0) {
+      utils.tryThrow('Argument error');
+      return false;
+    }
+
     onEvent(CONST.EVT_ITEM, {
       actionType: 'itemGet',
-      itemId: itemID,
-      itemNum: utils.parseInt(itemNum),
-      missonID: missionID,
-      reason: reason
+      itemId: String(itemID),
+      itemNum: itemNum,
+      reason: String(reason),
+      missonID: String(missionID)
     });
   }
 
   /**
    * 记录关卡内使用虚拟币购买道具
-   * @param itemID
-   * @param itemNum
-   * @param coinType
-   * @param coinNum
-   * @param missionID
    */
   function onItemBuy(itemID, itemNum, coinType, coinNum, missionID) {
+    itemNum = utils.parseInt(itemNum);
+    coinNum = utils.parseInt(coinNum);
+
+    if (itemNum < 0 || coinNum < 0) {
+      utils.tryThrow('Argument error');
+      return false;
+    }
+
     onEvent(CONST.EVT_ITEM, {
       actionType: 'itemBuy',
-      itemId: itemID,
-      itemNum: utils.parseInt(itemNum),
-      coinType: coinType,
-      coinNum: utils.parseInt(coinNum),
-      missonID: missionID
+      itemId: String(itemID),
+      itemNum: itemNum,
+      coinType: String(coinType),
+      coinNum: coinNum,
+      // 关卡ID
+      missonID: String(missionID)
     });
   }
 
