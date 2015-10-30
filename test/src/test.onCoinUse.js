@@ -29,6 +29,14 @@ describe('onCoinUse', function() {
     expect(onCoinUse).not.toThrow()
   })
 
+  it('should throw an error because useNum is less than zero', function() {
+    initAndLogin()
+    var coinUse = function() {
+      DCAgent.onCoinUse(-1, 0, '金币', '增加体力消耗')
+    }
+    expect(coinUse).toThrow()
+  })
+
   it('should trigger ajax in 5 secs', function(done) {
     initAndLogin()
     var count = DCAgent.player.reportCount
@@ -37,5 +45,25 @@ describe('onCoinUse', function() {
       expect(DCAgent.player.reportCount).toEqual(count + 1)
       done()
     }, 5000)
+  })
+
+  describe('coin info', function() {
+    it('should be the same with what I set', function(done) {
+      initAndLogin()
+      onCoinUse()
+      setTimeout(function() {
+        var events = DCAgent.report.eventInfoList
+        var event = events && events.filter(function(item) {
+          return item.eventId === 'DE_EVENT_COIN_ACTION'
+        })
+        var data = event && event[0] && event[0].eventMap
+        expect(data).toBeTruthy()
+        expect(data.coinNum).toEqual(200)
+        expect(data.balanceNum).toEqual(100)
+        expect(data.coinType).toEqual(encodeURIComponent('金币'))
+        expect(data.reason).toEqual(encodeURIComponent('增加体力消耗'))
+        done()
+      }, 5000)
+    })
   })
 })

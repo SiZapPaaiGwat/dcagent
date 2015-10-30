@@ -46,7 +46,7 @@ describe('login', function() {
     DCAgent.init({appId: 'appid'})
     DCAgent.login('simon')
     var loginTime = DCAgent.player.loginTime
-
+    // 内部使用的秒存储登录时间，精度不够，等待1秒
     setTimeout(function() {
       DCAgent.login('grace')
       expect(loginTime).not.toEqual(DCAgent.player.loginTime)

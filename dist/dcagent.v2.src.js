@@ -879,16 +879,16 @@
     };
   }
 
-  var compats_storage = storage;
+  var D__git_dcagent_src_compats_storage = storage;
 
   /**
    * 用户退出时将当前数据保存到本地存储
    */
   function saveToStorage() {
-    compats_storage.setItem(CONST.LOGOUT_TIME, utils.parseInt(Date.now() / 1000));
+    D__git_dcagent_src_compats_storage.setItem(CONST.LOGOUT_TIME, utils.parseInt(Date.now() / 1000));
 
     if (errors.length || events.length) {
-      compats_storage.setItem(CONST.QUIT_SNAPSHOT, utils.jsonStringify(collect()));
+      D__git_dcagent_src_compats_storage.setItem(CONST.QUIT_SNAPSHOT, utils.jsonStringify(collect()));
     }
   }
 
@@ -896,7 +896,7 @@
    * 用户进入时从本地存储导入数据
    */
   function loadFromStorage() {
-    return utils.jsonParse(compats_storage.getItem(CONST.QUIT_SNAPSHOT));
+    return utils.jsonParse(D__git_dcagent_src_compats_storage.getItem(CONST.QUIT_SNAPSHOT));
   }
 
   function addError(item) {
@@ -1612,13 +1612,21 @@
    * @param coinType 虚拟币类型
    * @param reason 原因
    */
-  function onCoinUse(gainNum, balanceNum, coinType, reason) {
+  function onCoinUse(useNum, balanceNum, coinType, reason) {
+    balanceNum = utils.parseInt(balanceNum);
+    useNum = utils.parseInt(useNum);
+
+    if (balanceNum < 0 || useNum < 0) {
+      utils.tryThrow('Argument error');
+      return false;
+    }
+
     onEvent(CONST.EVT_COIN, {
       actionType: 'coinUse',
-      coinType: coinType,
-      balanceNum: utils.parseInt(balanceNum),
-      coinNum: utils.parseInt(gainNum),
-      reason: reason
+      coinType: String(coinType),
+      balanceNum: balanceNum,
+      coinNum: useNum,
+      reason: String(reason)
     });
   }
 
@@ -1630,12 +1638,20 @@
    * @param reason 原因
    */
   function onCoinGet(gainNum, balanceNum, coinType, reason) {
+    balanceNum = utils.parseInt(balanceNum);
+    gainNum = utils.parseInt(gainNum);
+
+    if (balanceNum < 0 || gainNum < 0 || balanceNum < gainNum) {
+      utils.tryThrow('Argument error');
+      return false;
+    }
+
     onEvent(CONST.EVT_COIN, {
       actionType: 'coinGet',
-      coinType: coinType,
-      balanceNum: utils.parseInt(balanceNum),
-      coinNum: utils.parseInt(gainNum),
-      reason: reason
+      coinType: String(coinType),
+      balanceNum: balanceNum,
+      coinNum: gainNum,
+      reason: String(reason)
     });
   }
 
@@ -1721,7 +1737,7 @@
       return stateCenter.loginTime;
     },
     get lastLogoutTime() {
-      return parseInt(compats_storage.getItem(CONST.LOGOUT_TIME));
+      return parseInt(D__git_dcagent_src_compats_storage.getItem(CONST.LOGOUT_TIME));
     },
     get reportCount() {
       return reportCount;
@@ -1830,13 +1846,13 @@
 
   function setItem(key, value) {
     key = wrapKey(key);
-    compats_storage.setItem(key, value);
+    D__git_dcagent_src_compats_storage.setItem(key, value);
     _Cookie.set(key, value, 3650);
   }
 
   function getItem(key) {
     key = wrapKey(key);
-    return compats_storage.getItem(key) || _Cookie.get(key);
+    return D__git_dcagent_src_compats_storage.getItem(key) || _Cookie.get(key);
   }
 
   /**
@@ -2172,7 +2188,7 @@
       if (localUID !== paddingUID) {
         config.uid = paddingUID;
         localUID = paddingUID;
-        compats_storage.setItem(CONST.CREATE_TIME, utils.parseInt(Date.now() / 1000));
+        D__git_dcagent_src_compats_storage.setItem(CONST.CREATE_TIME, utils.parseInt(Date.now() / 1000));
       }
     }
 
@@ -2203,10 +2219,10 @@
      * 白鹭引擎由于共享设备ID
      * 所以可能导致第一次进入游戏设备ID已经设置但是创建时间没有设置
      */
-    var createTime = compats_storage.getItem(CONST.CREATE_TIME);
+    var createTime = D__git_dcagent_src_compats_storage.getItem(CONST.CREATE_TIME);
     if (!createTime) {
       createTime = stateCenter.initTime;
-      compats_storage.setItem(CONST.CREATE_TIME, createTime);
+      D__git_dcagent_src_compats_storage.setItem(CONST.CREATE_TIME, createTime);
     }
 
     stateCenter.createTime = utils.parseInt(createTime);
@@ -2255,7 +2271,7 @@
      * 无痕模式下属性存在但无法使用
      * TODO SDK是否无须localstorage支持
      */
-    if (!utils.isLocalStorageSupported(compats_storage)) {
+    if (!utils.isLocalStorageSupported(D__git_dcagent_src_compats_storage)) {
       return Client.hasStorage ? 'Storage quota error' : 'Storage not support';
     }
 

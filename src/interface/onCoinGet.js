@@ -10,11 +10,19 @@ import * as CONST from '../consts.js'
  * @param reason 原因
  */
 export default function onCoinGet(gainNum, balanceNum, coinType, reason) {
+	balanceNum = utils.parseInt(balanceNum)
+	gainNum = utils.parseInt(gainNum)
+
+	if (balanceNum < 0 || gainNum < 0 || balanceNum < gainNum) {
+		utils.tryThrow('Argument error')
+		return false
+	}
+
 	onEvent(CONST.EVT_COIN, {
 		actionType: 'coinGet',
-		coinType: coinType,
-		balanceNum: utils.parseInt(balanceNum),
-		coinNum: utils.parseInt(gainNum),
-		reason: reason
+		coinType: String(coinType),
+		balanceNum: balanceNum,
+		coinNum: gainNum,
+		reason: String(reason)
 	})
 }

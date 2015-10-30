@@ -9,12 +9,20 @@ import * as CONST from '../consts.js'
  * @param coinType 虚拟币类型
  * @param reason 原因
  */
-export default function onCoinUse(gainNum, balanceNum, coinType, reason) {
+export default function onCoinUse(useNum, balanceNum, coinType, reason) {
+	balanceNum = utils.parseInt(balanceNum)
+	useNum = utils.parseInt(useNum)
+
+	if (balanceNum < 0 || useNum < 0) {
+		utils.tryThrow('Argument error')
+		return false
+	}
+
 	onEvent(CONST.EVT_COIN, {
 		actionType: 'coinUse',
-		coinType: coinType,
-		balanceNum: utils.parseInt(balanceNum),
-		coinNum: utils.parseInt(gainNum),
-		reason: reason
+		coinType: String(coinType),
+		balanceNum: balanceNum,
+		coinNum: useNum,
+		reason: String(reason)
 	})
 }
