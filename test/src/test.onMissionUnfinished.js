@@ -29,6 +29,14 @@ describe('onMissionUnfinished', function() {
     expect(onMissionUnfinished).not.toThrow()
   })
 
+  it('should throw an error since elapsed is less than zero', function() {
+    initAndLogin()
+    var onMissionUnfinished1 = function() {
+      DCAgent.onMissionUnfinished('关卡1', -1)
+    }
+    expect(onMissionUnfinished1).toThrow()
+  })
+
   it('should trigger ajax in 5 secs', function(done) {
     initAndLogin()
     var count = DCAgent.player.reportCount
