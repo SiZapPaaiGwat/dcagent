@@ -11,7 +11,7 @@ describe('rate limit', function() {
       "responseText": 'success',
       "responseHeaders": {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'X-Rate-Limit',
+        'Access-Control-Allow-Headers': 'X-Rate-Limit',
         'X-Rate-Limit': 100
       }
   }

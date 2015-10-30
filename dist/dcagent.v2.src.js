@@ -2357,10 +2357,12 @@
     initialize(options);
 
     // 发送给后端的echo请求，便于接入层控制
-    // request({
-    //   url: uri.appendEcho(Client.protocol + '//' + CONST.HOST + '/echo'),
-    //   method: 'GET'
-    // }, true)
+    if (!utils.isDebug) {
+      request({
+        url: uri.appendEcho(Client.protocol + '//' + CONST.HOST + '/echo'),
+        method: 'GET'
+      }, true);
+    }
   }
 
   exports.init = init;
