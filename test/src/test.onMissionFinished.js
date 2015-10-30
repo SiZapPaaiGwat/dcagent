@@ -29,6 +29,11 @@ describe('onMissionFinished', function() {
     expect(onMissionFinished).not.toThrow()
   })
 
+  it('should work when init and login are invoked', function() {
+    initAndLogin()
+    expect(onMissionFinished).not.toThrow()
+  })
+
   it('should trigger ajax in 5 secs', function(done) {
     initAndLogin()
     var count = DCAgent.player.reportCount
