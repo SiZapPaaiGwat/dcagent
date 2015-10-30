@@ -9,10 +9,14 @@
     "gulp-jshint": "^1.9.4",
     "gulp-rename": "^1.2.0",
     "gulp-rollup": "^1.0.1",
-    "gulp-uglify": "^1.4.2"
+    "gulp-uglify": "^1.4.2",
+    "jasmine": "^2.3.2",
+    "jasmine-ajax": "^3.2.0",
+    "xmlhttprequest": "^1.8.0"
   },
   "scripts": {
     "demo": "http-server . -o \"http://localhost:8080/example/index.v2.html\"",
-    "test": "http-server . -o \"http://localhost:8080/test/runner.html\""
+    "test": "http-server . -o \"http://localhost:8080/test/runner.html\"",
+    "test-node": "cd test &node node-runner.js"
   }
 }
