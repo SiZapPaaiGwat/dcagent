@@ -1,15 +1,24 @@
 /* jshint node: true */
-var Jasmine = require('jasmine')
-var fs = require('fs')
-var jasmine = new Jasmine()
-var agentPath = '../dist/dcagent.v2.src'
-var specFiles = fs.readdirSync('src').filter((i) => {
-  // TODO jsamine-ajax works only in browser
-  return i !== 'test.rateLimit.js'
-})
 
+var fs = require('fs')
+var Jasmine = require('jasmine')
+var JasmineCore = require('jasmine-core')
+
+// jasmine-ajax need this global varaible
+global.getJasmineRequireObj = function() {
+  return JasmineCore
+}
 global.DCAGENT_DEBUG_OPEN = true
 global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest
+
+// for jasmine-ajax
+var jasmine = new Jasmine({
+  jasmineCore: JasmineCore
+})
+require('jasmine-ajax')
+
+var agentPath = '../dist/dcagent.v2.src'
+var specFiles = fs.readdirSync('src')
 
 global.loadDCAgent = function(done) {
   global.DCAgent = require(agentPath)
