@@ -108,7 +108,7 @@
   if (currentFile.indexOf('.js') !== -1) {
     document.write('<script src="src/' + currentFile + '"><' + '/script>')
     document.title = 'Running ' + currentFile
-  } else if (currentFile === 'all') {
+  } else if (currentFile.indexOf('all') > -1) {
     files.forEach(function(file) {
       document.write('<script src="src/' + file + '.js"><' + '/script>')
     })
