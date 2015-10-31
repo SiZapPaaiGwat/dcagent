@@ -36,7 +36,7 @@ describe('setAccountType', function() {
     setTimeout(function() {
       expect(DCAgent.player.reportCount).toEqual(count + 1)
       done()
-    }, 5000)
+    }, ASAP_TIMEOUT)
   })
 
   it('should be the same with what I set', function(done) {
@@ -46,6 +46,6 @@ describe('setAccountType', function() {
       var headerInfo = DCAgent.report.headerInfo
       expect(headerInfo.accountType).toEqual('VIP')
       done()
-    }, 5000)
+    }, ASAP_TIMEOUT)
   })
 })

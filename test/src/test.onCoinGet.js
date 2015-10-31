@@ -44,7 +44,7 @@ describe('onCoinGet', function() {
     setTimeout(function() {
       expect(DCAgent.player.reportCount).toEqual(count + 1)
       done()
-    }, 5000)
+    }, ASAP_TIMEOUT)
   })
 
   describe('coin info', function() {
@@ -63,7 +63,7 @@ describe('onCoinGet', function() {
         expect(data.coinType).toEqual(encodeURIComponent('金币'))
         expect(data.reason).toEqual(encodeURIComponent('完成任务获得奖励'))
         done()
-      }, 5000)
+      }, ASAP_TIMEOUT)
     })
   })
 })

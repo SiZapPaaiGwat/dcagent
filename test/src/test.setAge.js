@@ -36,7 +36,7 @@ describe('setAge', function() {
     setTimeout(function() {
       expect(DCAgent.player.reportCount).toEqual(count + 1)
       done()
-    }, 5000)
+    }, ASAP_TIMEOUT)
   })
 
   it('should be the same with what I set', function(done) {
@@ -46,6 +46,6 @@ describe('setAge', function() {
       var headerInfo = DCAgent.report.headerInfo
       expect(headerInfo.age).toEqual(100)
       done()
-    }, 5000)
+    }, ASAP_TIMEOUT)
   })
 })

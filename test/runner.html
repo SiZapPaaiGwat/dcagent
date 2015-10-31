@@ -43,6 +43,7 @@
 <script>
   /* jshint ignore:start */
   var DCAGENT_DEBUG_OPEN = true
+  var ASAP_TIMEOUT = 2010
 
   function loadDCAgent(done) {
     var script = document.createElement('script')
@@ -65,6 +66,7 @@
 
   var files = [
     'test.createRole',
+    'test.destroy',
     'test.init',
     'test.login',
     'test.onCoinGet',

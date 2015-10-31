@@ -10,6 +10,7 @@ global.getJasmineRequireObj = function() {
   return JasmineCore
 }
 global.DCAGENT_DEBUG_OPEN = true
+global.ASAP_TIMEOUT = 2010
 global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest
 global.localStorage = new LocalStorage('./.localstorage')
 

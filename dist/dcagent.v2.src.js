@@ -109,6 +109,9 @@
     get ASAP_TIMEOUT() {
       return ASAP_TIMEOUT;
     },
+    get ASAP_TIMEOUT_DEBUG() {
+      return ASAP_TIMEOUT_DEBUG;
+    },
     get MAX_ERROR_COUNT() {
       return MAX_ERROR_COUNT;
     },
@@ -208,14 +211,17 @@
     get reset() {
       return reset;
     },
+    get cancel() {
+      return cancel;
+    },
+    get stop() {
+      return stop;
+    },
+    get run() {
+      return run;
+    },
     get set() {
       return set;
-    },
-    get get() {
-      return get;
-    },
-    get destroy() {
-      return destroy;
     }
   };
 
@@ -249,6 +255,9 @@
     },
     get shouldBeLoggedIn() {
       return shouldBeLoggedIn;
+    },
+    get shouldNotBeDestoryed() {
+      return shouldNotBeDestoryed;
     }
   };
 
@@ -655,6 +664,8 @@
   // 尽早执行的定时器的延时
   var ASAP_TIMEOUT = 5000;
 
+  var ASAP_TIMEOUT_DEBUG = 2000;
+
   // 最大错误上报数目
   var MAX_ERROR_COUNT = 100;
 
@@ -882,16 +893,16 @@
     };
   }
 
-  var D__git_dcagent_src_compats_storage = storage;
+  var compats_storage = storage;
 
   /**
    * 用户退出时将当前数据保存到本地存储
    */
   function saveToStorage() {
-    D__git_dcagent_src_compats_storage.setItem(CONST.LOGOUT_TIME, utils.parseInt(Date.now() / 1000));
+    compats_storage.setItem(CONST.LOGOUT_TIME, utils.parseInt(Date.now() / 1000));
 
     if (errors.length || events.length) {
-      D__git_dcagent_src_compats_storage.setItem(CONST.QUIT_SNAPSHOT, utils.jsonStringify(collect()));
+      compats_storage.setItem(CONST.QUIT_SNAPSHOT, utils.jsonStringify(collect()));
     }
   }
 
@@ -899,7 +910,7 @@
    * 用户进入时从本地存储导入数据
    */
   function loadFromStorage() {
-    var params = D__git_dcagent_src_compats_storage.getItem(CONST.QUIT_SNAPSHOT);
+    var params = compats_storage.getItem(CONST.QUIT_SNAPSHOT);
     return params && utils.jsonParse(params);
   }
 
@@ -1026,7 +1037,7 @@
     if (timer) {
       timer.stop();
       setTimeout(function () {
-        timer.reset(interval);
+        timer && timer.reset(interval);
       }, interval);
 
       if (interval) {
@@ -1035,23 +1046,30 @@
     }
   }
 
-  function set(func, interval) {
-    timer = new Timer(func, interval);
-  }
-
-  function get() {
-    return timer;
-  }
-
   /**
    * 停止定时器上报
    */
-  function destroy() {
-    // 如果未初始化或者初始化未成功这里的timer为空
+  function cancel() {
     if (timer) {
       timer.cancel();
       timer = null;
     }
+  }
+
+  function stop() {
+    if (timer) {
+      timer.stop();
+    }
+  }
+
+  function run() {
+    if (timer) {
+      timer.run();
+    }
+  }
+
+  function set(func, interval) {
+    timer = new Timer(func, interval);
   }
 
   // 全部请求失败的次数
@@ -1305,6 +1323,13 @@
     }
   }
 
+  function shouldNotBeDestoryed() {
+    if (stateCenter.destroyed) {
+      utils.tryThrow('DCAgent is destroyed already');
+      return false;
+    }
+  }
+
   var API_PATH = Client.protocol + '//' + CONST.HOST + CONST.API_PATH;
 
   function appendOnline(uri) {
@@ -1369,16 +1394,16 @@
    * 优化接口调用的数据上报
    * 使其尽可能快地批量上报数据
    */
-  function setPollingDebounce() {
-    var wait = arguments.length <= 0 || arguments[0] === undefined ? defaults.ASAP_TIMEOUT : arguments[0];
+  function setPollingDebounce(wait) {
+    if (!wait) {
+      wait = utils.isDebug ? defaults.ASAP_TIMEOUT_DEBUG : defaults.ASAP_TIMEOUT;
+    }
 
     clearTimeout(controlTimeoutID);
 
-    var timer = onlineTimer.get();
-    timer.stop();
-
+    onlineTimer.stop();
     controlTimeoutID = setTimeout(function () {
-      timer.run();
+      onlineTimer.run();
     }, wait);
   }
 
@@ -1403,8 +1428,7 @@
     }
 
     // 暂停定时器，指定时间段以后开始在线上报
-    var timer = onlineTimer.get();
-    controller.setPollingDebounce(timer.duration);
+    controller.setPollingDebounce(stateCenter.interval);
 
     // 上报上个用户的所有数据
     onlinePolling(true);
@@ -1723,8 +1747,8 @@
   };
 
   var name;
-  var preInit = [validator.shouldBeInited];
-  var preLogin = [validator.shouldBeLoggedIn];
+  var preInit = [validator.shouldNotBeDestoryed, validator.shouldBeInited];
+  var preLogin = [validator.shouldNotBeDestoryed, validator.shouldBeLoggedIn];
   var debounce = [controller.setPollingDebounce];
 
   /**
@@ -1765,6 +1789,12 @@
     }
   }
 
+  function destroy() {
+    cancel();
+
+    stateCenter.destroyed = true;
+  }
+
   function isReady() {
     return stateCenter.inited;
   }
@@ -1784,7 +1814,7 @@
       return stateCenter.loginTime;
     },
     get lastLogoutTime() {
-      return parseInt(D__git_dcagent_src_compats_storage.getItem(CONST.LOGOUT_TIME));
+      return parseInt(compats_storage.getItem(CONST.LOGOUT_TIME));
     },
     get reportCount() {
       return reportCount;
@@ -1910,13 +1940,13 @@
 
   function setItem(key, value) {
     key = wrapKey(key);
-    D__git_dcagent_src_compats_storage.setItem(key, value);
+    compats_storage.setItem(key, value);
     _Cookie.set(key, value, 3650);
   }
 
   function getItem(key) {
     key = wrapKey(key);
-    return D__git_dcagent_src_compats_storage.getItem(key) || _Cookie.get(key);
+    return compats_storage.getItem(key) || _Cookie.get(key);
   }
 
   /**
@@ -2252,7 +2282,7 @@
       if (localUID !== paddingUID) {
         config.uid = paddingUID;
         localUID = paddingUID;
-        D__git_dcagent_src_compats_storage.setItem(CONST.CREATE_TIME, utils.parseInt(Date.now() / 1000));
+        compats_storage.setItem(CONST.CREATE_TIME, utils.parseInt(Date.now() / 1000));
       }
     }
 
@@ -2283,10 +2313,10 @@
      * 白鹭引擎由于共享设备ID
      * 所以可能导致第一次进入游戏设备ID已经设置但是创建时间没有设置
      */
-    var createTime = D__git_dcagent_src_compats_storage.getItem(CONST.CREATE_TIME);
+    var createTime = compats_storage.getItem(CONST.CREATE_TIME);
     if (!createTime) {
       createTime = stateCenter.initTime;
-      D__git_dcagent_src_compats_storage.setItem(CONST.CREATE_TIME, createTime);
+      compats_storage.setItem(CONST.CREATE_TIME, createTime);
     }
 
     stateCenter.createTime = utils.parseInt(createTime);
@@ -2335,7 +2365,7 @@
      * 如果提供了uid，不需要本地存储支持
      * 不过可能会损失部分在线数据
      */
-    stateCenter.storage = utils.isLocalStorageSupported(D__git_dcagent_src_compats_storage);
+    stateCenter.storage = utils.isLocalStorageSupported(compats_storage);
     if (!options.uid && !stateCenter.storage) {
       return Client.hasStorage ? 'Storage quota error' : 'Storage not support';
     }
@@ -2371,6 +2401,8 @@
   }
 
   function init(options) {
+    if (validator.shouldNotBeDestoryed() === false) return;
+
     var errorMSg = checkArguments(options);
     if (errorMSg) {
       return utils.tryThrow(errorMSg);

@@ -19,6 +19,7 @@ import onError from '../utils/onError.js'
 import onPlayerLeave from '../utils/onPlayerLeave.js'
 import request from '../utils/request.js'
 import * as uri from '../utils/uri.js'
+import * as validator from '../utils/validator.js'
 
 /**
  * 验证用户参数
@@ -139,7 +140,7 @@ function initialize(options) {
    * 将本次PV数据写入到本地存储
    * 不管第一次PV上报是否成功，后面只要有一次上报成功数据就会准确
    */
-  var pageUrl = Client.isStandardBrowser ? location.href : '!'
+  var pageUrl = location.href : '!'
 
   dataCenter.addEvent({
     eventId: CONST.EVT_PV,
@@ -171,6 +172,8 @@ function initialize(options) {
 }
 
 export default function(options) {
+  if (validator.shouldNotBeDestoryed() === false) return
+
   var errorMSg = checkArguments(options)
   if (errorMSg) {
     return utils.tryThrow(errorMSg)

@@ -60,6 +60,6 @@ describe('onEvent', function() {
     setTimeout(function() {
       expect(DCAgent.player.reportCount).toEqual(requestCount + 1)
       done()
-    }, 5000)
+    }, ASAP_TIMEOUT)
   })
 })

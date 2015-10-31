@@ -28,8 +28,7 @@ export default function login(accountID) {
   }
 
   // 暂停定时器，指定时间段以后开始在线上报
-  var timer = onlineTimer.get()
-  controller.setPollingDebounce(timer.duration)
+  controller.setPollingDebounce(stateCenter.interval)
 
   // 上报上个用户的所有数据
   onlinePolling(true)

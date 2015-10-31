@@ -30,3 +30,10 @@ export function shouldBeLoggedIn() {
     return false
   }
 }
+
+export function shouldNotBeDestoryed() {
+  if (stateCenter.destroyed) {
+    utils.tryThrow('DCAgent is destroyed already')
+    return false
+  }
+}

@@ -14,6 +14,8 @@ export var UID_MIN_LENGTH = 32
 // 尽早执行的定时器的延时
 export var ASAP_TIMEOUT = 5000
 
+export var ASAP_TIMEOUT_DEBUG = 2000
+
 // 最大错误上报数目
 export var MAX_ERROR_COUNT = 100
 

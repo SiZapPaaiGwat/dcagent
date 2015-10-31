@@ -15,7 +15,7 @@ export function reset(interval) {
   if (timer) {
     timer.stop()
     setTimeout(() => {
-      timer.reset(interval)
+      timer && timer.reset(interval)
     }, interval)
 
     if (interval) {
@@ -24,21 +24,28 @@ export function reset(interval) {
   }
 }
 
-export function set(func, interval) {
-  timer = new Timer(func, interval)
-}
-
-export function get() {
-  return timer
-}
-
 /**
  * 停止定时器上报
  */
-export function destroy() {
-  // 如果未初始化或者初始化未成功这里的timer为空
+export function cancel() {
   if (timer) {
     timer.cancel()
     timer = null
   }
+}
+
+export function stop() {
+  if (timer) {
+    timer.stop()
+  }
+}
+
+export function run() {
+  if (timer) {
+    timer.run()
+  }
+}
+
+export function set(func, interval) {
+  timer = new Timer(func, interval)
 }

@@ -41,6 +41,6 @@ describe('rate limit', function() {
       jasmine.Ajax.requests.mostRecent().respondWith(returnValue)
       expect(DCAgent.state.interval).toEqual(100 * 1000)
       done()
-    }, 5000)
+    }, ASAP_TIMEOUT)
   })
 })

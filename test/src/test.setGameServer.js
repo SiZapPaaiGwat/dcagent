@@ -36,7 +36,7 @@ describe('setGameServer', function() {
     setTimeout(function() {
       expect(DCAgent.player.reportCount).toEqual(count + 1)
       done()
-    }, 5000)
+    }, ASAP_TIMEOUT)
   })
 
   it('should be the same with what I set', function(done) {
@@ -46,6 +46,6 @@ describe('setGameServer', function() {
       var headerInfo = DCAgent.report.headerInfo
       expect(headerInfo.gameServer).toEqual('第六区')
       done()
-    }, 5000)
+    }, ASAP_TIMEOUT)
   })
 })

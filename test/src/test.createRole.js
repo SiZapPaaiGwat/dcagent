@@ -35,7 +35,7 @@ describe('createRole', function() {
     setTimeout(function() {
       expect(DCAgent.player.reportCount).toEqual(count + 1)
       done()
-    }, 5000)
+    }, ASAP_TIMEOUT)
   })
 
   describe('role info', function() {
@@ -50,7 +50,7 @@ describe('createRole', function() {
         expect(headerInfo.roleClass).toEqual('战士')
         expect(headerInfo.roleLevel).toEqual(1)
         done()
-      }, 5000)
+      }, ASAP_TIMEOUT)
     })
   })
 })

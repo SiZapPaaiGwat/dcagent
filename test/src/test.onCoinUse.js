@@ -44,7 +44,7 @@ describe('onCoinUse', function() {
     setTimeout(function() {
       expect(DCAgent.player.reportCount).toEqual(count + 1)
       done()
-    }, 5000)
+    }, ASAP_TIMEOUT)
   })
 
   describe('coin info', function() {
@@ -63,7 +63,7 @@ describe('onCoinUse', function() {
         expect(data.coinType).toEqual(encodeURIComponent('金币'))
         expect(data.reason).toEqual(encodeURIComponent('增加体力消耗'))
         done()
-      }, 5000)
+      }, ASAP_TIMEOUT)
     })
   })
 })

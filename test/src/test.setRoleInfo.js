@@ -36,7 +36,7 @@ describe('setRoleInfo', function() {
     setTimeout(function() {
       expect(DCAgent.player.reportCount).toEqual(count + 1)
       done()
-    }, 5000)
+    }, ASAP_TIMEOUT)
   })
 
   it('should be the same with what I set', function(done) {
@@ -50,6 +50,6 @@ describe('setRoleInfo', function() {
       expect(headerInfo.roleClass).toEqual('弓箭手')
       expect(headerInfo.roleLevel).toEqual(2)
       done()
-    }, 5000)
+    }, ASAP_TIMEOUT)
   })
 })
