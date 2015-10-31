@@ -3,6 +3,10 @@
  */
 
 import config from './initConfig.js'
+import * as Client from '../detect/client.js'
+import * as CONST from '../consts.js'
+
+export var API_PATH = Client.protocol + '//' + CONST.HOST + CONST.API_PATH
 
 export function appendOnline(uri) {
   return uri + '?__deuid=' + config.uid + '&__deappid=' + config.appId

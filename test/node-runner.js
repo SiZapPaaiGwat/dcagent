@@ -3,6 +3,7 @@
 var fs = require('fs')
 var Jasmine = require('jasmine')
 var JasmineCore = require('jasmine-core')
+var LocalStorage = require('node-localstorage').LocalStorage
 
 // jasmine-ajax need this global varaible
 global.getJasmineRequireObj = function() {
@@ -10,6 +11,7 @@ global.getJasmineRequireObj = function() {
 }
 global.DCAGENT_DEBUG_OPEN = true
 global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest
+global.localStorage = new LocalStorage('./.localstorage')
 
 // for jasmine-ajax
 var jasmine = new Jasmine({

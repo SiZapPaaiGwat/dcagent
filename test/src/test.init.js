@@ -1,8 +1,11 @@
-/*globals describe, it, expect, DCAgent, beforeEach, afterEach, loadDCAgent, destroyDCAgent*/
+/*globals describe, it, expect, DCAgent, beforeEach, afterEach, loadDCAgent, destroyDCAgent, localStorage*/
 describe('init', function() {
   beforeEach(loadDCAgent)
 
   afterEach(destroyDCAgent)
+
+  var setItem = localStorage.setItem
+  var getItem = localStorage.getItem
 
   // appid不能为空
   it('throws an error when appid is not supplied', function() {
@@ -31,5 +34,30 @@ describe('init', function() {
       DCAgent.init({appId: 'abc'})
     }
     expect(init).toThrow()
+  })
+
+  it('should throw an error if uid is not supplied and localstorage is not support', function() {
+    // can not set localStorage to null in browser
+    // create a private mode
+    localStorage.setItem = function() {}
+    localStorage.getItem = function() {}
+    var init = function() {
+      DCAgent.init({appId: 'init_uid'})
+    }
+    expect(init).toThrow()
+    // do not affect other specs
+    localStorage.setItem = setItem
+    localStorage.getItem = getItem
+  })
+
+  it('should work if uid is supplied even localstorage is not support', function() {
+    localStorage.setItem = function() {}
+    localStorage.getItem = function() {}
+    var init = function() {
+      DCAgent.init({appId: 'init_uid', uid: 'my_uid'})
+    }
+    expect(init).not.toThrow()
+    localStorage.setItem = setItem
+    localStorage.getItem = getItem
   })
 })

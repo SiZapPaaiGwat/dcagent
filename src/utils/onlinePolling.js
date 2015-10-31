@@ -5,21 +5,18 @@
 import request, {failedCount, reportCount} from './request.js'
 import * as dataCenter from './dataCenter.js'
 import * as CONST from '../consts.js'
-import * as Client from '../detect/client.js'
 import * as utils from '../libs/utils.js'
 import {document} from '../globals.js'
 import stateCenter from './stateCenter.js'
 import * as validator from './validator.js'
 import * as uri from './uri.js'
 
-var API_PATH = Client.protocol + '//' + CONST.HOST + CONST.API_PATH
-
 export default function(force, payment, reg) {
   // 如果文档被隐藏暂时不上报
   if (!force && utils.hiddenProperty && document[utils.hiddenProperty]) return
 
   var opts = {
-    url: uri.appendOnline(API_PATH)
+    url: uri.appendOnline(uri.API_PATH)
   }
 
   /**

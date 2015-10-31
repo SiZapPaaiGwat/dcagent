@@ -82,7 +82,8 @@ export function saveToStorage() {
  * 用户进入时从本地存储导入数据
  */
 export function loadFromStorage() {
-  return utils.jsonParse(storage.getItem(CONST.QUIT_SNAPSHOT))
+  var params = storage.getItem(CONST.QUIT_SNAPSHOT)
+  return params && utils.jsonParse(params)
 }
 
 export function addError(item) {

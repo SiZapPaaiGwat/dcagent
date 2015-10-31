@@ -25,10 +25,12 @@ import * as uri from '../utils/uri.js'
  */
 function checkArguments(options) {
   /**
-   * 无痕模式下属性存在但无法使用
-   * TODO SDK是否无须localstorage支持
+   * 无痕模式（隐私模式）下本地存储无法使用
+   * 如果提供了uid，不需要本地存储支持
+   * 不过可能会损失部分在线数据
    */
-  if (!utils.isLocalStorageSupported(storage)) {
+  stateCenter.storage = utils.isLocalStorageSupported(storage)
+  if (!options.uid && !stateCenter.storage) {
     return Client.hasStorage ? 'Storage quota error' : 'Storage not support'
   }
 
@@ -62,7 +64,7 @@ function checkArguments(options) {
   })
 }
 
-function initDeviceID(localUID) {
+function settleUID(localUID) {
   /**
    * uid现在用户可以设置，所以会存在uid覆盖的情况
    * 如果覆盖则创建时间会更新
@@ -87,13 +89,30 @@ function initDeviceID(localUID) {
   return deviceID
 }
 
+/**
+ * 玩家退出时保存当前快照到本地
+ * 下次进入时立刻上报这些数据
+ */
+function restoreSnapshot(isNewUser) {
+  if (!stateCenter.storage)  return
+
+  onPlayerLeave(dataCenter.saveToStorage)
+  // 新玩家不必上报
+  if (isNewUser) return
+
+  request({
+    url: uri.appendOnline(uri.API_PATH),
+    data: dataCenter.loadFromStorage()
+  }, true)
+}
+
 function initialize(options) {
   var localUID = innerStorage.getItem(CONST.CLIENT_KEY)
 
   // 是否首次激活
   var isAct = localUID ? 0 : 1
 
-  var deviceId = initDeviceID(localUID)
+  var deviceId = settleUID(localUID)
   config.uid = deviceId
   config.accountId = deviceId
 
@@ -141,8 +160,7 @@ function initialize(options) {
   // 在线（PV）上报
   onlinePolling(true, null, regParams)
 
-  // 玩家退出
-  onPlayerLeave(dataCenter.saveToStorage)
+  restoreSnapshot(isAct)
 
   // 开启在线轮询
   var minInterval = utils.isDebug ? defaults.MIN_ONLINE_INTERVAL_DEBUG : defaults.MIN_ONLINE_INTERVAL

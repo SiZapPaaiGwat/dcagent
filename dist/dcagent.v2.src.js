@@ -253,6 +253,9 @@
   };
 
   var uri = {
+    get API_PATH() {
+      return API_PATH;
+    },
     get appendOnline() {
       return appendOnline;
     },
@@ -507,14 +510,14 @@
    * 测试本地存储quota https://arty.name/localstorage.html
    */
   function isLocalStorageSupported(storage) {
-    var key = '.';
-    try {
+    return attempt(function () {
+      // node里面 .表示当前目录，设置的时候会报错
+      var key = '0';
       storage.setItem(key, key);
+      var isSupport = storage.getItem(key) === key;
       storage.removeItem(key);
-      return true;
-    } catch (e) {
-      return false;
-    }
+      return isSupport;
+    });
   }
 
   /**
@@ -896,7 +899,8 @@
    * 用户进入时从本地存储导入数据
    */
   function loadFromStorage() {
-    return utils.jsonParse(D__git_dcagent_src_compats_storage.getItem(CONST.QUIT_SNAPSHOT));
+    var params = D__git_dcagent_src_compats_storage.getItem(CONST.QUIT_SNAPSHOT);
+    return params && utils.jsonParse(params);
   }
 
   function addError(item) {
@@ -1316,7 +1320,7 @@
     if (!force && utils.hiddenProperty && document[utils.hiddenProperty]) return;
 
     var opts = {
-      url: uri.appendOnline(API_PATH)
+      url: uri.appendOnline(uri.API_PATH)
     };
 
     /**
@@ -1806,6 +1810,23 @@
     }
   }
 
+  /**
+   * 玩家退出时保存当前快照到本地
+   * 下次进入时立刻上报这些数据
+   */
+  function restoreSnapshot(isNewUser) {
+    if (!stateCenter.storage) return;
+
+    onPlayerLeave(dataCenter.saveToStorage);
+    // 新玩家不必上报
+    if (isNewUser) return;
+
+    request({
+      url: uri.appendOnline(uri.API_PATH),
+      data: dataCenter.loadFromStorage()
+    }, true);
+  }
+
   function onError() {
     window.addEventListener && window.addEventListener('error', function (e) {
       utils.attempt(function () {
@@ -2217,7 +2238,7 @@
     return uid || utils.uuid(getPrefix());
   }
 
-  function initDeviceID(localUID) {
+  function settleUID(localUID) {
     /**
      * uid现在用户可以设置，所以会存在uid覆盖的情况
      * 如果覆盖则创建时间会更新
@@ -2247,7 +2268,7 @@
     // 是否首次激活
     var isAct = localUID ? 0 : 1;
 
-    var deviceId = initDeviceID(localUID);
+    var deviceId = settleUID(localUID);
     config.uid = deviceId;
     config.accountId = deviceId;
 
@@ -2295,8 +2316,7 @@
     // 在线（PV）上报
     onlinePolling(true, null, regParams);
 
-    // 玩家退出
-    onPlayerLeave(dataCenter.saveToStorage);
+    restoreSnapshot(isAct);
 
     // 开启在线轮询
     var minInterval = utils.isDebug ? defaults.MIN_ONLINE_INTERVAL_DEBUG : defaults.MIN_ONLINE_INTERVAL;
@@ -2311,10 +2331,12 @@
    */
   function checkArguments(options) {
     /**
-     * 无痕模式下属性存在但无法使用
-     * TODO SDK是否无须localstorage支持
+     * 无痕模式（隐私模式）下本地存储无法使用
+     * 如果提供了uid，不需要本地存储支持
+     * 不过可能会损失部分在线数据
      */
-    if (!utils.isLocalStorageSupported(D__git_dcagent_src_compats_storage)) {
+    stateCenter.storage = utils.isLocalStorageSupported(D__git_dcagent_src_compats_storage);
+    if (!options.uid && !stateCenter.storage) {
       return Client.hasStorage ? 'Storage quota error' : 'Storage not support';
     }
 

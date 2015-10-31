@@ -111,14 +111,14 @@ export var attempt = isDebug ? (fn, context, args) => {
  * 测试本地存储quota https://arty.name/localstorage.html
  */
 export function isLocalStorageSupported(storage) {
-	var key = '.'
-	try {
-		storage.setItem(key, key)
+  return attempt(() => {
+    // node里面 .表示当前目录，设置的时候会报错
+    var key = '0'
+    storage.setItem(key, key)
+    var isSupport = storage.getItem(key) === key
 		storage.removeItem(key)
-		return true
-	} catch (e) {
-		return false
-	}
+		return isSupport
+  })
 }
 
 /**
