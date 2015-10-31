@@ -140,7 +140,7 @@ function initialize(options) {
    * 将本次PV数据写入到本地存储
    * 不管第一次PV上报是否成功，后面只要有一次上报成功数据就会准确
    */
-  var pageUrl = location.href : '!'
+  var pageUrl = location.href || '!'
 
   dataCenter.addEvent({
     eventId: CONST.EVT_PV,
