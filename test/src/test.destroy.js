@@ -23,15 +23,14 @@ describe('destroy', function() {
     expect(init).toThrow()
   })
 
-  it('should clear online timer', function(done) {
+  it('should clear polling request', function() {
     init()
     DCAgent.destroy()
     var count = DCAgent.player.reportCount
-    setTimeout(function() {
-      expect(count).toEqual(DCAgent.player.reportCount)
-      expect(onEvent).toThrow()
-      expect(onCoinGet).toThrow()
-      done()
-    }, ASAP_TIMEOUT)
+
+    jasmine.clock().tick(ASAP_TIMEOUT)
+    expect(count).toEqual(DCAgent.player.reportCount)
+    expect(onEvent).toThrow()
+    expect(onCoinGet).toThrow()
   })
 })

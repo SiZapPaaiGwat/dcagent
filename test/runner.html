@@ -47,9 +47,11 @@
 
   function loadDCAgent(done) {
     var script = document.createElement('script')
-    script.src = '../dist/dcagent.v2.src.js'
+    script.src = '../dist/dcagent.v2.src.js?v=' + Date.now()
     script.setAttribute('id', 'dcagent')
     script.onload = function() {
+      jasmine.clock().install()
+      jasmine.clock().mockDate(new Date(2015, 11, 1))
       done()
     }
     document.body.appendChild(script)
@@ -58,9 +60,11 @@
   function destroyDCAgent(done) {
     var script = document.querySelector('#dcagent')
     document.body.removeChild(script)
-    // 停止轮询
+    // 如果不使用mockDate，这里的执行时机可能会早于setPollingDebounce里的timer
+    // 只在浏览器端出现
     DCAgent.destroy()
     DCAgent = null
+    jasmine.clock().uninstall()
     done()
   }
 

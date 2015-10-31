@@ -105,6 +105,8 @@ function restoreSnapshot(isNewUser) {
     url: uri.appendOnline(uri.API_PATH),
     data: dataCenter.loadFromStorage()
   }, true)
+
+  storage.removeItem(CONST.QUIT_SNAPSHOT)
 }
 
 function initialize(options) {

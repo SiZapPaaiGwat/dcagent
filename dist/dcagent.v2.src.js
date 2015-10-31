@@ -1749,7 +1749,9 @@
   var name;
   var preInit = [validator.shouldNotBeDestoryed, validator.shouldBeInited];
   var preLogin = [validator.shouldNotBeDestoryed, validator.shouldBeLoggedIn];
-  var debounce = [controller.setPollingDebounce];
+  var debounce = [function () {
+    return controller.setPollingDebounce();
+  }];
 
   /**
    * 校验是否已经初始化
@@ -1855,6 +1857,8 @@
       url: uri.appendOnline(uri.API_PATH),
       data: dataCenter.loadFromStorage()
     }, true);
+
+    compats_storage.removeItem(CONST.QUIT_SNAPSHOT);
   }
 
   function onError() {

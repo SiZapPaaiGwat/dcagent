@@ -1,5 +1,4 @@
 /*globals describe, it, expect, DCAgent, beforeEach, afterEach, loadDCAgent, destroyDCAgent, setTimeout, jasmine */
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
 describe('createRole', function() {
   beforeEach(loadDCAgent)
 
@@ -28,29 +27,27 @@ describe('createRole', function() {
     expect(createRole).not.toThrow()
   })
 
-  it('should trigger ajax in 5 secs', function(done) {
+  it('should trigger ajax in 5 secs', function() {
     initAndLogin('createRole3')
     var count = DCAgent.player.reportCount
     createRole()
-    setTimeout(function() {
-      expect(DCAgent.player.reportCount).toEqual(count + 1)
-      done()
-    }, ASAP_TIMEOUT)
+
+    jasmine.clock().tick(ASAP_TIMEOUT)
+    expect(DCAgent.player.reportCount).toEqual(count + 1)
   })
 
   describe('role info', function() {
-    it('should be the same with what I set', function(done) {
+    it('should be the same with what I set', function() {
       initAndLogin('createRole4')
       createRole()
-      setTimeout(function() {
-        var headerInfo = DCAgent.report.headerInfo
-        expect(headerInfo).not.toBeUndefined()
-        expect(headerInfo.roleId).toEqual('兽人')
-        expect(headerInfo.roleRace).toEqual('部落')
-        expect(headerInfo.roleClass).toEqual('战士')
-        expect(headerInfo.roleLevel).toEqual(1)
-        done()
-      }, ASAP_TIMEOUT)
+
+      jasmine.clock().tick(ASAP_TIMEOUT)
+      var headerInfo = DCAgent.report.headerInfo
+      expect(headerInfo).not.toBeUndefined()
+      expect(headerInfo.roleId).toEqual('兽人')
+      expect(headerInfo.roleRace).toEqual('部落')
+      expect(headerInfo.roleClass).toEqual('战士')
+      expect(headerInfo.roleLevel).toEqual(1)
     })
   })
 })

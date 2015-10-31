@@ -12,7 +12,7 @@ describe('login', function() {
     expect(DCAgent.player.loginTime).toBeUndefined()
   })
 
-  it('should work when init is invoked', function(done) {
+  it('should work when init is invoked', function() {
     var start = Math.floor(Date.now() / 1000) - 1
     var login = function() {
       DCAgent.init({appId: 'appid'})
@@ -20,38 +20,32 @@ describe('login', function() {
     }
     expect(login).not.toThrow()
 
-    setTimeout(function() {
-      var end = Math.ceil(Date.now() / 1000)
-      var loginTime = DCAgent.player.loginTime
-      expect(loginTime).toBeLessThan(end)
-      expect(loginTime).toBeGreaterThan(start)
-
-      done()
-    }, 1000)
+    jasmine.clock().tick(1000)
+    var end = Math.ceil(Date.now() / 1000)
+    var loginTime = DCAgent.player.loginTime
+    expect(loginTime).toBeLessThan(end)
+    expect(loginTime).toBeGreaterThan(start)
   })
 
-  it('should not change login time when account id is the same', function(done) {
+  it('should not change login time when account id is the same', function() {
     DCAgent.init({appId: 'appid'})
     DCAgent.login('simon')
     var loginTime = DCAgent.player.loginTime
 
-    setTimeout(function() {
-      DCAgent.login('simon')
-      expect(loginTime).toEqual(DCAgent.player.loginTime)
-      done()
-    }, 1000)
+    jasmine.clock().tick(1000)
+    DCAgent.login('simon')
+    expect(loginTime).toEqual(DCAgent.player.loginTime)
   })
 
-  it('should change the login time when account id is different', function(done) {
+  it('should change the login time when account id is different', function() {
     DCAgent.init({appId: 'appid'})
     DCAgent.login('simon')
     var loginTime = DCAgent.player.loginTime
+
     // 内部使用的秒存储登录时间，精度不够，等待1秒
-    setTimeout(function() {
-      DCAgent.login('grace')
-      expect(loginTime).not.toEqual(DCAgent.player.loginTime)
-      expect(loginTime).toBeLessThan(DCAgent.player.loginTime)
-      done()
-    }, 1000)
+    jasmine.clock().tick(1000)
+    DCAgent.login('grace')
+    expect(loginTime).not.toEqual(DCAgent.player.loginTime)
+    expect(loginTime).toBeLessThan(DCAgent.player.loginTime)
   })
 })
