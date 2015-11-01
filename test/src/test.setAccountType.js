@@ -1,5 +1,4 @@
 /*globals describe, it, expect, DCAgent, beforeEach, afterEach, loadDCAgent, destroyDCAgent, setTimeout, jasmine */
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
 describe('setAccountType', function() {
   beforeEach(loadDCAgent)
 
@@ -14,9 +13,8 @@ describe('setAccountType', function() {
     DCAgent.login('simon')
   }
 
-  it('should throw an error if init is not invoked', function(done) {
+  it('should throw an error if init is not invoked', function() {
     expect(setAccountType).toThrow()
-    done()
   })
 
   it('should throw an error if login is not invoked', function() {
@@ -29,23 +27,21 @@ describe('setAccountType', function() {
     expect(setAccountType).not.toThrow()
   })
 
-  it('should trigger ajax in 5 secs', function(done) {
+  it('should trigger ajax in 2 secs', function() {
     initAndLogin()
     var count = DCAgent.player.reportCount
     setAccountType()
-    setTimeout(function() {
-      expect(DCAgent.player.reportCount).toEqual(count + 1)
-      done()
-    }, ASAP_TIMEOUT)
+
+    jasmine.clock().tick(ASAP_TIMEOUT)
+    expect(DCAgent.player.reportCount).toEqual(count + 1)
   })
 
-  it('should be the same with what I set', function(done) {
+  it('should be the same with what I set', function() {
     initAndLogin()
     DCAgent.setAccountType('VIP')
-    setTimeout(function() {
-      var headerInfo = DCAgent.report.headerInfo
-      expect(headerInfo.accountType).toEqual('VIP')
-      done()
-    }, ASAP_TIMEOUT)
+
+    jasmine.clock().tick(ASAP_TIMEOUT)
+    var headerInfo = DCAgent.report.headerInfo
+    expect(headerInfo.accountType).toEqual('VIP')
   })
 })

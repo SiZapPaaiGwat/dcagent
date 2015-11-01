@@ -1,5 +1,4 @@
 /*globals describe, it, expect, DCAgent, beforeEach, afterEach, loadDCAgent, destroyDCAgent, setTimeout, jasmine */
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
 describe('onCoinUse', function() {
   beforeEach(loadDCAgent)
 
@@ -37,33 +36,31 @@ describe('onCoinUse', function() {
     expect(coinUse).toThrow()
   })
 
-  it('should trigger ajax in 5 secs', function(done) {
+  it('should trigger ajax in 2 secs', function() {
     initAndLogin()
     var count = DCAgent.player.reportCount
     onCoinUse()
-    setTimeout(function() {
-      expect(DCAgent.player.reportCount).toEqual(count + 1)
-      done()
-    }, ASAP_TIMEOUT)
+
+    jasmine.clock().tick(ASAP_TIMEOUT)
+    expect(DCAgent.player.reportCount).toEqual(count + 1)
   })
 
   describe('coin info', function() {
-    it('should be the same with what I set', function(done) {
+    it('should be the same with what I set', function() {
       initAndLogin()
       onCoinUse()
-      setTimeout(function() {
-        var events = DCAgent.report.eventInfoList
-        var event = events && events.filter(function(item) {
-          return item.eventId === 'DE_EVENT_COIN_ACTION'
-        })
-        var data = event && event[0] && event[0].eventMap
-        expect(data).toBeTruthy()
-        expect(data.coinNum).toEqual(200)
-        expect(data.balanceNum).toEqual(100)
-        expect(data.coinType).toEqual(encodeURIComponent('金币'))
-        expect(data.reason).toEqual(encodeURIComponent('增加体力消耗'))
-        done()
-      }, ASAP_TIMEOUT)
+
+      jasmine.clock().tick(ASAP_TIMEOUT)
+      var events = DCAgent.report.eventInfoList
+      var event = events && events.filter(function(item) {
+        return item.eventId === 'DE_EVENT_COIN_ACTION'
+      })
+      var data = event && event[0] && event[0].eventMap
+      expect(data).toBeTruthy()
+      expect(data.coinNum).toEqual(200)
+      expect(data.balanceNum).toEqual(100)
+      expect(data.coinType).toEqual(encodeURIComponent('金币'))
+      expect(data.reason).toEqual(encodeURIComponent('增加体力消耗'))
     })
   })
 })

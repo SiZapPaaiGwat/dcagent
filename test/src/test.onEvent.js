@@ -1,5 +1,4 @@
 /*globals describe, it, expect, DCAgent, beforeEach, afterEach, loadDCAgent, destroyDCAgent, jasmine, setTimeout */
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
 describe('onEvent', function() {
   beforeEach(loadDCAgent)
 
@@ -52,14 +51,12 @@ describe('onEvent', function() {
     expect(DCAgent.player.reportCount).toEqual(requestCount)
   })
 
-  it('should trigger ajax in 5 seconds after invocation', function(done) {
+  it('should trigger ajax in 5 seconds after invocation', function() {
     DCAgent.init({appId: 'event'})
     var requestCount = DCAgent.player.reportCount
     DCAgent.onEvent('open_dialog', {level: 1})
 
-    setTimeout(function() {
-      expect(DCAgent.player.reportCount).toEqual(requestCount + 1)
-      done()
-    }, ASAP_TIMEOUT)
+    jasmine.clock().tick(ASAP_TIMEOUT)
+    expect(DCAgent.player.reportCount).toEqual(requestCount + 1)
   })
 })

@@ -1,5 +1,4 @@
 /*globals describe, it, expect, DCAgent, beforeEach, afterEach, loadDCAgent, destroyDCAgent, setTimeout, jasmine */
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
 describe('setRoleInfo', function() {
   beforeEach(loadDCAgent)
 
@@ -29,27 +28,25 @@ describe('setRoleInfo', function() {
     expect(setRoleInfo).not.toThrow()
   })
 
-  it('should trigger ajax in 5 secs', function(done) {
+  it('should trigger ajax in 2 secs', function() {
     initAndLogin()
     var count = DCAgent.player.reportCount
     setRoleInfo()
-    setTimeout(function() {
-      expect(DCAgent.player.reportCount).toEqual(count + 1)
-      done()
-    }, ASAP_TIMEOUT)
+
+    jasmine.clock().tick(ASAP_TIMEOUT)
+    expect(DCAgent.player.reportCount).toEqual(count + 1)
   })
 
-  it('should be the same with what I set', function(done) {
+  it('should be the same with what I set', function() {
     initAndLogin()
     DCAgent.setRoleInfo('精灵', '联盟', '弓箭手', 2)
-    setTimeout(function() {
-      var headerInfo = DCAgent.report.headerInfo
-      expect(headerInfo).not.toBeUndefined()
-      expect(headerInfo.roleId).toEqual('精灵')
-      expect(headerInfo.roleRace).toEqual('联盟')
-      expect(headerInfo.roleClass).toEqual('弓箭手')
-      expect(headerInfo.roleLevel).toEqual(2)
-      done()
-    }, ASAP_TIMEOUT)
+
+    jasmine.clock().tick(ASAP_TIMEOUT)
+    var headerInfo = DCAgent.report.headerInfo
+    expect(headerInfo).not.toBeUndefined()
+    expect(headerInfo.roleId).toEqual('精灵')
+    expect(headerInfo.roleRace).toEqual('联盟')
+    expect(headerInfo.roleClass).toEqual('弓箭手')
+    expect(headerInfo.roleLevel).toEqual(2)
   })
 })

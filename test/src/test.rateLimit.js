@@ -1,5 +1,4 @@
 /*globals describe, it, expect, DCAgent, beforeEach, afterEach, loadDCAgent, destroyDCAgent, setTimeout, jasmine */
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 6000
 describe('rate limit', function() {
   beforeEach(loadDCAgent)
 
@@ -28,7 +27,7 @@ describe('rate limit', function() {
     })
   })
 
-  it('should reset timer via response header in the polling request', function(done) {
+  it('should reset timer via response header in the polling request', function() {
     DCAgent.init({
       appId: 'rate-limit2',
       interval: 60
@@ -37,10 +36,9 @@ describe('rate limit', function() {
     jasmine.Ajax.install()
     // trigger polling ajax
     DCAgent.onEvent('open')
-    setTimeout(function() {
-      jasmine.Ajax.requests.mostRecent().respondWith(returnValue)
-      expect(DCAgent.state.interval).toEqual(100 * 1000)
-      done()
-    }, ASAP_TIMEOUT)
+
+    jasmine.clock().tick(ASAP_TIMEOUT)
+    jasmine.Ajax.requests.mostRecent().respondWith(returnValue)
+    expect(DCAgent.state.interval).toEqual(100 * 1000)
   })
 })

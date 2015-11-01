@@ -1,5 +1,4 @@
 /*globals describe, it, expect, DCAgent, beforeEach, afterEach, loadDCAgent, destroyDCAgent, setTimeout, jasmine */
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
 describe('onItemBuy', function() {
   beforeEach(loadDCAgent)
 
@@ -14,9 +13,8 @@ describe('onItemBuy', function() {
     DCAgent.login('simon')
   }
 
-  it('should throw an error if init is not invoked', function(done) {
+  it('should throw an error if init is not invoked', function() {
     expect(onItemBuy).toThrow()
-    done()
   })
 
   it('should throw an error if login is not invoked', function() {
@@ -41,13 +39,12 @@ describe('onItemBuy', function() {
     expect(itemBuy2).toThrow()
   })
 
-  it('should trigger ajax in 5 secs', function(done) {
+  it('should trigger ajax in 2 secs', function() {
     initAndLogin()
     var count = DCAgent.player.reportCount
     onItemBuy()
-    setTimeout(function() {
-      expect(DCAgent.player.reportCount).toEqual(count + 1)
-      done()
-    }, ASAP_TIMEOUT)
+
+    jasmine.clock().tick(ASAP_TIMEOUT)
+    expect(DCAgent.player.reportCount).toEqual(count + 1)
   })
 })

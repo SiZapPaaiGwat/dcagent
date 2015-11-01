@@ -35,7 +35,7 @@ describe('onCoinGet', function() {
     expect(coinGet).toThrow()
   })
 
-  it('should trigger ajax in 5 secs', function() {
+  it('should trigger ajax in 2 secs', function() {
     initAndLogin()
     var count = DCAgent.player.reportCount
     onCoinGet()

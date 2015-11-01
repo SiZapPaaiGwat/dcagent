@@ -13,9 +13,8 @@ describe('onPayment', function() {
     DCAgent.login('simon')
   }
 
-  it('should throw an error if init is not invoked', function(done) {
+  it('should throw an error if init is not invoked', function() {
     expect(payment).toThrow()
-    done()
   })
 
   it('should throw an error if login is not invoked', function() {

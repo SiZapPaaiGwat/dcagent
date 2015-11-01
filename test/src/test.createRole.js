@@ -27,7 +27,7 @@ describe('createRole', function() {
     expect(createRole).not.toThrow()
   })
 
-  it('should trigger ajax in 5 secs', function() {
+  it('should trigger ajax in 2 secs', function() {
     initAndLogin('createRole3')
     var count = DCAgent.player.reportCount
     createRole()

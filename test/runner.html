@@ -45,26 +45,21 @@
   var DCAGENT_DEBUG_OPEN = true
   var ASAP_TIMEOUT = 2000
 
+  // 每个Spec开始的时候重新加载SDK避免被上次的结果影响
   function loadDCAgent(done) {
     var script = document.createElement('script')
     script.src = '../dist/dcagent.v2.src.js?v=' + Date.now()
     script.setAttribute('id', 'dcagent')
-    script.onload = function() {
-      jasmine.clock().install()
-      jasmine.clock().mockDate(new Date(2015, 11, 1))
-      done()
-    }
+    script.onload = done
     document.body.appendChild(script)
   }
 
+  // 每个Spec结束的时候销毁SDK，避免遗漏的Timer影响数据
   function destroyDCAgent(done) {
     var script = document.querySelector('#dcagent')
     document.body.removeChild(script)
-    // 如果不使用mockDate，这里的执行时机可能会早于setPollingDebounce里的timer
-    // 只在浏览器端出现
     DCAgent.destroy()
     DCAgent = null
-    jasmine.clock().uninstall()
     done()
   }
 
@@ -109,6 +104,16 @@
 <script src="./libs/mock-ajax.js"></script>
 <script>
   /* jshint ignore:start */
+
+  /**
+   * 这里需要在所有Spec执行前执行，且每个Spec执行的时候不需要uninstall
+   * node环境里面无所谓因为加载SDK时通过的
+   * 浏览器里面比较特殊，异步容易相互影响。
+   * 所以clock提前设置好避免出现不必要的BUG
+   */
+  jasmine.clock().install()
+  // 这里也必须mockDate，不然有些Spec会失败
+  jasmine.clock().mockDate(new Date(2015, 11, 1))
   var currentFile = location.search.slice(1)
   // 执行单个spec
   if (currentFile.indexOf('.js') !== -1) {
