@@ -13,12 +13,19 @@
     "jasmine": "^2.3.2",
     "jasmine-ajax": "^3.2.0",
     "jasmine-core": "^2.3.4",
+    "karma": "^0.13.14",
+    "karma-chrome-launcher": "^0.2.1",
+    "karma-firefox-launcher": "^0.1.6",
+    "karma-ie-launcher": "^0.2.0",
+    "karma-jasmine": "^0.3.6",
+    "karma-safari-launcher": "^0.1.1",
     "node-localstorage": "^0.6.0",
     "xmlhttprequest": "^1.8.0"
   },
   "scripts": {
     "demo": "http-server . -o \"http://localhost:8080/example/index.v2.html\"",
-    "test": "http-server . -o \"http://localhost:8080/test/runner.html\"",
-    "test-node": "cd test && node node-runner.js"
+    "test": "http-server . -o \"http://localhost:8080/test/runner.html?all\"",
+    "test-node": "cd test && node node-runner.js",
+    "karma": "./node_modules/karma/bin/karma start karma.conf.js"
   }
 }
