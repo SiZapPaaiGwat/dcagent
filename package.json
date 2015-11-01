@@ -19,6 +19,6 @@
   "scripts": {
     "demo": "http-server . -o \"http://localhost:8080/example/index.v2.html\"",
     "test": "http-server . -o \"http://localhost:8080/test/runner.html\"",
-    "test-node": "cd test &node node-runner.js"
+    "test-node": "cd test && node node-runner.js"
   }
 }
