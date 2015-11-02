@@ -1,3 +1,4 @@
+/*jshint node:true*/
 var rename = require('gulp-rename')
 var jshint = require('gulp-jshint')
 var gulp = require('gulp')

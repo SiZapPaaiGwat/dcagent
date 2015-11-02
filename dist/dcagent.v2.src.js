@@ -893,16 +893,16 @@
     };
   }
 
-  var compats_storage = storage;
+  var D__git_dcagent_src_compats_storage = storage;
 
   /**
    * 用户退出时将当前数据保存到本地存储
    */
   function saveToStorage() {
-    compats_storage.setItem(CONST.LOGOUT_TIME, utils.parseInt(Date.now() / 1000));
+    D__git_dcagent_src_compats_storage.setItem(CONST.LOGOUT_TIME, utils.parseInt(Date.now() / 1000));
 
     if (errors.length || events.length) {
-      compats_storage.setItem(CONST.QUIT_SNAPSHOT, utils.jsonStringify(collect()));
+      D__git_dcagent_src_compats_storage.setItem(CONST.QUIT_SNAPSHOT, utils.jsonStringify(collect()));
     }
   }
 
@@ -910,7 +910,7 @@
    * 用户进入时从本地存储导入数据
    */
   function loadFromStorage() {
-    var params = compats_storage.getItem(CONST.QUIT_SNAPSHOT);
+    var params = D__git_dcagent_src_compats_storage.getItem(CONST.QUIT_SNAPSHOT);
     return params && utils.jsonParse(params);
   }
 
@@ -1237,7 +1237,7 @@
   })();
 
   // 最近一次上报的数据
-  exports.report;
+  var reportData;
 
   // 全部请求次数
   var reportCount = 0;
@@ -1262,7 +1262,7 @@
     }
 
     reportCount += 1;
-    exports.report = opts.data;
+    reportData = opts.data;
 
     ajax({
       url: opts.url,
@@ -1770,62 +1770,6 @@
     exports[name] = utils.aspect(loginBasedAPI[name], preLogin, name !== 'onPayment' && debounce);
   }
 
-  /**
-   * 执行快速统计调用
-   * dc('init', {...})
-   * dc(onEvent, id, data)
-   */
-  var proxyName = window.DCAgentObject;
-  if (proxyName) {
-    var proxy = window[proxyName];
-    if (utils.isFunction(proxy)) {
-      var cache = proxy.cache;
-
-      if (cache.length) {
-        cache.forEach(function (args) {
-          utils.attempt(exports[args[0]], exports, utils.slice(args, 1));
-        });
-
-        cache.length = 0;
-      }
-    }
-  }
-
-  function destroy() {
-    cancel();
-
-    stateCenter.destroyed = true;
-  }
-
-  function isReady() {
-    return stateCenter.inited;
-  }
-
-  var player = {
-    get isNew() {
-      var loginTime = stateCenter.loginTime || stateCenter.initTime;
-      return stateCenter.createTime === loginTime;
-    },
-    get initTime() {
-      return stateCenter.initTime;
-    },
-    get createTime() {
-      return stateCenter.createTime;
-    },
-    get loginTime() {
-      return stateCenter.loginTime;
-    },
-    get lastLogoutTime() {
-      return parseInt(compats_storage.getItem(CONST.LOGOUT_TIME));
-    },
-    get reportCount() {
-      return reportCount;
-    },
-    get reportFailedCount() {
-      return failedCount;
-    }
-  };
-
   function getLeavingEvent() {
     var props = ['pagehide', 'beforeunload', 'unload'];
     for (var i = 0; i < props.length; i += 1) {
@@ -1853,12 +1797,15 @@
     // 新玩家不必上报
     if (isNewUser) return;
 
+    var snapshot = dataCenter.loadFromStorage();
+    if (!snapshot) return;
+
     request({
       url: uri.appendOnline(uri.API_PATH),
-      data: dataCenter.loadFromStorage()
+      data: snapshot
     }, true);
 
-    compats_storage.removeItem(CONST.QUIT_SNAPSHOT);
+    D__git_dcagent_src_compats_storage.removeItem(CONST.QUIT_SNAPSHOT);
   }
 
   function onError() {
@@ -1944,13 +1891,13 @@
 
   function setItem(key, value) {
     key = wrapKey(key);
-    compats_storage.setItem(key, value);
+    D__git_dcagent_src_compats_storage.setItem(key, value);
     _Cookie.set(key, value, 3650);
   }
 
   function getItem(key) {
     key = wrapKey(key);
-    return compats_storage.getItem(key) || _Cookie.get(key);
+    return D__git_dcagent_src_compats_storage.getItem(key) || _Cookie.get(key);
   }
 
   /**
@@ -2286,7 +2233,7 @@
       if (localUID !== paddingUID) {
         config.uid = paddingUID;
         localUID = paddingUID;
-        compats_storage.setItem(CONST.CREATE_TIME, utils.parseInt(Date.now() / 1000));
+        D__git_dcagent_src_compats_storage.setItem(CONST.CREATE_TIME, utils.parseInt(Date.now() / 1000));
       }
     }
 
@@ -2317,10 +2264,10 @@
      * 白鹭引擎由于共享设备ID
      * 所以可能导致第一次进入游戏设备ID已经设置但是创建时间没有设置
      */
-    var createTime = compats_storage.getItem(CONST.CREATE_TIME);
+    var createTime = D__git_dcagent_src_compats_storage.getItem(CONST.CREATE_TIME);
     if (!createTime) {
       createTime = stateCenter.initTime;
-      compats_storage.setItem(CONST.CREATE_TIME, createTime);
+      D__git_dcagent_src_compats_storage.setItem(CONST.CREATE_TIME, createTime);
     }
 
     stateCenter.createTime = utils.parseInt(createTime);
@@ -2369,7 +2316,7 @@
      * 如果提供了uid，不需要本地存储支持
      * 不过可能会损失部分在线数据
      */
-    stateCenter.storage = utils.isLocalStorageSupported(compats_storage);
+    stateCenter.storage = utils.isLocalStorageSupported(D__git_dcagent_src_compats_storage);
     if (!options.uid && !stateCenter.storage) {
       return Client.hasStorage ? 'Storage quota error' : 'Storage not support';
     }
@@ -2423,9 +2370,74 @@
     }
   }
 
+  // 显示使用exports，不然dc执行缓存的时候找不到对应的方法
   exports.init = init;
+
+  var player = {
+    get isNew() {
+      var loginTime = stateCenter.loginTime || stateCenter.initTime;
+      return stateCenter.createTime === loginTime;
+    },
+    get initTime() {
+      return stateCenter.initTime;
+    },
+    get createTime() {
+      return stateCenter.createTime;
+    },
+    get loginTime() {
+      return stateCenter.loginTime;
+    },
+    get lastLogoutTime() {
+      return parseInt(D__git_dcagent_src_compats_storage.getItem(CONST.LOGOUT_TIME));
+    },
+    get reportCount() {
+      return reportCount;
+    },
+    get reportFailedCount() {
+      return failedCount;
+    }
+  };
+
   exports.player = player;
+
+  function isReady() {
+    return stateCenter.inited;
+  }
+
   exports.isReady = isReady;
+
+  function destroy() {
+    cancel();
+
+    stateCenter.destroyed = true;
+  }
+
   exports.destroy = destroy;
+
+  // 最近一次上报数据
+  exports.report = reportData;
+
+  // SDK内部状态仓库
   exports.state = stateCenter;
+
+  /**
+   * 执行快速统计调用
+   * dc('init', {...})
+   * dc(onEvent, id, data)
+   */
+  var proxyName = window.DCAgentObject;
+  if (proxyName) {
+    var proxy = window[proxyName];
+    if (utils.isFunction(proxy)) {
+      var cache = proxy.cache;
+
+      if (cache.length) {
+        cache.forEach(function (args) {
+          utils.attempt(exports[args[0]], exports, utils.slice(args, 1));
+        });
+
+        cache.length = 0;
+      }
+    }
+  }
 });

@@ -101,9 +101,12 @@ function restoreSnapshot(isNewUser) {
   // 新玩家不必上报
   if (isNewUser) return
 
+  var snapshot = dataCenter.loadFromStorage()
+  if (!snapshot) return
+
   request({
     url: uri.appendOnline(uri.API_PATH),
-    data: dataCenter.loadFromStorage()
+    data: snapshot
   }, true)
 
   storage.removeItem(CONST.QUIT_SNAPSHOT)

@@ -87,6 +87,16 @@ for (name in loginBasedAPI) {
   exports[name] = utils.aspect(loginBasedAPI[name], preLogin, name !== 'onPayment' && debounce)
 }
 
+// 显示使用exports，不然dc执行缓存的时候找不到对应的方法
+exports.init = init
+exports.player = player
+exports.isReady = isReady
+exports.destroy = destroy
+// 最近一次上报数据
+exports.report = report
+// SDK内部状态仓库
+exports.state = state
+
 /**
  * 执行快速统计调用
  * dc('init', {...})
@@ -108,18 +118,5 @@ if (proxyName) {
   }
 }
 
-/**
- * 这里需要显示export一些接口否则生成的代码会有问题
- */
-export {
-  init,
-  version,
-  // 玩家信息
-  player,
-  isReady,
-  destroy,
-  // 最近一次上报数据
-  report,
-  // SDK内部状态仓库
-  state
-}
+// export之后才会生成暴露DCAgent，不然exports找不到
+export {version}
