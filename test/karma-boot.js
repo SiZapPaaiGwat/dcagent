@@ -1,3 +1,4 @@
+/* jshint ignore:start*/
 var DCAGENT_DEBUG_OPEN = true
 var ASAP_TIMEOUT = 2000
 

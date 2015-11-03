@@ -1,4 +1,5 @@
 /* jshint node: true */
+/*globals jasmine*/
 
 var fs = require('fs')
 var Jasmine = require('jasmine')
