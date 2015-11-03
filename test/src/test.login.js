@@ -1,4 +1,4 @@
-/*globals describe, it, expect, DCAgent, beforeEach, afterEach, loadDCAgent, destroyDCAgent, setTimeout */
+/*globals describe, it, expect, DCAgent, beforeEach, afterEach, loadDCAgent, destroyDCAgent, jasmine */
 describe('login', function() {
   beforeEach(loadDCAgent)
 

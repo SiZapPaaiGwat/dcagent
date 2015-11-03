@@ -1237,7 +1237,7 @@
   })();
 
   // 最近一次上报的数据
-  var reportData;
+  exports.report;
 
   // 全部请求次数
   var reportCount = 0;
@@ -1262,7 +1262,7 @@
     }
 
     reportCount += 1;
-    reportData = opts.data;
+    exports.report = opts.data;
 
     ajax({
       url: opts.url,
@@ -2373,6 +2373,41 @@
   // 显示使用exports，不然dc执行缓存的时候找不到对应的方法
   exports.init = init;
 
+  function isReady() {
+    return stateCenter.inited;
+  }
+
+  exports.isReady = isReady;
+
+  function destroy() {
+    cancel();
+
+    stateCenter.destroyed = true;
+  }
+
+  exports.destroy = destroy;
+
+  /**
+   * 执行快速统计调用
+   * dc('init', {...})
+   * dc(onEvent, id, data)
+   */
+  var proxyName = window.DCAgentObject;
+  if (proxyName) {
+    var proxy = window[proxyName];
+    if (utils.isFunction(proxy)) {
+      var cache = proxy.cache;
+
+      if (cache.length) {
+        cache.forEach(function (args) {
+          utils.attempt(exports[args[0]], exports, utils.slice(args, 1));
+        });
+
+        cache.length = 0;
+      }
+    }
+  }
+
   var player = {
     get isNew() {
       var loginTime = stateCenter.loginTime || stateCenter.initTime;
@@ -2398,46 +2433,6 @@
     }
   };
 
-  exports.player = player;
-
-  function isReady() {
-    return stateCenter.inited;
-  }
-
-  exports.isReady = isReady;
-
-  function destroy() {
-    cancel();
-
-    stateCenter.destroyed = true;
-  }
-
-  exports.destroy = destroy;
-
-  // 最近一次上报数据
-  exports.report = reportData;
-
-  // SDK内部状态仓库
   exports.state = stateCenter;
-
-  /**
-   * 执行快速统计调用
-   * dc('init', {...})
-   * dc(onEvent, id, data)
-   */
-  var proxyName = window.DCAgentObject;
-  if (proxyName) {
-    var proxy = window[proxyName];
-    if (utils.isFunction(proxy)) {
-      var cache = proxy.cache;
-
-      if (cache.length) {
-        cache.forEach(function (args) {
-          utils.attempt(exports[args[0]], exports, utils.slice(args, 1));
-        });
-
-        cache.length = 0;
-      }
-    }
-  }
+  exports.player = player;
 });

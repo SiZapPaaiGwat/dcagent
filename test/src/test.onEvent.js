@@ -1,4 +1,4 @@
-/*globals describe, it, expect, DCAgent, beforeEach, afterEach, loadDCAgent, destroyDCAgent, jasmine, setTimeout */
+/*globals ASAP_TIMEOUT, describe, it, expect, DCAgent, beforeEach, afterEach, loadDCAgent, destroyDCAgent, jasmine */
 describe('onEvent', function() {
   beforeEach(loadDCAgent)
 

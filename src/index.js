@@ -89,13 +89,8 @@ for (name in loginBasedAPI) {
 
 // 显示使用exports，不然dc执行缓存的时候找不到对应的方法
 exports.init = init
-exports.player = player
 exports.isReady = isReady
 exports.destroy = destroy
-// 最近一次上报数据
-exports.report = report
-// SDK内部状态仓库
-exports.state = state
 
 /**
  * 执行快速统计调用
@@ -118,5 +113,5 @@ if (proxyName) {
   }
 }
 
-// export之后才会生成暴露DCAgent，不然exports找不到
-export {version}
+// export之后才会生成DCAgent，不然exports找不到
+export {version, report, state, player}
