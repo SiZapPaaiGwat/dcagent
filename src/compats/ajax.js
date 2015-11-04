@@ -32,31 +32,35 @@ var createBrowserXHR = Client.useXDR ? function() {
   return new window.XMLHttpRequest()
 }
 
-/**
- * see XDomainRequest
- * https://msdn.microsoft.com/library/cc288060(v=vs.85).aspx
- */
-var setContentType = Client.useXDR ? function (xhr, value) {
-  xhr.contentType = value
-} : function (xhr, value) {
-  xhr.setRequestHeader('Content-Type', value)
-}
-
 var createXHR = engine.isCocos ? createCocosXHR : createBrowserXHR
 
 /**
- * WP打包的APP环境下的XMLHttpRequest不支持timeout（没有XDomainRequest）
- * 有这个属性但是设置会抛异常
+ * VS的WP打包环境有XHR，没有XDR，但是XHR的timeout只读
+ * Lumia 640有XDR，但是contentType只读
+ * https://msdn.microsoft.com/library/cc288060(v=vs.85).aspx
  */
-var supportTimeout = (() => {
-  try {
-    var xhr = createXHR()
-    xhr.timeout = 1
-    return true
-  } catch(e) {
-    return false
+var supportTimeout = true
+var supportContentType = true
+var xhr = createXHR()
+try {
+  xhr.timeout = 1
+} catch(e) {
+  supportTimeout = false
+}
+
+try {
+  xhr.contentType = 'text/plain; charset=UTF-8'
+} catch(e) {
+  supportContentType = false
+}
+
+var setContentType = Client.useXDR ? function (xhr, value) {
+  if (supportContentType) {
+    xhr.contentType = value
   }
-})()
+} : function (xhr, value) {
+  xhr.setRequestHeader('Content-Type', value)
+}
 
 /**
  * for Egret Runtime and Native

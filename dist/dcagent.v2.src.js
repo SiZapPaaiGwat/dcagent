@@ -1099,6 +1099,13 @@
     loader.load(request);
   }
 
+  /**
+   * VS的WP打包环境有XHR，没有XDR，但是XHR的timeout只读
+   * Lumia 640有XDR，但是contentType只读
+   * https://msdn.microsoft.com/library/cc288060(v=vs.85).aspx
+   */
+  var supportTimeout = true;
+
   function hasDOM() {
 
     if (document && isFunction(document.createElement)) {
@@ -1160,29 +1167,29 @@
 
   var createXHR = engine.isCocos ? createCocosXHR : createBrowserXHR;
 
-  /**
-   * WP打包的APP环境下的XMLHttpRequest不支持timeout（没有XDomainRequest）
-   * 有这个属性但是设置会抛异常
-   */
-  var supportTimeout = (function () {
-    try {
-      var xhr = createXHR();
-      xhr.timeout = 1;
-      return true;
-    } catch (e) {
-      return false;
-    }
-  })();
+  var xhr = createXHR();
 
-  /**
-   * see XDomainRequest
-   * https://msdn.microsoft.com/library/cc288060(v=vs.85).aspx
-   */
+  var supportContentType = true;
+
+  try {
+    xhr.contentType = 'text/plain; charset=UTF-8';
+  } catch (e) {
+    supportContentType = false;
+  }
+
   var setContentType = Client.useXDR ? function (xhr, value) {
-    xhr.contentType = value;
+    if (supportContentType) {
+      xhr.contentType = value;
+    }
   } : function (xhr, value) {
     xhr.setRequestHeader('Content-Type', value);
   };
+
+  try {
+    xhr.timeout = 1;
+  } catch (e) {
+    supportTimeout = false;
+  }
 
   /**
    * 切断网络或者手机切到后台可能导致timeout
