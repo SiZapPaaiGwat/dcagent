@@ -1,7 +1,6 @@
 {
-  "name": "DCAgent",
-  "version": "0.2.4",
-  "private": true,
+  "name": "dcagent",
+  "version": "0.2.5",
   "main": "dist/dcagent.v2.src.js",
   "devDependencies": {
     "gulp": "^3.8.8",
@@ -27,5 +26,22 @@
     "test": "http-server . -o \"http://localhost:8080/test/runner.html?all\"",
     "test-node": "cd test && node node-runner.js",
     "karma": "./node_modules/karma/bin/karma start karma.conf.js"
+  },
+  "keywords": [
+    "game-analytics",
+    "analytics",
+    "html5",
+    "sdk"
+  ],
+  "homepage": "https://github.com/simongfxu/dcagent",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/simongfxu/dcagent"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "simonxu",
+    "email": "simonxu@dataeye.com",
+    "url": "https://github.com/simongfxu"
   }
 }
