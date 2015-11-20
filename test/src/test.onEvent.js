@@ -59,4 +59,11 @@ describe('onEvent', function() {
     jasmine.clock().tick(ASAP_TIMEOUT)
     expect(DCAgent.player.reportCount).toEqual(requestCount + 1)
   })
+
+  it('should send the request right now when specific immediate', function() {
+    DCAgent.init({appId: 'event'})
+    var requestCount = DCAgent.player.reportCount
+    DCAgent.onEvent('open_dialog', {level: 1, immediate: true})
+    expect(DCAgent.player.reportCount).toEqual(requestCount + 1)
+  })
 })

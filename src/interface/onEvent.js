@@ -1,5 +1,6 @@
 import * as dataCenter from '../utils/dataCenter.js'
 import * as utils from '../libs/utils.js'
+import * as onlineTimer from '../utils/onlineTimer.js'
 
 export default function onEvent(eventId, json) {
 	if (!eventId) {
@@ -16,21 +17,27 @@ export default function onEvent(eventId, json) {
 		json = arguments[2]
 	}
 
-	var jsonStr = {}
+	var eventMap = {}
 	if (utils.isObject(json)) {
 		for (var key in json) {
 			// 没有编码，移除%
-			jsonStr[replace(key)] = typeof json[key] === 'number' ?
-				json[key] :
-				encodeURIComponent(json[key])
+			eventMap[replace(key)] = typeof json[key] === 'number' ?
+				json[key] : encodeURIComponent(json[key])
 		}
 	}
 
-  var sendData = {
+  var data = {
     eventId: replace(eventId),
-    eventMap: jsonStr
+    eventMap: eventMap
   }
-  dataCenter.addEvent(sendData)
 
-  return sendData
+  dataCenter.addEvent(data)
+
+  // 立即发送请求
+  if (json && json.immediate === true) {
+    onlineTimer.reset()
+    onlineTimer.run()
+  }
+
+  return data
 }

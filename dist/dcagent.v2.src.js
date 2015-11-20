@@ -3,27 +3,21 @@
 })(this, function (exports) {
   'use strict';
 
-  var dataCenter = {
-    get getOnlineInfo() {
-      return getOnlineInfo;
+  var onlineTimer = {
+    get reset() {
+      return reset;
     },
-    get collect() {
-      return collect;
+    get cancel() {
+      return cancel;
     },
-    get clear() {
-      return clear;
+    get stop() {
+      return stop;
     },
-    get saveToStorage() {
-      return saveToStorage;
+    get run() {
+      return run;
     },
-    get loadFromStorage() {
-      return loadFromStorage;
-    },
-    get addError() {
-      return addError;
-    },
-    get addEvent() {
-      return addEvent;
+    get set() {
+      return set;
     }
   };
 
@@ -87,6 +81,30 @@
     },
     get jsonParse() {
       return jsonParse;
+    }
+  };
+
+  var dataCenter = {
+    get getOnlineInfo() {
+      return getOnlineInfo;
+    },
+    get collect() {
+      return collect;
+    },
+    get clear() {
+      return clear;
+    },
+    get saveToStorage() {
+      return saveToStorage;
+    },
+    get loadFromStorage() {
+      return loadFromStorage;
+    },
+    get addError() {
+      return addError;
+    },
+    get addEvent() {
+      return addEvent;
     }
   };
 
@@ -207,24 +225,6 @@
     }
   };
 
-  var onlineTimer = {
-    get reset() {
-      return reset;
-    },
-    get cancel() {
-      return cancel;
-    },
-    get stop() {
-      return stop;
-    },
-    get run() {
-      return run;
-    },
-    get set() {
-      return set;
-    }
-  };
-
   var Client = {
     get hasStorage() {
       return hasStorage;
@@ -297,8 +297,7 @@
     }
   };
 
-  // 错误信息
-  var errors = [];
+  var timer;
 
   /**
    * SDK内部状态管理
@@ -307,9 +306,6 @@
   var stateCenter = {
     inited: false
   };
-
-  // 当前页面使用的引擎
-  var engineName;
 
   /**
    * SDK内部使用的顶层对象及其主要对象
@@ -328,88 +324,26 @@
 
   var window = topThis || {};
 
-  // SDK若在引擎之前加载，开始获取到的引擎名称可能为空。所以要多尝试几次
-  var retryTimes = 0;
+  var setTimeout = window.setTimeout;
+  var clearTimeout = window.clearTimeout;
+
+  var engine = {
+    isEgret: !!window.egret,
+    isLayabox: !!window.layabox,
+    isCocos: !!window.cc && !!window.cc.game
+  };
 
   /**
-   * 获取当前引擎名称
+   * egret 参数略有不同
    */
-  function detectEngine() {
-    if (engineName) return engineName;
-
-    retryTimes += 1;
-    if (retryTimes > 4) return;
-
-    // egret和layabox在supports已经检测直接使用
-    var engines = {
-      egret: 'egret',
-      layabox: 'layabox',
-      // http://www.cocos2d-x.org/reference/html5-js/V3.6/index.html
-      cocos: 'cc.game',
-      impact: 'ig',
-      phaser: 'Phaser',
-      pixi: 'PIXI',
-      create: 'createjs',
-      three: 'THREE',
-      gameMaker: 'asset_get_type',
-      playCanvas: 'pc.fw',
-      // http://biz.turbulenz.com/sample_assets/2dcanvas.js.html
-      turbulenz: 'TurbulenzEngine',
-      // http://www.html5quintus.com/#demo
-      quintus: 'Quintus',
-      // https://github.com/melonjs/melonJS
-      melon: 'me.game',
-      // https://github.com/LazerUnicorns/lycheeJS
-      lychee: 'lychee',
-      // http://www.clockworkchilli.com/index.php/developers/snippet/1
-      wade: 'wade.addSceneObject',
-      // http://craftyjs.com/
-      crafty: 'Crafty',
-      // https://github.com/digitalfruit/limejs
-      lime: 'lime.Scene',
-      // https://github.com/wise9/enchant.js
-      enchant: 'enchant',
-      // http://www.isogenicengine.com/docs-reference.html#IgeEngine
-      isogenic: 'IgeEngine',
-      // http://docs.gameclosure.com/example/advrendering-tiles/index.html
-      gameclosure: 'GC.Application',
-      // http://www.pandajs.net/docs/files/src_engine_scene.js.html#l11
-      panda: 'game.Scene',
-      // http://www.api.kiwijs.org/
-      kiwi: 'Kiwi',
-      // https://github.com/ippa/jaws
-      jaws: 'jaws',
-      // http://sirius2d.com/doc/
-      sirius2d: 'ss2d',
-      // http://jindo.dev.naver.com/collie/doc/index.html?l=en
-      collie: 'collie',
-      // https://github.com/wellcaffeinated/PhysicsJS/
-      physics: 'Physics',
-      // https://github.com/piqnt/stage.js
-      stage: 'Stage.Anim',
-      // https://github.com/BabylonJS/Babylon.js
-      babylon: 'BABYLON'
+  if (engine.isEgret) {
+    setTimeout = function (func, time) {
+      window.egret.setTimeout(func, window, time);
     };
 
-    for (var key in engines) {
-      var namespace = engines[key];
-
-      // 有些引擎的namespace过于通用会进行一次深度属性检测
-      if (namespace.indexOf('.') > -1) {
-        var props = namespace.split('.');
-        var field = window[props[0]];
-
-        if (field && field[props[1]]) {
-          engineName = key;
-          return key;
-        }
-      } else {
-        if (window[namespace]) {
-          engineName = key;
-          return key;
-        }
-      }
-    }
+    clearTimeout = function (id) {
+      window.egret.clearTimeout(id);
+    };
   }
 
   var toString = Object.prototype.toString;
@@ -646,6 +580,188 @@
     return null;
   }
 
+  function Timer(fn, duration) {
+    var _this = this;
+
+    /**
+     * running期间多次调用会执行多次
+     * 下个执行点为轮询执行完毕的duration之后
+     */
+    this.duration = duration;
+    this.status = 'running';
+    this.timer = setTimeout(function () {
+      return _this.run();
+    }, this.duration);
+
+    // 立即执行一次函数
+    this.run = function () {
+      if (_this.status === 'cancelled') return;
+
+      // 清除上次的定时器
+      clearTimeout(_this.timer);
+
+      utils.attempt(fn);
+
+      _this.timer = setTimeout(function () {
+        return _this.run();
+      }, _this.duration);
+    };
+
+    this.stop = function () {
+      _this.status = 'stopped';
+      clearTimeout(_this.timer);
+    };
+
+    // reset之后也会立即执行一次
+    this.reset = function (num) {
+      if (_this.status === 'cancelled') return;
+
+      _this.stop();
+      if (num) {
+        _this.duration = num;
+      }
+      _this.run();
+    };
+
+    // 永久停止timer防止被错误启动
+    this.cancel = function () {
+      this.status = 'cancelled';
+      clearTimeout(this.timer);
+    };
+  }
+
+  /**
+   * 等待一个周期再启动Timer
+   */
+  function reset(interval) {
+    if (timer) {
+      timer.stop();
+      setTimeout(function () {
+        timer && timer.reset(interval);
+      }, interval);
+
+      if (interval) {
+        stateCenter.interval = interval;
+      }
+    }
+  }
+
+  /**
+   * 停止定时器上报
+   */
+  function cancel() {
+    if (timer) {
+      timer.cancel();
+      timer = null;
+    }
+  }
+
+  function stop() {
+    if (timer) {
+      timer.stop();
+    }
+  }
+
+  function run() {
+    if (timer) {
+      timer.run();
+    }
+  }
+
+  function set(func, interval) {
+    timer = new Timer(func, interval);
+  }
+
+  // 错误信息
+  var errors = [];
+
+  // 当前页面使用的引擎
+  var engineName;
+
+  // SDK若在引擎之前加载，开始获取到的引擎名称可能为空。所以要多尝试几次
+  var retryTimes = 0;
+
+  /**
+   * 获取当前引擎名称
+   */
+  function detectEngine() {
+    if (engineName) return engineName;
+
+    retryTimes += 1;
+    if (retryTimes > 4) return;
+
+    // egret和layabox在supports已经检测直接使用
+    var engines = {
+      egret: 'egret',
+      layabox: 'layabox',
+      // http://www.cocos2d-x.org/reference/html5-js/V3.6/index.html
+      cocos: 'cc.game',
+      impact: 'ig',
+      phaser: 'Phaser',
+      pixi: 'PIXI',
+      create: 'createjs',
+      three: 'THREE',
+      gameMaker: 'asset_get_type',
+      playCanvas: 'pc.fw',
+      // http://biz.turbulenz.com/sample_assets/2dcanvas.js.html
+      turbulenz: 'TurbulenzEngine',
+      // http://www.html5quintus.com/#demo
+      quintus: 'Quintus',
+      // https://github.com/melonjs/melonJS
+      melon: 'me.game',
+      // https://github.com/LazerUnicorns/lycheeJS
+      lychee: 'lychee',
+      // http://www.clockworkchilli.com/index.php/developers/snippet/1
+      wade: 'wade.addSceneObject',
+      // http://craftyjs.com/
+      crafty: 'Crafty',
+      // https://github.com/digitalfruit/limejs
+      lime: 'lime.Scene',
+      // https://github.com/wise9/enchant.js
+      enchant: 'enchant',
+      // http://www.isogenicengine.com/docs-reference.html#IgeEngine
+      isogenic: 'IgeEngine',
+      // http://docs.gameclosure.com/example/advrendering-tiles/index.html
+      gameclosure: 'GC.Application',
+      // http://www.pandajs.net/docs/files/src_engine_scene.js.html#l11
+      panda: 'game.Scene',
+      // http://www.api.kiwijs.org/
+      kiwi: 'Kiwi',
+      // https://github.com/ippa/jaws
+      jaws: 'jaws',
+      // http://sirius2d.com/doc/
+      sirius2d: 'ss2d',
+      // http://jindo.dev.naver.com/collie/doc/index.html?l=en
+      collie: 'collie',
+      // https://github.com/wellcaffeinated/PhysicsJS/
+      physics: 'Physics',
+      // https://github.com/piqnt/stage.js
+      stage: 'Stage.Anim',
+      // https://github.com/BabylonJS/Babylon.js
+      babylon: 'BABYLON'
+    };
+
+    for (var key in engines) {
+      var namespace = engines[key];
+
+      // 有些引擎的namespace过于通用会进行一次深度属性检测
+      if (namespace.indexOf('.') > -1) {
+        var props = namespace.split('.');
+        var field = window[props[0]];
+
+        if (field && field[props[1]]) {
+          engineName = key;
+          return key;
+        }
+      } else {
+        if (window[namespace]) {
+          engineName = key;
+          return key;
+        }
+      }
+    }
+  }
+
   exports.version = 24;
 
   // 上报超时时间
@@ -726,12 +842,6 @@
   if (!resolution) {
     resolution = unknownWH;
   }
-
-  var engine = {
-    isEgret: !!window.egret,
-    isLayabox: !!window.layabox,
-    isCocos: !!window.cc && !!window.cc.game
-  };
 
   var osVersion = '';
 
@@ -941,135 +1051,32 @@
       json = arguments[2];
     }
 
-    var jsonStr = {};
+    var eventMap = {};
     if (utils.isObject(json)) {
       for (var key in json) {
         // 没有编码，移除%
-        jsonStr[replace(key)] = typeof json[key] === 'number' ? json[key] : encodeURIComponent(json[key]);
+        eventMap[replace(key)] = typeof json[key] === 'number' ? json[key] : encodeURIComponent(json[key]);
       }
     }
 
-    var sendData = {
+    var data = {
       eventId: replace(eventId),
-      eventMap: jsonStr
+      eventMap: eventMap
     };
-    dataCenter.addEvent(sendData);
 
-    return sendData;
+    dataCenter.addEvent(data);
+
+    // 即可发送请求
+    if (json && json.immediate === true) {
+      onlineTimer.reset();
+      onlineTimer.run();
+    }
+
+    return data;
   }
 
   function getUid() {
     return config.uid || '';
-  }
-
-  var timer;
-
-  var setTimeout = window.setTimeout;
-  var clearTimeout = window.clearTimeout;
-
-  /**
-   * egret 参数略有不同
-   */
-  if (engine.isEgret) {
-    setTimeout = function (func, time) {
-      window.egret.setTimeout(func, window, time);
-    };
-
-    clearTimeout = function (id) {
-      window.egret.clearTimeout(id);
-    };
-  }
-
-  function Timer(fn, duration) {
-    var _this = this;
-
-    /**
-     * running期间多次调用会执行多次
-     * 下个执行点为轮询执行完毕的duration之后
-     */
-    this.duration = duration;
-    this.status = 'running';
-    this.timer = setTimeout(function () {
-      return _this.run();
-    }, this.duration);
-
-    // 立即执行一次函数
-    this.run = function () {
-      if (_this.status === 'cancelled') return;
-
-      // 清除上次的定时器
-      clearTimeout(_this.timer);
-
-      utils.attempt(fn);
-
-      _this.timer = setTimeout(function () {
-        return _this.run();
-      }, _this.duration);
-    };
-
-    this.stop = function () {
-      _this.status = 'stopped';
-      clearTimeout(_this.timer);
-    };
-
-    // reset之后也会立即执行一次
-    this.reset = function (num) {
-      if (_this.status === 'cancelled') return;
-
-      _this.stop();
-      if (num) {
-        _this.duration = num;
-      }
-      _this.run();
-    };
-
-    // 永久停止timer防止被错误启动
-    this.cancel = function () {
-      this.status = 'cancelled';
-      clearTimeout(this.timer);
-    };
-  }
-
-  /**
-   * 等待一个周期再启动Timer
-   */
-  function reset(interval) {
-    if (timer) {
-      timer.stop();
-      setTimeout(function () {
-        timer && timer.reset(interval);
-      }, interval);
-
-      if (interval) {
-        stateCenter.interval = interval;
-      }
-    }
-  }
-
-  /**
-   * 停止定时器上报
-   */
-  function cancel() {
-    if (timer) {
-      timer.cancel();
-      timer = null;
-    }
-  }
-
-  function stop() {
-    if (timer) {
-      timer.stop();
-    }
-  }
-
-  function run() {
-    if (timer) {
-      timer.run();
-    }
-  }
-
-  function set(func, interval) {
-    timer = new Timer(func, interval);
   }
 
   // 全部请求失败的次数
