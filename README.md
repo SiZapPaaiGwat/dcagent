@@ -58,25 +58,23 @@ DCAgent.init({
 })
 ```
 
-## Demo
-
-```bash
-npm run demo
-```
-
 ## Unit test
 
 in Node.js
 
 ```bash
-npm run test-node
+npm test
 ```
 
 in browser
 
 ```bash
-npm run test
+npm run demo
 ```
+
+Open [http://localhost:8000/example/index.v2.html](http://localhost:8000/example/index.v2.html) in chrome.
+
+Some test suites may fail on Firefox / Safari, because of the implementation of localStorage.
 
 ## Build
 
