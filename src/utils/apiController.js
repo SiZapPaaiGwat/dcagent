@@ -18,8 +18,6 @@ export function setPollingDebounce(wait) {
     wait = utils.isDebug ? defaults.ASAP_TIMEOUT_DEBUG : defaults.ASAP_TIMEOUT
   }
 
-  console.log(wait, utils.isDebug)
-
   clearTimeout(controlTimeoutID)
 
   onlineTimer.stop()

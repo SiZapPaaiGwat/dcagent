@@ -45,22 +45,20 @@ describe('onCoinUse', function() {
     expect(DCAgent.player.reportCount).toEqual(count + 1)
   })
 
-  describe('coin info', function() {
-    it('should be the same with what I set', function() {
-      initAndLogin()
-      onCoinUse()
+  !CI_MODE && it('should be the same with what I set', function() {
+    initAndLogin()
+    onCoinUse()
 
-      jasmine.clock().tick(ASAP_TIMEOUT)
-      var events = DCAgent.report.eventInfoList
-      var event = events && events.filter(function(item) {
-        return item.eventId === 'DE_EVENT_COIN_ACTION'
-      })
-      var data = event && event[0] && event[0].eventMap
-      expect(data).toBeTruthy()
-      expect(data.coinNum).toEqual(200)
-      expect(data.balanceNum).toEqual(100)
-      expect(data.coinType).toEqual(encodeURIComponent('金币'))
-      expect(data.reason).toEqual(encodeURIComponent('增加体力消耗'))
+    jasmine.clock().tick(ASAP_TIMEOUT)
+    var events = DCAgent.report.eventInfoList
+    var event = events && events.filter(function(item) {
+      return item.eventId === 'DE_EVENT_COIN_ACTION'
     })
+    var data = event && event[0] && event[0].eventMap
+    expect(data).toBeTruthy()
+    expect(data.coinNum).toEqual(200)
+    expect(data.balanceNum).toEqual(100)
+    expect(data.coinType).toEqual(encodeURIComponent('金币'))
+    expect(data.reason).toEqual(encodeURIComponent('增加体力消耗'))
   })
 })

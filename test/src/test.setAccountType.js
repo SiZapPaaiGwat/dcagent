@@ -36,7 +36,7 @@ describe('setAccountType', function() {
     expect(DCAgent.player.reportCount).toEqual(count + 1)
   })
 
-  it('should be the same with what I set', function() {
+  !CI_MODE && it('should be the same with what I set', function() {
     initAndLogin()
     DCAgent.setAccountType('VIP')
 
