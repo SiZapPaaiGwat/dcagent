@@ -19,7 +19,7 @@
     "xmlhttprequest": "^1.8.0"
   },
   "scripts": {
-    "test": "./node_modules/karma/bin/karma start karma.conf.js --browsers PhantomJS",
+    "test": "./node_modules/karma/bin/karma start karma.conf.js",
     "test-node": "cd test && node test/node-runner.js",
     "demo": "puer ."
   },
