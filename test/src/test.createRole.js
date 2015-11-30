@@ -36,18 +36,16 @@ describe('createRole', function() {
     expect(DCAgent.player.reportCount).toEqual(count + 1)
   })
 
-  describe('role info', function() {
-    it('should be the same with what I set', function() {
-      initAndLogin('createRole4')
-      createRole()
+  it('should be the same with what I set', function() {
+    initAndLogin('createRole4')
+    createRole()
 
-      jasmine.clock().tick(ASAP_TIMEOUT + 50)
-      var headerInfo = DCAgent.report.headerInfo
-      expect(headerInfo).not.toBeUndefined()
-      expect(headerInfo.roleId).toEqual('兽人')
-      expect(headerInfo.roleRace).toEqual('部落')
-      expect(headerInfo.roleClass).toEqual('战士')
-      expect(headerInfo.roleLevel).toEqual(1)
-    })
+    jasmine.clock().tick(ASAP_TIMEOUT + 50)
+    var headerInfo = DCAgent.report.headerInfo
+    expect(headerInfo).not.toBeUndefined()
+    expect(headerInfo.roleId).toEqual('兽人')
+    expect(headerInfo.roleRace).toEqual('部落')
+    expect(headerInfo.roleClass).toEqual('战士')
+    expect(headerInfo.roleLevel).toEqual(1)
   })
 })
