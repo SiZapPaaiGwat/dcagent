@@ -16,7 +16,7 @@ global.ASAP_TIMEOUT = 2000
 global.CI_MODE = process.env.CI_MODE
 // XMLHttpRequest and localStorage in node
 global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest
-global.localStorage = new LocalStorage('./.localstorage')
+global.localStorage = new LocalStorage(__dirname + '/.localstorage')
 // jasmine-ajax need this
 global.jasmine = new Jasmine({
   jasmineCore: JasmineCore
@@ -27,8 +27,8 @@ jasmine.clock = function() {
 }
 require('jasmine-ajax')
 
-var agentPath = '../dist/dcagent.v2.src'
-var specFiles = process.argv[2] ? [process.argv[2]] : fs.readdirSync('src')
+var agentPath = __dirname + '/../dist/dcagent.v2.src'
+var specFiles = process.argv[2] ? [process.argv[2]] : fs.readdirSync(__dirname + '/src')
 
 jasmine.clock().install()
 // this code must not be removed, other else some specs fail
