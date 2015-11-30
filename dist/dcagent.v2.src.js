@@ -1003,16 +1003,16 @@
     };
   }
 
-  var D__git_dcagent_src_compats_storage = storage;
+  var d__git_dcagent_src_compats_storage = storage;
 
   /**
    * 用户退出时将当前数据保存到本地存储
    */
   function saveToStorage() {
-    D__git_dcagent_src_compats_storage.setItem(CONST.LOGOUT_TIME, utils.parseInt(Date.now() / 1000));
+    d__git_dcagent_src_compats_storage.setItem(CONST.LOGOUT_TIME, utils.parseInt(Date.now() / 1000));
 
     if (errors.length || events.length) {
-      D__git_dcagent_src_compats_storage.setItem(CONST.QUIT_SNAPSHOT, utils.jsonStringify(collect()));
+      d__git_dcagent_src_compats_storage.setItem(CONST.QUIT_SNAPSHOT, utils.jsonStringify(collect()));
     }
   }
 
@@ -1020,7 +1020,7 @@
    * 用户进入时从本地存储导入数据
    */
   function loadFromStorage() {
-    var params = D__git_dcagent_src_compats_storage.getItem(CONST.QUIT_SNAPSHOT);
+    var params = d__git_dcagent_src_compats_storage.getItem(CONST.QUIT_SNAPSHOT);
     return params && utils.jsonParse(params);
   }
 
@@ -1276,6 +1276,7 @@
     }
 
     reportCount += 1;
+    console.log(opts.data);
     exports.report = opts.data;
 
     ajax({
@@ -1412,6 +1413,8 @@
     if (!wait) {
       wait = utils.isDebug ? defaults.ASAP_TIMEOUT_DEBUG : defaults.ASAP_TIMEOUT;
     }
+
+    console.log(wait, utils.isDebug);
 
     clearTimeout(controlTimeoutID);
 
@@ -1819,7 +1822,7 @@
       data: snapshot
     }, true);
 
-    D__git_dcagent_src_compats_storage.removeItem(CONST.QUIT_SNAPSHOT);
+    d__git_dcagent_src_compats_storage.removeItem(CONST.QUIT_SNAPSHOT);
   }
 
   function onError() {
@@ -1905,13 +1908,13 @@
 
   function setItem(key, value) {
     key = wrapKey(key);
-    D__git_dcagent_src_compats_storage.setItem(key, value);
+    d__git_dcagent_src_compats_storage.setItem(key, value);
     _Cookie.set(key, value, 3650);
   }
 
   function getItem(key) {
     key = wrapKey(key);
-    return D__git_dcagent_src_compats_storage.getItem(key) || _Cookie.get(key);
+    return d__git_dcagent_src_compats_storage.getItem(key) || _Cookie.get(key);
   }
 
   /**
@@ -2247,7 +2250,7 @@
       if (localUID !== paddingUID) {
         config.uid = paddingUID;
         localUID = paddingUID;
-        D__git_dcagent_src_compats_storage.setItem(CONST.CREATE_TIME, utils.parseInt(Date.now() / 1000));
+        d__git_dcagent_src_compats_storage.setItem(CONST.CREATE_TIME, utils.parseInt(Date.now() / 1000));
       }
     }
 
@@ -2278,10 +2281,10 @@
      * 白鹭引擎由于共享设备ID
      * 所以可能导致第一次进入游戏设备ID已经设置但是创建时间没有设置
      */
-    var createTime = D__git_dcagent_src_compats_storage.getItem(CONST.CREATE_TIME);
+    var createTime = d__git_dcagent_src_compats_storage.getItem(CONST.CREATE_TIME);
     if (!createTime) {
       createTime = stateCenter.initTime;
-      D__git_dcagent_src_compats_storage.setItem(CONST.CREATE_TIME, createTime);
+      d__git_dcagent_src_compats_storage.setItem(CONST.CREATE_TIME, createTime);
     }
 
     stateCenter.createTime = utils.parseInt(createTime);
@@ -2330,7 +2333,7 @@
      * 如果提供了uid，不需要本地存储支持
      * 不过可能会损失部分在线数据
      */
-    stateCenter.storage = utils.isLocalStorageSupported(D__git_dcagent_src_compats_storage);
+    stateCenter.storage = utils.isLocalStorageSupported(d__git_dcagent_src_compats_storage);
     if (!options.uid && !stateCenter.storage) {
       return Client.hasStorage ? 'Storage quota error' : 'Storage not support';
     }
@@ -2437,7 +2440,7 @@
       return stateCenter.loginTime;
     },
     get lastLogoutTime() {
-      return parseInt(D__git_dcagent_src_compats_storage.getItem(CONST.LOGOUT_TIME));
+      return parseInt(d__git_dcagent_src_compats_storage.getItem(CONST.LOGOUT_TIME));
     },
     get reportCount() {
       return reportCount;
