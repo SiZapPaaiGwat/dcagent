@@ -1,6 +1,6 @@
 # DCAgent
 
-[![Build Status](https://travis-ci.org/simongfxu/dcagent.svg)](https://travis-ci.org/simongfxu/dcagent)
+[![Build Status](https://semaphoreci.com/api/v1/projects/fe96f7eb-4550-40f1-bc7c-8730972786b9/617607/badge.svg)](https://semaphoreci.com/damngoto/dcagent)
 
 an analytics sdk for HTML5 app and web game
 
