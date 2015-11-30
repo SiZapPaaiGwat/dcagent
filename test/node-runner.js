@@ -12,6 +12,8 @@ global.getJasmineRequireObj = function() {
 }
 global.DCAGENT_DEBUG_OPEN = true
 global.ASAP_TIMEOUT = 2000
+// some test suite failed in ci system(pass in ci's ssh mode)
+global.CI_MODE = process.env.CI_MODE
 // XMLHttpRequest and localStorage in node
 global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest
 global.localStorage = new LocalStorage('./.localstorage')
