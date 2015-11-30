@@ -1066,7 +1066,7 @@
 
     dataCenter.addEvent(data);
 
-    // 即可发送请求
+    // 立即发送请求
     if (json && json.immediate === true) {
       onlineTimer.reset();
       onlineTimer.run();
