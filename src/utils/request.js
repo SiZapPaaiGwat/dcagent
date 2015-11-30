@@ -34,7 +34,6 @@ export default function(opts, force) {
   }
 
   reportCount += 1
-  console.log(opts.data)
   reportData = opts.data
 
   ajax({
