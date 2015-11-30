@@ -41,7 +41,7 @@ describe('createRole', function() {
       initAndLogin('createRole4')
       createRole()
 
-      jasmine.clock().tick(ASAP_TIMEOUT)
+      jasmine.clock().tick(ASAP_TIMEOUT + 50)
       var headerInfo = DCAgent.report.headerInfo
       expect(headerInfo).not.toBeUndefined()
       expect(headerInfo.roleId).toEqual('兽人')
