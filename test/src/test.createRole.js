@@ -1,5 +1,5 @@
 /*globals ASAP_TIMEOUT, describe, it, expect, DCAgent, beforeEach, afterEach, loadDCAgent, destroyDCAgent, jasmine */
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 6000
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
 describe('createRole', function() {
   beforeEach(loadDCAgent)
 
