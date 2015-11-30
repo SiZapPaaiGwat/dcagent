@@ -20,7 +20,7 @@
   },
   "scripts": {
     "test": "./node_modules/karma/bin/karma start karma.conf.js",
-    "test-node": "cd test && node test/node-runner.js",
+    "test-node": "node test/node-runner.js",
     "demo": "puer ."
   },
   "keywords": [
