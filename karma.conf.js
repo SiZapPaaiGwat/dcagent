@@ -17,7 +17,7 @@ module.exports = function(config) {
     files: [
       'test/libs/mock-ajax.js',
       'test/karma-boot.js',
-      'test/src/*.js',
+      'test/src/test.createRole.js',
       {pattern: 'dist/dcagent.v2.src.js', included: false, served: true, watched: true, nocache: true}
     ],
 
@@ -67,6 +67,6 @@ module.exports = function(config) {
 
     // Concurrency level
     // how many browser should be started simultanous
-    concurrency: 2
+    concurrency: 1
   })
 }
