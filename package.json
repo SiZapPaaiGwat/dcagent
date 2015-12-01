@@ -17,12 +17,11 @@
     "karma": "^0.13.14",
     "karma-chrome-launcher": "^0.2.1",
     "karma-jasmine": "^0.3.6",
-    "karma-coverage": "^0.5.3",
     "node-localstorage": "^0.6.0",
     "xmlhttprequest": "^1.8.0"
   },
   "scripts": {
-    "cover": "cd test && ../node_modules/istanbul/lib/cli.js cover node-runner.js && cat ./coverage/coverage.json | ../node_modules/codecov.io/bin/codecov.io.js",
+    "cover": "cd test && ../node_modules/istanbul/lib/cli.js cover node-runner.js -i \"../dist/dcagent.v2.src.js\" && cat ./coverage/coverage.json | ../node_modules/codecov.io/bin/codecov.io.js",
     "demo": "puer .",
     "dist": "./node_modules/gulp/bin/gulp.js",
     "test": "./node_modules/karma/bin/karma start karma.conf.js",
