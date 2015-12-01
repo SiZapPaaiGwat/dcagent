@@ -4,6 +4,7 @@
   "main": "dist/dcagent.v2.src.js",
   "devDependencies": {
     "codecov.io": "0.1.6",
+    "istanbul": "^0.4.1",
     "gulp": "^3.8.8",
     "gulp-babel": "^5.0.0",
     "gulp-jshint": "^1.9.4",
@@ -16,16 +17,16 @@
     "karma": "^0.13.14",
     "karma-chrome-launcher": "^0.2.1",
     "karma-jasmine": "^0.3.6",
-    "karma-coverrage": "^0.5.3",
+    "karma-coverage": "^0.5.3",
     "node-localstorage": "^0.6.0",
     "xmlhttprequest": "^1.8.0"
   },
   "scripts": {
-    "test": "./node_modules/karma/bin/karma start karma.conf.js",
-    "test-node": "cd test && node node-runner.js",
-    "dist": "./node_modules/gulp/bin/gulp.js",
     "cover": "./node_modules/istanbul/lib/cli.js cover test/node-runner.js && cat ./coverage/coverage.json | ./node_modules/codecov.io/bin/codecov.io.js",
-    "demo": "puer ."
+    "demo": "puer .",
+    "dist": "./node_modules/gulp/bin/gulp.js",
+    "test": "./node_modules/karma/bin/karma start karma.conf.js",
+    "test-node": "cd test && node node-runner.js"
   },
   "keywords": [
     "game-analytics",
