@@ -1,0 +1,15 @@
+**** 演示说明 ****
+  打开index.v2.html查看demo
+
+  dcagent.additional.js
+  dcagent.json
+  dcagent.d.ts
+  以上三个文件为白鹭引擎专用，其他运行环境可以忽略
+
+
+**** 更新说明 ****
+Version 0.2.4
+更新日期：2015-12-05
+更新内容：
+- 1. 修复SDK在一些机型（WP以及少部分安卓）中无法运行的BUG
+- 2. SDK支持Node.js服务端统计
