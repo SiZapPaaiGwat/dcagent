@@ -2,7 +2,7 @@
 var DCAGENT_DEBUG_OPEN = true
 var ASAP_TIMEOUT = 2000
 // 有些单元测试在ci模式下通不过，不知道什么原因
-var CI_MODE = true
+var CI_MODE = false
 
 // 每个Spec开始的时候重新加载SDK避免被上次的结果影响
 function loadDCAgent(done) {
