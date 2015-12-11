@@ -27,6 +27,14 @@ describe('onPayment', function() {
     expect(payment).not.toThrow()
   })
 
+  it('should throw an error when amount is not greater than zero', function() {
+    initAndLogin()
+    var pay1 = function() {
+      DCAgent.onPayment({amountx: 0})
+    }
+    expect(pay1).toThrow()
+  })
+
   it('should throw an error when there is no amount field', function() {
     initAndLogin()
     var pay1 = function() {

@@ -19,6 +19,11 @@ export default function onPayment(opts) {
     }
   }
 
+	if (sendData.currencyAmount <= 0) {
+		utils.tryThrow('amount must be greater than 0')
+		return
+	}
+
   onlinePolling(true, sendData)
   return sendData
 }
