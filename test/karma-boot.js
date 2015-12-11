@@ -2,7 +2,7 @@
 var DCAGENT_DEBUG_OPEN = true
 var ASAP_TIMEOUT = 2000
 // 有些单元测试在ci模式下通不过，不知道什么原因
-var CI_MODE = true
+var CI_MODE = false
 
 // 每个Spec开始的时候重新加载SDK避免被上次的结果影响
 function loadDCAgent(done) {
@@ -25,3 +25,14 @@ function destroyDCAgent(done) {
 jasmine.clock().install()
 // 这里也必须mockDate，不然有些Spec会失败
 jasmine.clock().mockDate(new Date(2015, 11, 1))
+jasmine.Ajax.install()
+jasmine.Ajax.stubRequest(/http:\/\/rd.gdatacube.net\/.+/).andReturn({
+  "status": 200,
+  "contentType": 'text/plain',
+  "responseText": 'success',
+  "responseHeaders": {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'X-Rate-Limit',
+    'X-Rate-Limit': 100
+  }
+})
