@@ -9,8 +9,7 @@ import * as defaults from '../defaults.js'
 import * as Client from '../detect/client.js'
 import stateCenter from '../utils/stateCenter.js'
 import * as dataCenter from '../utils/dataCenter.js'
-import * as innerStorage from '../utils/storage.js'
-import storage from '../compats/storage.js'
+import * as storage from '../utils/storage.js'
 import config from '../utils/initConfig.js'
 import onlinePolling from '../utils/onlinePolling.js'
 import * as onlineTimer from '../utils/onlineTimer.js'
@@ -85,7 +84,7 @@ function settleUID(localUID) {
 
 
   var deviceID = localUID || getUID()
-  innerStorage.setItem(CONST.CLIENT_KEY, deviceID)
+  storage.setUID(CONST.CLIENT_KEY, deviceID)
 
   return deviceID
 }
@@ -113,7 +112,7 @@ function restoreSnapshot(isNewUser) {
 }
 
 function initialize(options) {
-  var localUID = innerStorage.getItem(CONST.CLIENT_KEY)
+  var localUID = storage.getUID(CONST.CLIENT_KEY)
 
   // 是否首次激活
   var isAct = localUID ? 0 : 1

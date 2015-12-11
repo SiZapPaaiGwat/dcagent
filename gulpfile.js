@@ -44,6 +44,11 @@ gulp.task('lint', ['bundle'], function () {
 gulp.task('bundle', function () {
   return gulp.src('src/index.js', {read: false})
     .pipe(rollup(options))
+    .on('error', function(err) {
+      console.log('任务结束，执行出错：')
+      console.log(err)
+      this.emit('end')
+    })
     .pipe(rename(function (path) {
       // 移除目录和后缀
       path.basename = 'dcagent.v2.src'

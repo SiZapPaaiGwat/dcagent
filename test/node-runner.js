@@ -13,7 +13,7 @@ global.getJasmineRequireObj = function() {
 global.DCAGENT_DEBUG_OPEN = true
 global.ASAP_TIMEOUT = 2000
 // some test suite failed in ci system(pass in ci's ssh mode)
-global.CI_MODE = true
+global.CI_MODE = false
 // XMLHttpRequest and localStorage in node
 global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest
 global.localStorage = new LocalStorage(__dirname + '/.localstorage')
@@ -33,6 +33,18 @@ var specFiles = process.argv[2] ? [process.argv[2]] : fs.readdirSync(__dirname +
 jasmine.clock().install()
 // this code must not be removed, other else some specs fail
 jasmine.clock().mockDate(new Date(2015, 10, 1))
+jasmine.Ajax.install()
+jasmine.Ajax.stubRequest(/http:\/\/rd.gdatacube.net\/.+/).andReturn({
+  "status": 200,
+  "contentType": 'text/plain',
+  "responseText": 'success',
+  "responseHeaders": {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'X-Rate-Limit',
+    'X-Rate-Limit': 100
+  }
+})
+
 
 global.loadDCAgent = function(done) {
   global.DCAgent = require(agentPath)

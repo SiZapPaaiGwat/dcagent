@@ -4,25 +4,25 @@
 
 import {engine} from '../detect/engine.js'
 import {hasStorage} from '../detect/client.js'
+import {window} from '../globals.js'
 import {noop} from '../libs/utils.js'
-import {window} from '../globals'
 
-var storage
+var localstorage
 
 /**
  * see egret core at src/context/localStorage/localStorage.ts
  */
 if (engine.isEgret) {
-  storage = window.egret.localStorage
+  localstorage = window.egret.localStorage
 } else if (engine.isCocos) {
-  storage = window.cc.sys.localStorage
+  localstorage = window.cc.sys.localStorage
 } else {
   // layabox也是localStorage
-  storage = hasStorage ? window.localStorage : {
+  localstorage = hasStorage ? window.localStorage : {
     getItem: noop,
     setItem: noop,
     removeItem: noop
   }
 }
 
-export default storage
+export default localstorage

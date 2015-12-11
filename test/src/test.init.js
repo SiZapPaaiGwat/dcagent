@@ -51,6 +51,7 @@ describe('init', function() {
   })
 
   it('should work if uid is supplied even localstorage is not support', function() {
+    // localStorage is not writable in firefox
     localStorage.setItem = function() {}
     localStorage.getItem = function() {}
     var init = function() {
@@ -59,5 +60,20 @@ describe('init', function() {
     expect(init).not.toThrow()
     localStorage.setItem = setItem
     localStorage.getItem = getItem
+  })
+
+  var uid
+  it('should create uid in localstorage based on appid', function() {
+    var appid = Date.now().toString()
+    DCAgent.init({appId: appid})
+    uid = localStorage.getItem(appid + '.dcagent_client_id')
+    expect(uid).toBeTruthy()
+  })
+
+  it('should not share data between different applications in one domain', function() {
+    var appid = Date.now().toString()
+    DCAgent.init({appId: appid})
+    var uid2 = localStorage.getItem(appid + '.dcagent_client_id')
+    expect(uid).toEqual(uid2)
   })
 })

@@ -5,7 +5,7 @@
 import config from './initConfig.js'
 import * as defaults from '../defaults.js'
 import * as CONST from '../consts.js'
-import storage from '../compats/storage.js'
+import * as storage from './storage.js'
 import * as utils from '../libs/utils.js'
 import detectEngine from '../detect/engine.js'
 import {device} from '../detect/client.js'

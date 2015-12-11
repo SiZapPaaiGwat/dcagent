@@ -225,6 +225,24 @@
     }
   };
 
+  var storage = {
+    get setUID() {
+      return setUID;
+    },
+    get getUID() {
+      return _getUID;
+    },
+    get setItem() {
+      return setItem;
+    },
+    get getItem() {
+      return getItem;
+    },
+    get removeItem() {
+      return removeItem;
+    }
+  };
+
   var Client = {
     get hasStorage() {
       return hasStorage;
@@ -276,15 +294,6 @@
   var controller = {
     get setPollingDebounce() {
       return setPollingDebounce;
-    }
-  };
-
-  var innerStorage = {
-    get setItem() {
-      return setItem;
-    },
-    get getItem() {
-      return getItem;
     }
   };
 
@@ -762,7 +771,7 @@
     }
   }
 
-  exports.version = 24;
+  exports.version = 25;
 
   // 上报超时时间
   var REQUEST_TIME_OUT = 30 * 1000;
@@ -983,36 +992,140 @@
 
   var EVT_PV = 'DE_EVENT_PV';
 
-  var storage;
+  var Cookie = {
+    get: function (name) {
+      var reg = '(^|)\\s*' + name + '=([^\\s]*)';
+      var c = document.cookie.match(new RegExp(reg));
+
+      return c && c.length >= 3 ? decodeURIComponent(c[2]) : null;
+    },
+    set: function (name, value, days, domain, path, secure) {
+      var d;
+      if (days) {
+        d = new Date();
+        d.setTime(d.getTime() + days * 8.64e7);
+      }
+      var expiresStr = days ? ' expires=' + d.toGMTString() : '';
+      var pathStr = ' path=' + (path || '/');
+      var domainStr = domain ? ' domain=' + domain : '';
+      var secureStr = secure ? ' secure' : '';
+      document.cookie = name + '=' + encodeURIComponent(value) + expiresStr + pathStr + domainStr + secureStr;
+    },
+    remove: function (name, domain, path) {
+      Cookie.set(name, '', -1, domain, path);
+    }
+  };
 
   var hasStorage = !!window.localStorage || engine.isEgret || engine.isCocos || engine.isLayabox;
+
+  function hasDOM() {
+
+    if (document && isFunction(document.createElement)) {
+      /**
+       * document.createElement is not reliable
+       * since there is some kind browser you can just create canvas only
+       */
+      var node = document.createElement('div');
+
+      /**
+       * node may be an empty object or null (layabox earlier version)
+       */
+      if (!node) return false;
+
+      /**
+       * detect logic, create dom and exec query
+       */
+      if (isFunction(node.querySelector)) {
+        node.innerHTML = '<i></i>';
+
+        var el = node.querySelector('i');
+
+        return !!el && el.tagName === 'I';
+      }
+
+      /**
+       * for old browsers such as IE version < 9
+       */
+      if (isFunction(node.getElementsByTagName)) {
+        var children = node.getElementsByTagName('i');
+
+        return !!children && children.length === 1;
+      }
+    }
+
+    return false;
+  }
+
+  var isStandardBrowser = hasDOM();
+  var hasCookie = isStandardBrowser && 'cookie' in document;
+
+  var location = topThis.location || {};
+
+  var protocol = location.protocol === 'https:' ? 'https:' : 'http:';
+  var useXDR = !!window.XDomainRequest;
+
+  var cookie = Client.hasCookie ? Cookie : {
+    get: utils.noop,
+    set: utils.noop
+  };
+
+  var _Cookie = cookie;
+
+  var localstorage;
 
   /**
    * see egret core at src/context/localStorage/localStorage.ts
    */
   if (engine.isEgret) {
-    storage = window.egret.localStorage;
+    localstorage = window.egret.localStorage;
   } else if (engine.isCocos) {
-    storage = window.cc.sys.localStorage;
+    localstorage = window.cc.sys.localStorage;
   } else {
     // layabox也是localStorage
-    storage = hasStorage ? window.localStorage : {
+    localstorage = hasStorage ? window.localStorage : {
       getItem: noop,
       setItem: noop,
       removeItem: noop
     };
   }
 
-  var D__git_dcagent_src_compats_storage = storage;
+  var D__git_dcagent_src_compats_localStorage = localstorage;
+
+  function wrapKey(key) {
+    return config.appId + '.' + key;
+  }
+
+  function setUID(key, value) {
+    key = wrapKey(key);
+    D__git_dcagent_src_compats_localStorage.setItem(key, value);
+    _Cookie.set(key, value, 3650);
+  }
+
+  function _getUID(key) {
+    key = wrapKey(key);
+    return D__git_dcagent_src_compats_localStorage.getItem(key) || _Cookie.get(key);
+  }
+
+  function setItem(key, value) {
+    D__git_dcagent_src_compats_localStorage.setItem(wrapKey(key), value);
+  }
+
+  function getItem(key) {
+    return D__git_dcagent_src_compats_localStorage.getItem(wrapKey(key));
+  }
+
+  function removeItem(key) {
+    D__git_dcagent_src_compats_localStorage.removeItem(wrapKey(key));
+  }
 
   /**
    * 用户退出时将当前数据保存到本地存储
    */
   function saveToStorage() {
-    D__git_dcagent_src_compats_storage.setItem(CONST.LOGOUT_TIME, utils.parseInt(Date.now() / 1000));
+    storage.setItem(CONST.LOGOUT_TIME, utils.parseInt(Date.now() / 1000));
 
     if (errors.length || events.length) {
-      D__git_dcagent_src_compats_storage.setItem(CONST.QUIT_SNAPSHOT, utils.jsonStringify(collect()));
+      storage.setItem(CONST.QUIT_SNAPSHOT, utils.jsonStringify(collect()));
     }
   }
 
@@ -1020,7 +1133,7 @@
    * 用户进入时从本地存储导入数据
    */
   function loadFromStorage() {
-    var params = D__git_dcagent_src_compats_storage.getItem(CONST.QUIT_SNAPSHOT);
+    var params = storage.getItem(CONST.QUIT_SNAPSHOT);
     return params && utils.jsonParse(params);
   }
 
@@ -1112,52 +1225,6 @@
    * https://msdn.microsoft.com/library/cc288060(v=vs.85).aspx
    */
   var supportTimeout = true;
-
-  function hasDOM() {
-
-    if (document && isFunction(document.createElement)) {
-      /**
-       * document.createElement is not reliable
-       * since there is some kind browser you can just create canvas only
-       */
-      var node = document.createElement('div');
-
-      /**
-       * node may be an empty object or null (layabox earlier version)
-       */
-      if (!node) return false;
-
-      /**
-       * detect logic, create dom and exec query
-       */
-      if (isFunction(node.querySelector)) {
-        node.innerHTML = '<i></i>';
-
-        var el = node.querySelector('i');
-
-        return !!el && el.tagName === 'I';
-      }
-
-      /**
-       * for old browsers such as IE version < 9
-       */
-      if (isFunction(node.getElementsByTagName)) {
-        var children = node.getElementsByTagName('i');
-
-        return !!children && children.length === 1;
-      }
-    }
-
-    return false;
-  }
-
-  var isStandardBrowser = hasDOM();
-  var hasCookie = isStandardBrowser && 'cookie' in document;
-
-  var location = topThis.location || {};
-
-  var protocol = location.protocol === 'https:' ? 'https:' : 'http:';
-  var useXDR = !!window.XDomainRequest;
 
   var createBrowserXHR = Client.useXDR ? function () {
     return new window.XDomainRequest();
@@ -1824,7 +1891,7 @@
       data: snapshot
     }, true);
 
-    D__git_dcagent_src_compats_storage.removeItem(CONST.QUIT_SNAPSHOT);
+    storage.removeItem(CONST.QUIT_SNAPSHOT);
   }
 
   function onError() {
@@ -1865,58 +1932,6 @@
         dataCenter.addError(params);
       });
     }, false);
-  }
-
-  var Cookie = {
-    get: function (name) {
-      var reg = '(^|)\\s*' + name + '=([^\\s]*)';
-      var c = document.cookie.match(new RegExp(reg));
-
-      return c && c.length >= 3 ? decodeURIComponent(c[2]) : null;
-    },
-    set: function (name, value, days, domain, path, secure) {
-      var d;
-      if (days) {
-        d = new Date();
-        d.setTime(d.getTime() + days * 8.64e7);
-      }
-      var expiresStr = days ? ' expires=' + d.toGMTString() : '';
-      var pathStr = ' path=' + (path || '/');
-      var domainStr = domain ? ' domain=' + domain : '';
-      var secureStr = secure ? ' secure' : '';
-      document.cookie = name + '=' + encodeURIComponent(value) + expiresStr + pathStr + domainStr + secureStr;
-    },
-    remove: function (name, domain, path) {
-      Cookie.set(name, '', -1, domain, path);
-    }
-  };
-
-  var cookie = Client.hasCookie ? Cookie : {
-    get: utils.noop,
-    set: utils.noop
-  };
-
-  var _Cookie = cookie;
-
-  function wrapKey(key) {
-    // 设备ID不加APPID前缀，方便跨app定位用户
-    if (Client.isStandardBrowser || CONST.CLIENT_KEY === key) {
-      return key;
-    }
-
-    // egret的localStorage是跨APP共享的，所以需要自己完成数据隔离
-    return config.appId + '.' + key;
-  }
-
-  function setItem(key, value) {
-    key = wrapKey(key);
-    D__git_dcagent_src_compats_storage.setItem(key, value);
-    _Cookie.set(key, value, 3650);
-  }
-
-  function getItem(key) {
-    key = wrapKey(key);
-    return D__git_dcagent_src_compats_storage.getItem(key) || _Cookie.get(key);
   }
 
   /**
@@ -2252,18 +2267,18 @@
       if (localUID !== paddingUID) {
         config.uid = paddingUID;
         localUID = paddingUID;
-        D__git_dcagent_src_compats_storage.setItem(CONST.CREATE_TIME, utils.parseInt(Date.now() / 1000));
+        storage.setItem(CONST.CREATE_TIME, utils.parseInt(Date.now() / 1000));
       }
     }
 
     var deviceID = localUID || getUID();
-    innerStorage.setItem(CONST.CLIENT_KEY, deviceID);
+    storage.setUID(CONST.CLIENT_KEY, deviceID);
 
     return deviceID;
   }
 
   function initialize(options) {
-    var localUID = innerStorage.getItem(CONST.CLIENT_KEY);
+    var localUID = storage.getUID(CONST.CLIENT_KEY);
 
     // 是否首次激活
     var isAct = localUID ? 0 : 1;
@@ -2283,10 +2298,10 @@
      * 白鹭引擎由于共享设备ID
      * 所以可能导致第一次进入游戏设备ID已经设置但是创建时间没有设置
      */
-    var createTime = D__git_dcagent_src_compats_storage.getItem(CONST.CREATE_TIME);
+    var createTime = storage.getItem(CONST.CREATE_TIME);
     if (!createTime) {
       createTime = stateCenter.initTime;
-      D__git_dcagent_src_compats_storage.setItem(CONST.CREATE_TIME, createTime);
+      storage.setItem(CONST.CREATE_TIME, createTime);
     }
 
     stateCenter.createTime = utils.parseInt(createTime);
@@ -2335,7 +2350,7 @@
      * 如果提供了uid，不需要本地存储支持
      * 不过可能会损失部分在线数据
      */
-    stateCenter.storage = utils.isLocalStorageSupported(D__git_dcagent_src_compats_storage);
+    stateCenter.storage = utils.isLocalStorageSupported(storage);
     if (!options.uid && !stateCenter.storage) {
       return Client.hasStorage ? 'Storage quota error' : 'Storage not support';
     }
@@ -2442,7 +2457,7 @@
       return stateCenter.loginTime;
     },
     get lastLogoutTime() {
-      return parseInt(D__git_dcagent_src_compats_storage.getItem(CONST.LOGOUT_TIME));
+      return parseInt(storage.getItem(CONST.LOGOUT_TIME));
     },
     get reportCount() {
       return reportCount;
