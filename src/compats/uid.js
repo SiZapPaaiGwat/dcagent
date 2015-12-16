@@ -3,7 +3,6 @@ import * as Engine from '../detect/engine.js'
 import * as CONST from '../consts.js'
 import * as defaults from '../defaults.js'
 import * as utils from '../libs/utils.js'
-import FingerPrint from '../libs/fingerprint.js'
 import {window} from '../globals.js'
 
 /**
@@ -48,14 +47,10 @@ export default function() {
   var uid
 
   try {
-    if (Client.isStandardBrowser) {
-      uid = new FingerPrint({canvas: true, screen_resolution: true, ie_activex: true}).get().toString()
-    } else {
-      if (Engine.engine.layabox) {
-        var deviceInfo = window.layabox.getDeviceInfo() || {}
-        uid = deviceInfo.mac || deviceInfo.idfa
-        uid = uid && uid.replace(/[-_:=\s]+/g, '').toUpperCase()
-      }
+    if (Engine.engine.layabox) {
+      var deviceInfo = window.layabox.getDeviceInfo() || {}
+      uid = deviceInfo.mac || deviceInfo.idfa
+      uid = uid && uid.replace(/[-_:=\s]+/g, '').toUpperCase()
     }
   } catch (e) {
     uid = null
