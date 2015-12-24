@@ -344,8 +344,9 @@
 
   /**
    * egret 参数略有不同
+   * egret.setTimeout貌似有bug，优先使用全局默认的setTimeout
    */
-  if (engine.isEgret) {
+  if (engine.isEgret && !setTimeout) {
     setTimeout = function (func, time) {
       window.egret.setTimeout(func, window, time);
     };
