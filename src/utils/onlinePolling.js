@@ -19,6 +19,8 @@ export default function(force, payment, reg) {
     url: uri.appendOnline(uri.API_PATH)
   }
 
+  var offsetLen = 1
+
   /**
    * 上报质量统计，每隔多少个周期上报，默认为10
    */
@@ -31,9 +33,17 @@ export default function(force, payment, reg) {
         total: reportCount
       }
     })
+
+    offsetLen += 1
   }
 
   opts.data = dataCenter.collect(payment, reg)
+
+  // report event immediately if set with immediate
+  var recentEvent = opts.data.eventInfoList[opts.data.eventInfoList.length - offsetLen]
+  if (recentEvent && recentEvent.eventMap && recentEvent.eventMap.immediate) {
+    force = true
+  }
 
   if (!validator.isParamsValid(opts.data)) return
 

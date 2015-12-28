@@ -7,14 +7,10 @@ export var MAX_ONLINE_TIME = 3600 * 24 * 2
 // 最短在线轮询周期，秒
 export var MIN_ONLINE_INTERVAL = 40
 
-export var MIN_ONLINE_INTERVAL_DEBUG = 15
-
 export var UID_MIN_LENGTH = 32
 
 // 尽早执行的定时器的延时
 export var ASAP_TIMEOUT = 5000
-
-export var ASAP_TIMEOUT_DEBUG = 2000
 
 // 最大错误上报数目
 export var MAX_ERROR_COUNT = 100

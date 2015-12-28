@@ -168,8 +168,7 @@ function initialize(options) {
   restoreSnapshot(isAct)
 
   // 开启在线轮询
-  var minInterval = utils.isDebug ? defaults.MIN_ONLINE_INTERVAL_DEBUG : defaults.MIN_ONLINE_INTERVAL
-  var interval = Math.max(minInterval, parseFloat(options.interval || minInterval)) * 1000
+  var interval = Math.max(defaults.MIN_ONLINE_INTERVAL, parseFloat(options.interval || defaults.MIN_ONLINE_INTERVAL)) * 1000
   onlineTimer.set(onlinePolling, interval)
   stateCenter.interval = interval
   stateCenter.inited = true

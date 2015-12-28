@@ -1,6 +1,7 @@
 import * as dataCenter from '../utils/dataCenter.js'
 import * as utils from '../libs/utils.js'
 import * as onlineTimer from '../utils/onlineTimer.js'
+import onlinePolling from '../utils/onlinePolling.js'
 
 export default function onEvent(eventId, json) {
 	if (!eventId) {
@@ -34,10 +35,9 @@ export default function onEvent(eventId, json) {
   dataCenter.addEvent(data)
 
   // 立即发送请求
-  if (json && json.immediate === true) {
-    onlineTimer.reset()
+  if (json && json.immediate) {
+    onlineTimer.stop()
     onlineTimer.run()
+		return false
   }
-
-  return data
 }

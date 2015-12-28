@@ -31,15 +31,16 @@ describe('onEvent', function() {
 
   it('should convert eventID\'s % to _', function() {
     DCAgent.init({appId: 'event'})
-    var event = DCAgent.onEvent('%12%34', {level: 2})
-    expect(event.eventId).toEqual('_12_34')
+    DCAgent.onEvent('%12%34', {level: 2})
+    jasmine.clock().tick(ASAP_TIMEOUT)
+    expect(DCAgent.report.eventInfoList[0].eventId).toEqual('_12_34')
   })
 
   it('should convert eventData key\'s % to _', function() {
     DCAgent.init({appId: 'event'})
-    var event = DCAgent.onEvent('open', {'%12%34': 10})
-    var key = Object.keys(event.eventMap)[0]
-    expect(key).toEqual('_12_34')
+    DCAgent.onEvent('open', {'%12%34': 10})
+    jasmine.clock().tick(ASAP_TIMEOUT)
+    expect(Object.keys(DCAgent.report.eventInfoList[0].eventMap)[0]).toEqual('_12_34')
   })
 
   it('should not trigger ajax after invocation', function() {
@@ -64,6 +65,17 @@ describe('onEvent', function() {
     DCAgent.init({appId: 'event'})
     var requestCount = DCAgent.player.reportCount
     DCAgent.onEvent('open_dialog', {level: 1, immediate: true})
+    expect(DCAgent.player.reportCount).toEqual(requestCount + 1)
+    var func = function() {
+      DCAgent.onEvent('open_dialog', {level: 2, immediate: true})
+    }
+    expect(func).not.toThrow()
+    requestCount = DCAgent.player.reportCount
+    // do not trigger asap policy
+    jasmine.clock().tick(ASAP_TIMEOUT)
+    expect(DCAgent.player.reportCount).toEqual(requestCount)
+    // report count + 1 after one period time
+    jasmine.clock().tick(35 * 1000)
     expect(DCAgent.player.reportCount).toEqual(requestCount + 1)
   })
 })

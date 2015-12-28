@@ -1,6 +1,6 @@
 /* jshint ignore:start*/
 var DCAGENT_DEBUG_OPEN = true
-var ASAP_TIMEOUT = 2000
+var ASAP_TIMEOUT = 5000
 // 有些单元测试在ci模式下通不过，不知道什么原因
 var CI_MODE = true
 

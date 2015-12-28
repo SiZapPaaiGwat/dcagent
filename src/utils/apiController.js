@@ -5,7 +5,6 @@
 import {setTimeout, clearTimeout} from '../compats/xTimeout.js'
 import * as onlineTimer from '../utils/onlineTimer.js'
 import * as defaults from '../defaults.js'
-import * as utils from '../libs/utils.js'
 
 var controlTimeoutID
 
@@ -15,7 +14,7 @@ var controlTimeoutID
  */
 export function setPollingDebounce(wait) {
   if (!wait) {
-    wait = utils.isDebug ? defaults.ASAP_TIMEOUT_DEBUG : defaults.ASAP_TIMEOUT
+    wait = defaults.ASAP_TIMEOUT
   }
 
   clearTimeout(controlTimeoutID)

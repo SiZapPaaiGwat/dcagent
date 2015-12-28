@@ -118,17 +118,11 @@
     get MIN_ONLINE_INTERVAL() {
       return MIN_ONLINE_INTERVAL;
     },
-    get MIN_ONLINE_INTERVAL_DEBUG() {
-      return MIN_ONLINE_INTERVAL_DEBUG;
-    },
     get UID_MIN_LENGTH() {
       return UID_MIN_LENGTH;
     },
     get ASAP_TIMEOUT() {
       return ASAP_TIMEOUT;
-    },
-    get ASAP_TIMEOUT_DEBUG() {
-      return ASAP_TIMEOUT_DEBUG;
     },
     get MAX_ERROR_COUNT() {
       return MAX_ERROR_COUNT;
@@ -783,14 +777,10 @@
   // 最短在线轮询周期，秒
   var MIN_ONLINE_INTERVAL = 40;
 
-  var MIN_ONLINE_INTERVAL_DEBUG = 15;
-
   var UID_MIN_LENGTH = 32;
 
   // 尽早执行的定时器的延时
   var ASAP_TIMEOUT = 5000;
-
-  var ASAP_TIMEOUT_DEBUG = 2000;
 
   // 最大错误上报数目
   var MAX_ERROR_COUNT = 100;
@@ -1181,12 +1171,12 @@
     dataCenter.addEvent(data);
 
     // 立即发送请求
-    if (json && json.immediate === true) {
-      onlineTimer.reset();
+    if (json && json.immediate) {
+      onlineTimer.stop();
       onlineTimer.run();
+      // onlinePolling(true)
+      return false;
     }
-
-    return data;
   }
 
   function getUid() {
@@ -1430,6 +1420,8 @@
       url: uri.appendOnline(uri.API_PATH)
     };
 
+    var offsetLen = 1;
+
     /**
      * 上报质量统计，每隔多少个周期上报，默认为10
      */
@@ -1442,9 +1434,17 @@
           total: reportCount
         }
       });
+
+      offsetLen += 1;
     }
 
     opts.data = dataCenter.collect(payment, reg);
+
+    // report event immediately if set with immediate
+    var recentEvent = opts.data.eventInfoList[opts.data.eventInfoList.length - offsetLen];
+    if (recentEvent && recentEvent.eventMap && recentEvent.eventMap.immediate) {
+      force = true;
+    }
 
     if (!validator.isParamsValid(opts.data)) return;
 
@@ -1478,7 +1478,7 @@
    */
   function setPollingDebounce(wait) {
     if (!wait) {
-      wait = utils.isDebug ? defaults.ASAP_TIMEOUT_DEBUG : defaults.ASAP_TIMEOUT;
+      wait = defaults.ASAP_TIMEOUT;
     }
 
     clearTimeout(controlTimeoutID);
@@ -2073,8 +2073,7 @@
     restoreSnapshot(isAct);
 
     // 开启在线轮询
-    var minInterval = utils.isDebug ? defaults.MIN_ONLINE_INTERVAL_DEBUG : defaults.MIN_ONLINE_INTERVAL;
-    var interval = Math.max(minInterval, parseFloat(options.interval || minInterval)) * 1000;
+    var interval = Math.max(defaults.MIN_ONLINE_INTERVAL, parseFloat(options.interval || defaults.MIN_ONLINE_INTERVAL)) * 1000;
     onlineTimer.set(onlinePolling, interval);
     stateCenter.interval = interval;
     stateCenter.inited = true;

@@ -11,7 +11,7 @@ global.getJasmineRequireObj = function() {
   return JasmineCore
 }
 global.DCAGENT_DEBUG_OPEN = true
-global.ASAP_TIMEOUT = 2000
+global.ASAP_TIMEOUT = 5000
 // some test suite failed in ci system(pass in ci's ssh mode)
 global.CI_MODE = true
 // XMLHttpRequest and localStorage in node
