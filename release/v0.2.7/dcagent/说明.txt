@@ -1,0 +1,14 @@
+**** 演示说明 ****
+  打开index.v2.html查看demo
+
+  dcagent.additional.js
+  dcagent.json
+  dcagent.d.ts
+  以上三个文件为白鹭引擎专用，其他运行环境可以忽略
+
+
+**** 更新说明 ****
+Version 0.2.7
+更新日期：2015-12-28
+更新内容：
+- 1. 自定义事件可以立即上报数据，使用示例：DCAgent.onEvent('test', {immediate: true})
