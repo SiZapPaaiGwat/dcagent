@@ -19,6 +19,7 @@ import {engine} from '../detect/engine.js'
 import * as utils from '../libs/utils.js'
 import * as Client from '../detect/client.js'
 
+
 /**
  * for standard browser and layabox, or cocos
  */
@@ -33,33 +34,42 @@ var createBrowserXHR = Client.useXDR ? function() {
 }
 
 var createXHR = engine.isCocos ? createCocosXHR : createBrowserXHR
+var xhrSupport
 
-/**
- * VS的WP打包环境有XHR，没有XDR，但是XHR的timeout只读
- * Lumia 640有XDR，但是contentType只读
- * https://msdn.microsoft.com/library/cc288060(v=vs.85).aspx
- */
-var supportTimeout = true
-var supportContentType = true
-var xhr = createXHR()
-try {
-  xhr.timeout = 1
-} catch(e) {
-  supportTimeout = false
-}
-
-try {
-  xhr.contentType = 'text/plain; charset=UTF-8'
-} catch(e) {
-  supportContentType = false
-}
-
-var setContentType = Client.useXDR ? function (xhr, value) {
-  if (supportContentType) {
-    xhr.contentType = value
+function getXHRSupport() {
+  /**
+   * VS的WP打包环境有XHR，没有XDR，但是XHR的timeout只读
+   * Lumia 640有XDR，但是contentType只读
+   * https://msdn.microsoft.com/library/cc288060(v=vs.85).aspx
+   */
+  var supportTimeout = true
+  var supportContentType = true
+  var xhr = createXHR()
+  try {
+    xhr.timeout = 1
+  } catch(e) {
+    supportTimeout = false
   }
-} : function (xhr, value) {
-  xhr.setRequestHeader('Content-Type', value)
+
+  try {
+    xhr.contentType = 'text/plain; charset=UTF-8'
+  } catch(e) {
+    supportContentType = false
+  }
+
+  var setContentType = Client.useXDR ? function (xhr, value) {
+    if (supportContentType) {
+      xhr.contentType = value
+    }
+  } : function (xhr, value) {
+    xhr.setRequestHeader('Content-Type', value)
+  }
+
+  return {
+    timeout: supportTimeout,
+    contentType: supportContentType,
+    setContentType: setContentType
+  }
 }
 
 /**
@@ -92,11 +102,11 @@ function egretRequest(opts) {
  */
 function request(opts) {
   var xhr = createXHR()
-  if (supportTimeout) {
+  if (xhrSupport.timeout) {
     xhr.timeout = opts.timeout
   }
   xhr.open(opts.method || 'POST', opts.url, true)
-  setContentType(xhr, 'text/plain; charset=UTF-8')
+  xhrSupport.setContentType(xhr, 'text/plain; charset=UTF-8')
 
   var start = Date.now()
 
@@ -113,7 +123,7 @@ function request(opts) {
     this.ontimeout = null
   }
 
-  if (supportTimeout) {
+  if (xhrSupport.timeout) {
     xhr.ontimeout = function() {
       var elapsed = Date.now() - start
 
@@ -130,7 +140,10 @@ function request(opts) {
 
 var ajax = (() => {
   // for browser layabox cocos
-  if (window.XMLHttpRequest || engine.isCocos) return request
+  if (window.XMLHttpRequest || engine.isCocos) {
+    xhrSupport = getXHRSupport()
+    return request
+  }
 
   if (engine.isEgret) return egretRequest
 
