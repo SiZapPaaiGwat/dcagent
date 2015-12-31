@@ -1209,12 +1209,7 @@
     loader.load(request);
   }
 
-  /**
-   * VS的WP打包环境有XHR，没有XDR，但是XHR的timeout只读
-   * Lumia 640有XDR，但是contentType只读
-   * https://msdn.microsoft.com/library/cc288060(v=vs.85).aspx
-   */
-  var supportTimeout = true;
+  var xhrSupport;
 
   var createBrowserXHR = Client.useXDR ? function () {
     return new window.XDomainRequest();
@@ -1231,41 +1226,17 @@
 
   var createXHR = engine.isCocos ? createCocosXHR : createBrowserXHR;
 
-  var xhr = createXHR();
-
-  var supportContentType = true;
-
-  try {
-    xhr.contentType = 'text/plain; charset=UTF-8';
-  } catch (e) {
-    supportContentType = false;
-  }
-
-  var setContentType = Client.useXDR ? function (xhr, value) {
-    if (supportContentType) {
-      xhr.contentType = value;
-    }
-  } : function (xhr, value) {
-    xhr.setRequestHeader('Content-Type', value);
-  };
-
-  try {
-    xhr.timeout = 1;
-  } catch (e) {
-    supportTimeout = false;
-  }
-
   /**
    * 切断网络或者手机切到后台可能导致timeout
    * IE 9有XMLHttpRequest，但是timeout属性不能设置
    */
   function _request(opts) {
     var xhr = createXHR();
-    if (supportTimeout) {
+    if (xhrSupport.timeout) {
       xhr.timeout = opts.timeout;
     }
     xhr.open(opts.method || 'POST', opts.url, true);
-    setContentType(xhr, 'text/plain; charset=UTF-8');
+    xhrSupport.setContentType(xhr, 'text/plain; charset=UTF-8');
 
     var start = Date.now();
 
@@ -1282,7 +1253,7 @@
       this.ontimeout = null;
     };
 
-    if (supportTimeout) {
+    if (xhrSupport.timeout) {
       xhr.ontimeout = function () {
         var elapsed = Date.now() - start;
 
@@ -1297,9 +1268,48 @@
     xhr.send(utils.jsonStringify(opts.data));
   }
 
+  function getXHRSupport() {
+    /**
+     * VS的WP打包环境有XHR，没有XDR，但是XHR的timeout只读
+     * Lumia 640有XDR，但是contentType只读
+     * https://msdn.microsoft.com/library/cc288060(v=vs.85).aspx
+     */
+    var supportTimeout = true;
+    var supportContentType = true;
+    var xhr = createXHR();
+    try {
+      xhr.timeout = 1;
+    } catch (e) {
+      supportTimeout = false;
+    }
+
+    try {
+      xhr.contentType = 'text/plain; charset=UTF-8';
+    } catch (e) {
+      supportContentType = false;
+    }
+
+    var setContentType = Client.useXDR ? function (xhr, value) {
+      if (supportContentType) {
+        xhr.contentType = value;
+      }
+    } : function (xhr, value) {
+      xhr.setRequestHeader('Content-Type', value);
+    };
+
+    return {
+      timeout: supportTimeout,
+      contentType: supportContentType,
+      setContentType: setContentType
+    };
+  }
+
   var ajax = (function () {
     // for browser layabox cocos
-    if (window.XMLHttpRequest || engine.isCocos) return _request;
+    if (window.XMLHttpRequest || engine.isCocos) {
+      xhrSupport = getXHRSupport();
+      return _request;
+    }
 
     if (engine.isEgret) return egretRequest;
 
